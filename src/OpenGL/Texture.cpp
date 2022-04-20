@@ -1,5 +1,7 @@
 #include "OpenGL.h"
 
+#include <stb_image.h>
+
 extern std::shared_ptr<OpenGLContext> gl_context;
 
 Texture *Texture_Create() {
@@ -18,7 +20,7 @@ Texture *Texture_LoadFile(const char* filename) {
 
 	auto* texture = Texture_Create();
 	
-	Texture_Bind(texture);
+	texture->Bind();
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -39,7 +41,7 @@ Texture *Texture_LoadFile(const char* filename) {
 	
 	stbi_image_free(data);
 
-	Texture_UnBind();
+	texture->UnBind();
 
 	texture->channels = channels;
 	texture->width = width;
@@ -48,22 +50,14 @@ Texture *Texture_LoadFile(const char* filename) {
 	return texture;
 }
 
-void Texture_Bind(Texture *texture) {
-	glBindTexture(GL_TEXTURE_2D, texture->id);
+void Texture::Bind() {
+	glBindTexture(GL_TEXTURE_2D, this->id);
 }
 
-void Texture_BindUnit(Texture *texture, uint32_t unit) {
-	glBindTextureUnit(unit, texture->id);
+void Texture::BindUnit(uint32_t unit) {
+	glBindTextureUnit(unit, this->id);
 }
 
-void Texture_UnBind() {
+void Texture::UnBind() {
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void TextureArray_Bind(Texture *texture) {
-	glBindTexture(GL_TEXTURE_2D_ARRAY, texture->id);
-}
-
-void TextureArray_UnBind() {
-	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }

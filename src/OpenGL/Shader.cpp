@@ -48,14 +48,14 @@ void Compile(unsigned int &program, const std::string &filename, unsigned int ta
 		std::cout << message << std::endl;
 	}
 
-	assert(result);
+	GL_ASSERT(result);
 
 	glAttachShader(program, shader);
 	glDeleteShader(shader);
 };
 
 Shader *Shader_Create(const std::string &vs_filename, const std::string &fs_filename, bool file) {
-	assert(gl_context != nullptr);
+	GL_ASSERT(gl_context != nullptr);
 
 	unsigned int program = glCreateProgram();
 
@@ -72,9 +72,9 @@ Shader *Shader_Create(const std::string &vs_filename, const std::string &fs_file
 	
 	auto* shader_ptr = shader.get();
 
-	Shader_Bind(shader_ptr);
+	shader_ptr->Bind();
 
-	if (Shader_GetUniformLoc(shader_ptr, SHADER_TEXTUREARRAY)) {
+	if (shader_ptr->GetUniformLoc(SHADER_TEXTUREARRAY)) {
 		shader_ptr->texture_array = true;
 
 		// for (int i = 0; i < 32; i++) {
@@ -83,75 +83,75 @@ Shader *Shader_Create(const std::string &vs_filename, const std::string &fs_file
 		// 	Shader_SetUniformi(shader_ptr, tmp, i);
 		// }
 		glActiveTexture(GL_TEXTURE0);
-		Shader_SetUniformi(shader_ptr, SHADER_TEXTUREARRAY, 0);
+		shader_ptr->SetUniformi(SHADER_TEXTUREARRAY, 0);
 	}
-	if (Shader_GetUniformLoc(shader_ptr, SHADER_TEXTURES)) {
+	if (shader_ptr->GetUniformLoc(SHADER_TEXTURES)) {
 		shader_ptr->textures = true;
 		
 		for (int i = 0; i < 32; i++) {
 			glActiveTexture(GL_TEXTURE0 + i);
 			auto tmp = std::string(SHADER_TEXTURES) + std::to_string(i);
-			Shader_SetUniformi(shader_ptr, tmp, i);
+			shader_ptr->SetUniformi(tmp, i);
 		}
 	}
-	if (Shader_GetUniformLoc(shader_ptr, "light")) {
+	if (shader_ptr->GetUniformLoc("light")) {
 		shader_ptr->light = true;
 	}
-	if (Shader_GetUniformLoc(shader_ptr, "material")) {
+	if (shader_ptr->GetUniformLoc("material")) {
 		shader_ptr->material = true;
 	}
 
 	return shader_ptr;
 }
 
-void Shader_Bind(Shader *shader) {
-	if (gl_context->binding_shader == shader->id) return;
-	gl_context->binding_shader = shader->id;
-	glUseProgram(shader->id);
+void Shader::Bind() {
+	if (gl_context->binding_shader == this->id) return;
+	gl_context->binding_shader = this->id;
+	glUseProgram(this->id);
 }
 
-void Shader_UnBind() {
+void Shader::UnBind() {
 	gl_context->binding_vertexarray = 0;
 	glUseProgram(0);
 }
 
-void Shader_BindUniformBlock(Shader *shader, std::string name, unsigned int index) {
-	glUniformBlockBinding(shader->id, glGetUniformBlockIndex(shader->id, name.c_str()), index);
+void Shader::BindUniformBlock(std::string name, unsigned int index) {
+	glUniformBlockBinding(this->id, glGetUniformBlockIndex(this->id, name.c_str()), index);
 }
 
-unsigned int Shader_GetUniformLoc(Shader *shader, std::string name) {
-	if (shader->uniform_location_map.find(name) == shader->uniform_location_map.end())
-		shader->uniform_location_map[name] = glGetUniformLocation(shader->id, name.c_str());
+unsigned int Shader::GetUniformLoc(std::string name) {
+	if (this->uniform_location_map.find(name) == this->uniform_location_map.end())
+		this->uniform_location_map[name] = glGetUniformLocation(this->id, name.c_str());
 		
-	return shader->uniform_location_map[name];
+	return this->uniform_location_map[name];
 }
 
-void Shader_SetUniformMat4(Shader *shader, std::string uniform, const float* matrix) {
-	Shader_Bind(shader);
-	glUniformMatrix4fv(Shader_GetUniformLoc(shader, uniform), 1, GL_FALSE, matrix);
+void Shader::SetUniformMat4(std::string uniform, const float* matrix) {
+	this->Bind();
+	glUniformMatrix4fv(this->GetUniformLoc(uniform), 1, GL_FALSE, matrix);
 }
 
-void Shader_SetUniformi(Shader *shader, std::string uniform, int v0) {
-	Shader_Bind(shader);
-	glUniform1i(Shader_GetUniformLoc(shader, uniform), v0);
+void Shader::SetUniformi(std::string uniform, int v0) {
+	this->Bind();
+	glUniform1i(this->GetUniformLoc(uniform), v0);
 }
 
-void Shader_SetUniformf(Shader *shader, std::string uniform, float v0) {
-	Shader_Bind(shader);
-	glUniform1f(Shader_GetUniformLoc(shader, uniform), v0);
+void Shader::SetUniformf(std::string uniform, float v0) {
+	this->Bind();
+	glUniform1f(this->GetUniformLoc(uniform), v0);
 }
 
-void Shader_SetUniformVec3(Shader *shader, std::string uniform, const float *v) {
-	Shader_Bind(shader);
-	glUniform3fv(Shader_GetUniformLoc(shader, uniform), 1, v);
+void Shader::SetUniformVec3(std::string uniform, const float *v) {
+	this->Bind();
+	glUniform3fv(this->GetUniformLoc(uniform), 1, v);
 }
 
-void Shader_SetUniformVec4(Shader *shader, std::string uniform, const float *v) {
-	Shader_Bind(shader);
-	glUniform4fv(Shader_GetUniformLoc(shader, uniform), 1, v);
+void Shader::SetUniformVec4(std::string uniform, const float *v) {
+	this->Bind();
+	glUniform4fv(this->GetUniformLoc(uniform), 1, v);
 }
 
-void Shader_SetUniformArray(Shader *shader, std::string uniform, std::size_t count, const float *v) {
-	Shader_Bind(shader);
-	glUniform1fv(Shader_GetUniformLoc(shader, uniform), count, v);
+void Shader::SetUniformArray(std::string uniform, std::size_t count, const float *v) {
+	this->Bind();
+	glUniform1fv(this->GetUniformLoc(uniform), count, v);
 }

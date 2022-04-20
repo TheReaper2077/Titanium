@@ -4,14 +4,14 @@
 
 extern std::shared_ptr<OpenGLContext> gl_context;
 
-VertexArray *VertexArray_Create(std::vector<VertexArrayLayout> layouts) {
+VertexArray* VertexArray_Create(std::vector<VertexArrayLayout> layouts) {
 	assert(gl_context != nullptr);
 
 	auto vertexarray = std::make_shared<VertexArray>();
 	gl_context->vertex_array_store.push_back(vertexarray);
 
 	glGenVertexArrays(1, &vertexarray->id);
-	VertexArray_Bind(vertexarray.get());
+	vertexarray->Bind();
 
 	uint32_t relativeoffset = 0;
 
@@ -47,21 +47,21 @@ VertexArray *VertexArray_Create(std::vector<VertexArrayLayout> layouts) {
 	return vertexarray.get();
 }
 
-void VertexArray_Bind(VertexArray *vertexarray) {
-	if (gl_context->binding_vertexarray == vertexarray->id) return;
-	gl_context->binding_vertexarray = vertexarray->id;
-	glBindVertexArray(vertexarray->id);
+void VertexArray::Bind() {
+	if (gl_context->binding_vertexarray == id) return;
+	gl_context->binding_vertexarray = id;
+	glBindVertexArray(id);
 }
 
-void VertexArray_UnBind() {
+void VertexArray::UnBind() {
 	gl_context->binding_vertexarray = 0;
 	glBindVertexArray(0);
 }
 
-void VertexArray_BindVertexBuffer(VertexArray *vertexarray, VertexBuffer *vertexbuffer, std::size_t stride, std::size_t offset) {
-	glVertexArrayVertexBuffer(vertexarray->id, 0, vertexbuffer->id, offset, (stride == 0) ? stride : vertexarray->stride);
+void VertexArray::BindVertexBuffer(VertexBuffer *vertexbuffer, std::size_t stride, std::size_t offset) {
+	glVertexArrayVertexBuffer(id, 0, vertexbuffer->id, offset, (stride == 0) ? stride : stride);
 }
 
-void VertexArray_BindIndexBuffer(VertexArray *vertexarray, IndexBuffer *indexbuffer) {
-	glVertexArrayElementBuffer(vertexarray->id, indexbuffer->id);
+void VertexArray::BindIndexBuffer(IndexBuffer *indexbuffer) {
+	glVertexArrayElementBuffer(id, indexbuffer->id);
 }
