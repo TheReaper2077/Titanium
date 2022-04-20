@@ -16,44 +16,44 @@ IndexBuffer *IndexBuffer_Create(VertexArray *vertexarray) {
 	return indexbuffer.get();
 }
 
-void IndexBuffer::Bind() {
-	this->vertexarray->Bind();
-	if (gl_context->binding_indexbuffer == this->id) return;
-	gl_context->binding_indexbuffer = this->id;
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
+void IndexBuffer_Bind(IndexBuffer *indexbuffer) {
+	VertexArray_Bind(indexbuffer->vertexarray);
+	if (gl_context->binding_indexbuffer == indexbuffer->id) return;
+	gl_context->binding_indexbuffer = indexbuffer->id;
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexbuffer->id);
 }
 
-void IndexBuffer::UnBind() {
+void IndexBuffer_UnBind() {
 	gl_context->binding_indexbuffer = 0;
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 
-void IndexBuffer::Destroy() {
-	glDeleteBuffers(1, &this->id);
-	// free(indexbuffer);
-	// indexbuffer = nullptr;
+void IndexBuffer_Destroy(IndexBuffer *indexbuffer) {
+	glDeleteBuffers(1, &indexbuffer->id);
+	free(indexbuffer);
+	indexbuffer = nullptr;
 }
 
-void IndexBuffer::Allocate(std::size_t size) {
-	if (this->size > size) return;
+void IndexBuffer_Allocate(IndexBuffer *indexbuffer, std::size_t size) {
+	if (indexbuffer->size > size) return;
 
-	this->Bind();
+	IndexBuffer_Bind(indexbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-	this->size = size;
+	indexbuffer->size = size;
 };
 
-void IndexBuffer::AddData(unsigned int* data, std::size_t size, std::size_t offset) {
-	if (offset == 0 && size > this->size) {
-		Bind();
+void IndexBuffer_AddData(IndexBuffer *indexbuffer, unsigned int* data, std::size_t size, std::size_t offset) {
+	if (offset == 0 && size > indexbuffer->size) {
+		IndexBuffer_Bind(indexbuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
-		this->size = size;
+		indexbuffer->size = size;
 		return;
 	}
 
-	assert(offset + size <= this->size);
+	assert(offset + size <= indexbuffer->size);
 
-	Bind();
+	IndexBuffer_Bind(indexbuffer);
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
-	this->size = size;
+	indexbuffer->size = size;
 }

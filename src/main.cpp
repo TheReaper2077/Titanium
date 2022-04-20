@@ -36,19 +36,18 @@ int main() {
 	auto* vertexarray = VertexArray_Create({ {0, 3, GL_FLOAT}, {1, 3, GL_FLOAT} });
 	auto* vertexbuffer = VertexBuffer_Create();
 	auto* shader = Shader_Create("D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\ray.fs");
+	auto* uniformbuffer = UniformBuffer_Create();
 
-	vertexbuffer->AddDataStatic(vertices.data(), vertices.size()*sizeof(Vertex));
+	VertexBuffer_AddDataStatic(vertexbuffer, vertices.data(), vertices.size()*sizeof(Vertex));
 
-	glm::mat4 proj = glm::ortho<float>(0, WIDTH, HEIGHT, 0, -1, 1);
+	glm::mat4 proj = glm::ortho<float>(0, WIDTH, HEIGHT, 0, -100, 100);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 model = glm::mat4(1.0f);
 
-	auto* uniformbuffer = UniformBuffer_Create();
+	Shader_BindUniformBlock(shader, "ProjectionMatrix", 0);
 
-	shader->BindUniformBlock("ProjectionMatrix", 0);
-
-	uniformbuffer->Allocate(3 * sizeof(glm::mat4));
 	uniformbuffer->BindRange(0, 3 * sizeof(glm::mat4));
+	uniformbuffer->Allocate(3 * sizeof(glm::mat4));
 	uniformbuffer->AddDataDynamic(&proj[0][0], sizeof(glm::mat4), 2 * sizeof(glm::mat4));
 	uniformbuffer->AddDataDynamic(&view[0][0], sizeof(glm::mat4), 1 * sizeof(glm::mat4));
 	uniformbuffer->AddDataDynamic(&model[0][0], sizeof(glm::mat4), 0 * sizeof(glm::mat4));
@@ -56,13 +55,13 @@ int main() {
 	while (!WindowExit()) {
 		PollEvents();
 
-		glEnable(GL_DEPTH_TEST);
+		// glEnable(GL_DEPTH_TEST);
 		glClearColor(0.2, 0.2, 0.2, 0.2);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		shader->Bind();
-		vertexarray->Bind();
-		vertexbuffer->Bind();
+		Shader_Bind(shader);
+		VertexArray_Bind(vertexarray);
+		VertexArray_BindVertexBuffer(vertexarray, vertexbuffer, vertexarray->stride);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 

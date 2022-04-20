@@ -9,7 +9,7 @@ TextureArray *TextureArray_LoadFile(int tilew, int tileh, const char* filename) 
 	auto spriteatlas = std::make_shared<TextureArray>();
 
 	spriteatlas->texture = Texture_Create();
-	TextureArray_Bind(spriteatlas->texture);
+	spriteatlas->texture->Bind();
 	
 	int width, height, channels;
 	auto* data = stbi_load(filename, &width, &height, &channels, 0);
@@ -71,4 +71,12 @@ TextureArray *TextureArray_LoadFile(int tilew, int tileh, const char* filename) 
 	gl_context->sprite_atlas_store.push_back(spriteatlas);
 
 	return spriteatlas.get();
+}
+
+void TextureArray::Bind() {
+	glBindTexture(GL_TEXTURE_2D_ARRAY, this->texture->id);
+}
+
+void TextureArray::UnBind() {
+	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
