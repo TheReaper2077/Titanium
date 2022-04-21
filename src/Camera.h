@@ -27,8 +27,8 @@ struct Camera {
 	float lastX = WIDTH/2, lastY = HEIGHT/2;
 	float zoom = 0.001f;
 
-	bool mouse_enabled = false;
-	bool keyboard_enabled = true;
+	// bool mouse_enabled = false;
+	// bool keyboard_enabled = true;
 
 	std::string name;
 

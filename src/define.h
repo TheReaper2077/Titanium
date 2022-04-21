@@ -36,16 +36,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_cross_product.hpp>
 
-#include <SFML/Graphics.hpp>
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 #include <imgui.h>
 #include <imgui_internal.h>
-#include <imgui_impl_glfw.h>
+#include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
+
+#include <SDL2/SDL.h>
 
 #include <entt/entt.hpp>
 
