@@ -22,7 +22,6 @@
 #include <chrono>
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include <stb_image.h>
 
@@ -47,9 +46,3 @@
 
 #include <SDL2/SDL.h>
 
-#include <entt/entt.hpp>
-
-#define TITLE "VOXELATION"
-
-#define WIDTH 1280.0f
-#define HEIGHT 640.0f

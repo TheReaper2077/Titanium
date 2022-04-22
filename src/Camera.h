@@ -24,7 +24,7 @@ struct Camera {
 	bool first_mouse = true;
 	float speed = 0;
 	float yaw = -90.0, pitch = 0;
-	float lastX = WIDTH/2, lastY = HEIGHT/2;
+	float lastX, lastY;
 	float zoom = 0.001f;
 
 	// bool mouse_enabled = false;
@@ -37,5 +37,5 @@ struct Camera {
 	void View(float zoom);
 	void Update(double dt);
 
-	Camera(std::string name, ProjectionMode mode);
+	Camera(std::string name, ProjectionMode mode, int width, int height);
 };

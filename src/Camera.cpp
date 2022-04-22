@@ -1,26 +1,24 @@
 #include "Camera.h"
 
-#include "GLFWLayer.h"
-
-Camera::Camera(std::string name, ProjectionMode mode) {
+Camera::Camera(std::string name, ProjectionMode mode, int width, int height) {
 	if (mode == ORTHOGRAPHIC) {
-		// this->projection = glm::ortho<float>(-(WIDTH/HEIGHT), (WIDTH/HEIGHT), 1, -1, -1000, 1000);
-		// this->projection = glm::ortho<float>(-WIDTH/2, WIDTH/2, HEIGHT/2, -HEIGHT/2, -1000, 1000);
-		this->projection = glm::ortho<float>(0, WIDTH, HEIGHT, 0, -1000, 1000);
+		this->projection = glm::ortho<float>(-(width/height), (width/height), 1, -1, -1000, 1000);
 		this->view = glm::mat4(1.0f);
 		this->model = glm::mat4(1.0f);
 		this->speed = 5.0f;
 	}
 	if (mode == PERSPECTIVE) {
-		this->projection = glm::perspective(glm::radians(45.0f), (float)WIDTH/HEIGHT, 0.001f, 1000.0f);
+		this->projection = glm::perspective(glm::radians(45.0f), (float)width/height, 0.001f, 1000.0f);
 		this->view = glm::mat4(1.0f);
-		this->model = glm::mat4(1.0f);//glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 0, 1));
+		this->model = glm::mat4(1.0f);
 		this->speed = 0.5f;
 	}
 
 	this->mode = mode;
 	this->name = name;
-	// this->mouse_enabled = true;
+
+	this->lastX = width/2;
+	this->lastY = height/2;
 }
 
 void Camera::View(const glm::vec3 &mag) {

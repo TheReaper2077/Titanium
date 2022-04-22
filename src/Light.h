@@ -2,24 +2,46 @@
 
 #include "math/math.h"
 
-enum LightType {
-	POINT,
-	DIRECTIONAL,
-	SPOTLIGHT
+struct Light{};
+
+struct DirLight: Light {
+	Vec3 direction;
+
+	Vec3 ambient;
+	Vec3 diffuse;
+	Vec3 specular;
 };
 
-struct Light {
-    Vec4 position;
-  
-    Vec3 ambient;
-    Vec3 diffuse;
-    Vec3 specular;
+struct PointLight: Light {
+	Vec3 position;
 
-	// Point Light
 	float constant;
-    float linear;
-    float quadratic;
+	float linear;
+	float quadratic;
 
-	// Spotlight
+	Vec3 ambient;
+	Vec3 diffuse;
+	Vec3 specular;
+};
+
+struct SpotLight: Light {
+	Vec3 position;
+	Vec3 direction;
 	float cutOff;
+	float outerCutOff;
+
+	float constant;
+	float linear;
+	float quadratic;
+
+	Vec3 ambient;
+	Vec3 diffuse;
+	Vec3 specular;       
+};
+
+struct AreaLight: Light {
+	Vec3 position;
+	Vec3 ambient;
+	Vec3 diffuse;
+	Vec3 specular;   
 };
