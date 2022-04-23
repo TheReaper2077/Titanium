@@ -3,39 +3,42 @@
 // #include <glm/glm.hpp>
 #include "define.h"
 
-enum ProjectionMode {
-	ORTHOGRAPHIC,
-	PERSPECTIVE
-};
+namespace ti {
 
-struct Camera {
-	ProjectionMode mode;
+	enum ProjectionMode {
+		ORTHOGRAPHIC,
+		PERSPECTIVE
+	};
 
-	glm::vec3 Up;
-	glm::vec3 Right;
-	glm::vec3 Position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 Front = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	
-	glm::mat4 model;
-	glm::mat4 view;
-	glm::mat4 projection;
+	struct Camera {
+		ProjectionMode mode;
 
-	bool first_mouse = true;
-	float speed = 0;
-	float yaw = -90.0, pitch = 0;
-	float lastX, lastY;
-	float zoom = 0.001f;
+		glm::vec3 Up;
+		glm::vec3 Right;
+		glm::vec3 Position = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 Front = glm::vec3(0.0f, 0.0f, -1.0f);
+		glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		
+		glm::mat4 model;
+		glm::mat4 view;
+		glm::mat4 projection;
 
-	// bool mouse_enabled = false;
-	// bool keyboard_enabled = true;
+		bool first_mouse = true;
+		float speed = 0;
+		float yaw = -90.0, pitch = 0;
+		float lastX, lastY;
+		float zoom = 0.001f;
 
-	std::string name;
+		// bool mouse_enabled = false;
+		// bool keyboard_enabled = true;
 
-	void MouseCallback();
-	void View(const glm::vec3 &mag);
-	void View(float zoom);
-	void Update(double dt);
+		std::string name;
 
-	Camera(std::string name, ProjectionMode mode, int width, int height);
-};
+		void MouseCallback();
+		void View(const glm::vec3 &mag);
+		void View(float zoom);
+		void Update(double dt);
+
+		Camera(std::string name, ProjectionMode mode, int width, int height);
+	};
+}

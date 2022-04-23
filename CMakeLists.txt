@@ -15,9 +15,6 @@ add_executable(main ${TARGET_SRC})
 find_package(glad CONFIG REQUIRED)
 target_link_libraries(main PRIVATE glad::glad)
 
-find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(main PRIVATE glfw)
-
 # find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 # target_link_libraries(main PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
 

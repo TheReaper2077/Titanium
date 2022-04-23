@@ -5,31 +5,40 @@
 #include <entt/entt.hpp>
 #include <memory>
 
-struct Engine {
-	entt::registry registry;
+namespace ti {
+	struct Engine {
+		entt::registry registry;
 
-	bool quit;
+		bool quit = false;
 
-	double dt;
+		double dt;
 
-	SDL_Window* window;
-	SDL_GLContext context;
+		SDL_Window* window;
+		SDL_GLContext context;
+		SDL_Event event;
 
-	const char* title;
-	int width, height, posx, posy;
+		const char* title = "Titanium";
+		int width = 1280, height = 640, posx = 50, posy = 50;
 
-	Renderer renderer;
-};
+		Renderer renderer;
 
-void ImGuiInit();
-void ImGuiUpdate();
-void ImGuiRender();
-void ImGuiDestroy();
+		std::vector<SDL_Scancode> key_chord;
+	};
 
-void Init();
-void Mainloop();
-void Update(double dt);
-void Render();
-void Destroy();
+	void ImGuiInit();
+	void ImGuiUpdate();
+	void ImGuiRender();
+	void ImGuiDestroy();
 
-double& TimeStep();
+	void Init();
+	void Mainloop();
+	void EventHandler();
+	void Update(double dt);
+	void Render();
+	void Destroy();
+
+	double& TimeStep();
+
+	Engine* GetEngine();
+	SDL_Event* GetEvent();
+}

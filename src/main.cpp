@@ -254,7 +254,7 @@
 #include "Engine.h"
 
 int main(int ArgCount, char **Args) {
-	Mainloop();
+	ti::Mainloop();
 
 	return 0;
 }

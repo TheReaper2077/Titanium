@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera(std::string name, ProjectionMode mode, int width, int height) {
+ti::Camera::Camera(std::string name, ProjectionMode mode, int width, int height) {
 	if (mode == ORTHOGRAPHIC) {
 		this->projection = glm::ortho<float>(-(width/height), (width/height), 1, -1, -1000, 1000);
 		this->view = glm::mat4(1.0f);
@@ -21,7 +21,7 @@ Camera::Camera(std::string name, ProjectionMode mode, int width, int height) {
 	this->lastY = height/2;
 }
 
-void Camera::View(const glm::vec3 &mag) {
+void ti::Camera::View(const glm::vec3 &mag) {
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(mag.x), glm::vec3(1, 0, 0));
 	model = glm::rotate(model, glm::radians(mag.y), glm::vec3(0, 1, 0));
@@ -30,7 +30,7 @@ void Camera::View(const glm::vec3 &mag) {
 	this->model = model;
 }
 
-void Camera::MouseCallback() {
+void ti::Camera::MouseCallback() {
 	// float xpos = GetMousePosX();
 	// float ypos = GetMousePosY();
 
@@ -71,10 +71,9 @@ void Camera::MouseCallback() {
 	// 	this->Right = glm::normalize(glm::cross(this->Front, this->WorldUp));
     //     this->Up = glm::normalize(glm::cross(this->Right, this->Front));
 	// }
-	// if (glfw)
 }
 
-void Camera::Update(double dt) {	
+void ti::Camera::Update(double dt) {	
 	// float speed = (float)this->speed*dt;
 
 	MouseCallback();
