@@ -1,6 +1,6 @@
 // #include "define.h"
 
-// #include "OpenGL/OpenGL.h"
+// #include <OpenGL.h>
 // #include "Camera.h"
 
 // #include "Math/math.h"
@@ -49,7 +49,7 @@
 // 	SDL_Init(SDL_INIT_VIDEO);
 // 	OpenGL_CreateContext();
 
-// 	SDL_Window* window = SDL_CreateWindow("2.5D Engine", 50, 50, WIDTH, HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+// 	SDL_Window* window = SDL_CreateWindow("2.5D Engine", 50, 50, 1280, 640, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 // 	assert(window);
 // 	SDL_GLContext context = SDL_GL_CreateContext(window);
 
@@ -64,7 +64,7 @@
 
 // 	vertexbuffer->AddDataStatic(vertices.data(), vertices.size()*sizeof(Vertex));
 
-// 	glm::mat4 proj = glm::ortho<float>(0, WIDTH, HEIGHT, 0, -100, 100);
+// 	glm::mat4 proj = glm::ortho<float>(0, 1280, 640, 0, -100, 100);
 // 	glm::mat4 view = glm::mat4(1.0f);
 // 	glm::mat4 model = glm::mat4(1.0f);
 
@@ -73,7 +73,7 @@
 // 	uniformbuffer->BindRange(0, 3 * sizeof(glm::mat4));
 // 	uniformbuffer->Allocate(3 * sizeof(glm::mat4));
 
-// 	auto* camera = new Camera("cam0", PERSPECTIVE);
+// 	auto* camera = new ti::Camera("cam0", ti::PERSPECTIVE, 1280, 640);
 
 // 	uniformbuffer->AddDataDynamic(&camera->projection[0][0], sizeof(glm::mat4), 2 * sizeof(glm::mat4));
 // 	uniformbuffer->AddDataDynamic(&camera->model[0][0], sizeof(glm::mat4), 0 * sizeof(glm::mat4));
@@ -96,40 +96,7 @@
 	
 //     ImGui::StyleColorsDark();
 	
-// 	unsigned int fbo;
-// 	glGenFramebuffers(1, &fbo);
-
-// 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-// 	unsigned int texture;
-// 	glGenTextures(1, &texture);
-// 	glBindTexture(GL_TEXTURE_2D, texture);
-	
-// 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-// 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-// 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-
-// 	glBindTexture(GL_TEXTURE_2D, 0);
-
-// 	unsigned int depth_stencil;
-// 	glGenTextures(1, &depth_stencil);
-// 	glBindTexture(GL_TEXTURE_2D, depth_stencil);
-	
-// 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
-
-// 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-// 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-// 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depth_stencil, 0);
-
-// 	glBindTexture(GL_TEXTURE_2D, 0);
-
-// 	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
-// 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+// 	auto* fbo = FrameBuffer_Create(1280, 640);
 
 // 	double dt = 0;
 // 	bool quit = false;
@@ -143,9 +110,7 @@
 
 // 		const auto& start_time = std::chrono::high_resolution_clock::now();
 		
-// 		// int display_w, display_h;
-//         // glfwGetFramebufferSize(GLFW_GetWindow(), &display_w, &display_h);
-//         glViewport(0, 0, WIDTH, HEIGHT);
+//         glViewport(0, 0, 1280, 640);
 		
 // 		glClearColor(0, 0, 0, 0);
 // 		glClear(GL_COLOR_BUFFER_BIT);
@@ -166,7 +131,7 @@
 // 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 // 		ImGui::SetNextWindowPos(ImVec2(0, 0));
-// 		ImGui::SetNextWindowSize(ImVec2(WIDTH, HEIGHT));
+// 		ImGui::SetNextWindowSize(ImVec2(1280, 640));
 		
 // 		static bool p_open;
 // 		ImGui::Begin("DockSpace Demo", &p_open, window_flags);
@@ -188,9 +153,9 @@
 // 			const auto& size = ImGui::GetWindowSize();
 // 			const auto& pos = ImGui::GetWindowPos();
 // 			{
-// 				glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+// 				fbo->Bind();
 
-// 				glViewport(0, 0, WIDTH, HEIGHT);
+// 				glViewport(0, 0, 1280, 640);
 
 // 				glClearColor(0.2, 0.2, 0.2, 0.2);
 // 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -207,7 +172,7 @@
 // 				shader->Bind();
 // 				vertexarray->Bind();
 // 				vertexarray->BindVertexBuffer(vertexbuffer, vertexarray->stride);
-// 				camera->Update(dt);
+// 				// camera->Update(dt);
 				
 // 				// camera->projection = glm::perspective(glm::radians(45.0f), (float)size.x/size.y, 0.001f, 1000.0f);
 // 				// uniformbuffer->AddDataDynamic(&camera->projection[0][0], sizeof(glm::mat4), 2 * sizeof(glm::mat4));
@@ -229,10 +194,9 @@
 
 // 				glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
-// 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+// 				fbo->UnBind();
 // 			}
-// 			// ImGui::Image((void*)fbo, size, ImVec2(0, 1), ImVec2(1, 0));
-// 			ImGui::GetWindowDrawList()->AddImage((void*)fbo, pos, ImVec2(pos.x + size.x, pos.y + size.y), ImVec2(0, 1), ImVec2(1, 0));
+// 			ImGui::GetWindowDrawList()->AddImage((void*)fbo->id, pos, ImVec2(pos.x + size.x, pos.y + size.y), ImVec2(0, 1), ImVec2(1, 0));
 //         ImGui::End();
 
 // 		ImGui::Render();

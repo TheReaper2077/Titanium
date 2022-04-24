@@ -19,5 +19,11 @@ namespace ti {
 			model = glm::rotate(model, rotation.z, glm::vec3(0, 0, 1));
 			return model;
 		}
+
+		void Clear() {
+			position = glm::vec3(0, 0, 0);
+			scale = glm::vec3(0, 0, 0);
+			rotation = glm::vec3(0, 0, 0);
+		}
 	};
 }

@@ -1,4 +1,4 @@
-#include "OpenGL.h"
+#include <OpenGL.h>
 
 #include <stb_image.h>
 

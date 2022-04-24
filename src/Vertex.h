@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OpenGL/OpenGL.h"
+#include <OpenGL.h>
 #include "define.h"
 #include "math/math.h"
 

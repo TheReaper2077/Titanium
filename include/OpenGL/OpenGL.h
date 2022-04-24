@@ -31,7 +31,7 @@ struct UniformBuffer;
 struct Shader;
 struct Texture;
 struct TextureArray;
-struct FrameBuffe;
+struct FrameBuffer;
 struct TextureColorBuffer;
 struct RenderBuffer;
 
@@ -40,6 +40,7 @@ struct OpenGLContext {
 	std::vector<std::shared_ptr<IndexBuffer>> index_buffer_store;
 	std::vector<std::shared_ptr<VertexBuffer>> vertex_buffer_store;
 	std::vector<std::shared_ptr<UniformBuffer>> uniform_buffer_store;
+	std::vector<std::shared_ptr<FrameBuffer>> frame_buffer_store;
 	std::vector<std::shared_ptr<Shader>> shader_store;
 	std::vector<std::shared_ptr<Texture>> texture_store;
 	std::vector<std::shared_ptr<TextureArray>> sprite_atlas_store;
@@ -48,6 +49,7 @@ struct OpenGLContext {
 	VertexBufferId binding_vertexbuffer;
 	IndexBufferId binding_indexbuffer;
 	UniformBufferId binding_uniformbuffer;
+	FrameBufferId binding_framebuffer;
 	ShaderId binding_shader;
 
 	int MAX_TEXTURES = 0;
@@ -55,6 +57,15 @@ struct OpenGLContext {
 	OpenGLContext() {}
 };
 
+
+struct FrameBuffer {
+	FrameBufferId id;
+	int width, height;
+
+	void Bind();
+	void UnBind();
+	void Destroy();
+};
 
 struct VertexArrayLayout {
 	unsigned int idx, size, type;
@@ -162,20 +173,10 @@ struct TextureArray {
 	void UnBind();
 };
 
-struct FrameBuffer {
-
-};
-struct TextureColorBuffer {
-
-};
-struct RenderBuffer {
-
-};
-
 void OpenGL_CreateContext();
 void OpenGL_DestroyContext();
 
-FrameBuffer* FrameBuffer_Create();
+FrameBuffer* FrameBuffer_Create(int width, int height);
 
 VertexArray* VertexArray_Create(std::vector<VertexArrayLayout> layouts);
 

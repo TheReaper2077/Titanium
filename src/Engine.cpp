@@ -1,7 +1,5 @@
 #include "Engine.h"
 
-typedef uint8_t MeshTemplates;
-
 static std::unique_ptr<ti::Engine> engine;
 
 void CreateContext() {
@@ -45,11 +43,32 @@ void ti::Init() {
 	auto& registry = engine->registry;
 	auto& renderer = engine->renderer;
 
-	renderer.Init();
+	renderer.Init(engine->window);
+
+	#ifdef DEBUG_ENABLE
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO &io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+		io.ConfigDockingWithShift = true;
+		
+		ImGui_ImplSDL2_InitForOpenGL(engine->window, (void*)engine->context);
+		ImGui_ImplOpenGL3_Init("#version 400");
+		
+		ImGui::StyleColorsDark();
+
+		engine->main_fbo = FrameBuffer_Create(engine->width, engine->height);
+	#endif
 }
 
 void ti::EventHandler() {
 	while (SDL_PollEvent(&engine->event)) {
+
+		#ifdef DEBUG_ENABLE
+			ImGui_ImplSDL2_ProcessEvent(&engine->event);
+		#endif
+
 		if (engine->event.type == SDL_QUIT) {
 			engine->quit = true;
 		}
@@ -63,8 +82,6 @@ void ti::EventHandler() {
 			engine->key_chord.clear();
 		}
 	}
-
-	std::cout << engine->key_chord.size() << '\n';
 }
 
 void ti::Update(double dt) {
@@ -75,9 +92,69 @@ void ti::Render() {
 	auto& renderer = engine->renderer;
 	auto& registry = engine->registry;
 
-	glClearColor(0.2, 0.2, 0.2, 0.2);
+	#ifdef DEBUG_ENABLE
+		glViewport(0, 0, engine->width, engine->height);
+		glClearColor(0.2, 0.2, 0.2, 0.2);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+		ImGui::NewFrame();
+		
+		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(engine->width, engine->height));
+		
+		static bool p_open;
+		ImGui::Begin("DockSpace", &p_open, window_flags);
+			ImGui::PopStyleVar();
+			ImGui::PopStyleVar(2);
+
+			if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+			}
+		ImGui::End();
+		
+		static bool b = true;
+		ImGui::ShowDemoWindow(&b);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+		ImGui::Begin("Game");
+			ImGui::PopStyleVar();
+
+			const auto& size = ImGui::GetWindowSize();
+			const auto& pos = ImGui::GetWindowPos();
+
+			engine->main_fbo->Bind();
+			{
+	#endif
+
+	glViewport(0, 0, engine->width, engine->height);
+	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	#ifdef DEBUG_ENABLE
+			}
+			engine->main_fbo->UnBind();
+			ImGui::GetWindowDrawList()->AddImage((void*)engine->main_fbo->id, pos, ImVec2(pos.x + size.x, pos.y + size.y), ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::End();
+
+		ImGuiRender();
+
+		ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	#endif
+
+	engine->renderer.RenderPreset();
 	SDL_GL_SwapWindow(engine->window);
 }
 
@@ -87,8 +164,4 @@ double& ti::TimeStep() {
 
 ti::Engine* ti::GetEngine() {
 	return engine.get();
-}
-
-SDL_Event* ti::GetEvent() {
-	return &engine->event;
 }

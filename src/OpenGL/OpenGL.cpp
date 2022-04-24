@@ -3,7 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #endif
 
-#include "OpenGL.h"
+#include <OpenGL.h>
 
 std::shared_ptr<OpenGLContext> gl_context;
 

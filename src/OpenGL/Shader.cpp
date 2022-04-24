@@ -1,4 +1,4 @@
-#include "OpenGL.h"
+#include <OpenGL.h>
 
 #ifndef SHADER_TEXTUREARRAY
 #define SHADER_TEXTUREARRAY "u_texturearray"

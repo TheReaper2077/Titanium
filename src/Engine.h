@@ -4,6 +4,9 @@
 #include "Renderer.h"
 #include <entt/entt.hpp>
 #include <memory>
+#include "Scene.h"
+
+// #define DEBUG_ENABLE
 
 namespace ti {
 	struct Engine {
@@ -23,12 +26,21 @@ namespace ti {
 		Renderer renderer;
 
 		std::vector<SDL_Scancode> key_chord;
+		std::vector<Scene> scene_array;
+
+		#ifdef DEBUG_ENABLE
+			FrameBuffer *main_fbo = nullptr;
+		#endif
 	};
 
 	void ImGuiInit();
 	void ImGuiUpdate();
 	void ImGuiRender();
 	void ImGuiDestroy();
+
+	template <typename T> void AddScene() {
+		auto scene = std::make_shared<T>();
+	}
 
 	void Init();
 	void Mainloop();
@@ -40,5 +52,4 @@ namespace ti {
 	double& TimeStep();
 
 	Engine* GetEngine();
-	SDL_Event* GetEvent();
 }

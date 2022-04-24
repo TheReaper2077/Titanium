@@ -8,7 +8,7 @@ file(GLOB TARGET_SRC "src/*.cpp" "src/OpenGL/*.cpp")
 
 set (CMAKE_CXX_STANDARD 20)
 
-include_directories(C:/Users/krishnadev/vcpkg/installed/x64-windows/include src)
+include_directories(C:/Users/krishnadev/vcpkg/installed/x64-windows/include src include/OpenGL)
 
 add_executable(main ${TARGET_SRC})
 

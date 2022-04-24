@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OpenGL.h"
+#include <OpenGL.h>
 
 extern std::shared_ptr<OpenGLContext> gl_context;
 
