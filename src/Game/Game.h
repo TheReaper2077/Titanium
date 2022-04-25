@@ -2,7 +2,9 @@
 
 #include "../Scene.h"
 
-class Game: public Scene {
+class Game: public Layer {
+public:
 	void Init() override;
 	void Update(double dt) override;
-}
+	void Render() override;
+};

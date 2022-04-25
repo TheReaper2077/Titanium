@@ -54,7 +54,7 @@ void Compile(unsigned int &program, const std::string &filename, unsigned int ta
 	glDeleteShader(shader);
 };
 
-Shader *Shader_Create(const std::string &vs_filename, const std::string &fs_filename, bool file) {
+Shader *Shader_Create(std::string name, const std::string &vs_filename, const std::string &fs_filename, bool file) {
 	GL_ASSERT(gl_context != nullptr);
 
 	unsigned int program = glCreateProgram();
@@ -67,6 +67,7 @@ Shader *Shader_Create(const std::string &vs_filename, const std::string &fs_file
 	auto shader = std::make_shared<Shader>();
 
 	shader->id = program;
+	shader->name = name;
 
 	gl_context->shader_store.push_back(shader);
 	

@@ -1,49 +1,47 @@
 #include "Engine.h"
 
-static std::unique_ptr<ti::Engine> engine;
-
-void CreateContext() {
-	engine = std::make_unique<ti::Engine>();
-
-	engine->quit = false;
+void ti::Engine::CreateContext() {
+	this->quit = false;
 	
 	OpenGL_CreateContext();
 	SDL_Init(SDL_INIT_VIDEO);
 
-	engine->window = SDL_CreateWindow(engine->title, engine->posx, engine->posy, engine->width, engine->height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	assert(engine->window);
-	engine->context = SDL_GL_CreateContext(engine->window);
+	this->window = SDL_CreateWindow(this->title, this->posx, this->posy, this->width, this->height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	assert(this->window);
+	this->context = SDL_GL_CreateContext(this->window);
 
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 }
 
-void ti::Destroy() {
+void ti::Engine::Destroy() {
 	
 }
 
-void ti::Mainloop() {
-	CreateContext();
+void ti::Engine::Mainloop() {
 	Init();
-
-	while (!engine->quit) {
+	while (!this->quit) {
 		const auto& start_time = std::chrono::high_resolution_clock::now();
 
 		EventHandler();
-		Update(engine->dt);
+		Update(this->dt);
 		Render();
 
 		const auto& end_time = std::chrono::high_resolution_clock::now();
-		engine->dt = std::chrono::duration<double, std::ratio<1, 60>>(end_time - start_time).count();
+		this->dt = std::chrono::duration<double, std::ratio<1, 60>>(end_time - start_time).count();
 	}
 
 	Destroy();
 }
 
-void ti::Init() {
-	auto& registry = engine->registry;
-	auto& renderer = engine->renderer;
+void ti::Engine::Init() {	
+	auto& registry = this->registry;
+	auto& renderer = this->renderer;
 
-	renderer.Init(engine->window);
+	renderer.Init(this->window);
+
+	for (auto& scene: this->scene_array) {
+		scene->Init();
+	}
 
 	#ifdef DEBUG_ENABLE
 		IMGUI_CHECKVERSION();
@@ -53,47 +51,53 @@ void ti::Init() {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 		io.ConfigDockingWithShift = true;
 		
-		ImGui_ImplSDL2_InitForOpenGL(engine->window, (void*)engine->context);
+		ImGui_ImplSDL2_InitForOpenGL(this->window, (void*)this->context);
 		ImGui_ImplOpenGL3_Init("#version 400");
 		
 		ImGui::StyleColorsDark();
 
-		engine->main_fbo = FrameBuffer_Create(engine->width, engine->height);
+		this->main_fbo = FrameBuffer_Create(this->width, this->height);
 	#endif
+
+	
 }
 
-void ti::EventHandler() {
-	while (SDL_PollEvent(&engine->event)) {
+void ti::Engine::EventHandler() {
+	while (SDL_PollEvent(&this->event)) {
 
 		#ifdef DEBUG_ENABLE
-			ImGui_ImplSDL2_ProcessEvent(&engine->event);
+			ImGui_ImplSDL2_ProcessEvent(&this->event);
 		#endif
 
-		if (engine->event.type == SDL_QUIT) {
-			engine->quit = true;
+		if (this->event.type == SDL_QUIT) {
+			this->quit = true;
 		}
-		if (engine->event.type == SDL_KEYDOWN) {
-			if (engine->key_chord.size() == 0)
-				engine->key_chord.push_back(engine->event.key.keysym.scancode);
-			else if (engine->key_chord.back() != engine->event.key.keysym.scancode)
-				engine->key_chord.push_back(engine->event.key.keysym.scancode);
+		if (this->event.type == SDL_KEYDOWN) {
+			if (this->key_chord.size() == 0)
+				this->key_chord.push_back(this->event.key.keysym.scancode);
+			else if (this->key_chord.back() != this->event.key.keysym.scancode)
+				this->key_chord.push_back(this->event.key.keysym.scancode);
 		}
-		if (engine->event.type == SDL_KEYUP) {
-			engine->key_chord.clear();
+		if (this->event.type == SDL_KEYUP) {
+			this->key_chord.clear();
 		}
 	}
 }
 
-void ti::Update(double dt) {
-	auto& registry = engine->registry;
+void ti::Engine::Update(double dt) {
+	auto& registry = this->registry;
+
+	for (auto& scene: this->scene_array) {
+		scene->Update(dt);
+	}
 }
 
-void ti::Render() {
-	auto& renderer = engine->renderer;
-	auto& registry = engine->registry;
+void ti::Engine::Render() {
+	auto& renderer = this->renderer;
+	auto& registry = this->registry;
 
 	#ifdef DEBUG_ENABLE
-		glViewport(0, 0, engine->width, engine->height);
+		glViewport(0, 0, this->width, this->height);
 		glClearColor(0.2, 0.2, 0.2, 0.2);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -110,7 +114,7 @@ void ti::Render() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2(engine->width, engine->height));
+		ImGui::SetNextWindowSize(ImVec2(this->width, this->height));
 		
 		static bool p_open;
 		ImGui::Begin("DockSpace", &p_open, window_flags);
@@ -134,18 +138,20 @@ void ti::Render() {
 			const auto& size = ImGui::GetWindowSize();
 			const auto& pos = ImGui::GetWindowPos();
 
-			engine->main_fbo->Bind();
+			this->main_fbo->Bind();
 			{
 	#endif
+	
+	for (auto& scene: this->scene_array) {
+		scene->Render();
+	}
 
-	glViewport(0, 0, engine->width, engine->height);
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	this->renderer.RenderPreset();
 
 	#ifdef DEBUG_ENABLE
 			}
-			engine->main_fbo->UnBind();
-			ImGui::GetWindowDrawList()->AddImage((void*)engine->main_fbo->id, pos, ImVec2(pos.x + size.x, pos.y + size.y), ImVec2(0, 1), ImVec2(1, 0));
+			this->main_fbo->UnBind();
+			ImGui::GetWindowDrawList()->AddImage((void*)this->main_fbo->id, pos, ImVec2(pos.x + size.x, pos.y + size.y), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::End();
 
 		ImGuiRender();
@@ -154,14 +160,13 @@ void ti::Render() {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	#endif
 
-	engine->renderer.RenderPreset();
-	SDL_GL_SwapWindow(engine->window);
+	SDL_GL_SwapWindow(this->window);
 }
 
-double& ti::TimeStep() {
-	return engine->dt;
-}
+// double& ti::TimeStep() {
+// 	return this->dt;
+// }
 
-ti::Engine* ti::GetEngine() {
-	return engine.get();
-}
+// ti::Engine* ti::GetEngine() {
+// 	return engine.get();
+// }

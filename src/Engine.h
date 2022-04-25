@@ -1,15 +1,17 @@
 #pragma once
 
+#define ENGINE
+
 #include "Transform.h"
 #include "Renderer.h"
 #include <entt/entt.hpp>
 #include <memory>
 #include "Scene.h"
-
+#include "define.h"
 // #define DEBUG_ENABLE
 
 namespace ti {
-	struct Engine {
+	class Engine {
 		entt::registry registry;
 
 		bool quit = false;
@@ -26,30 +28,36 @@ namespace ti {
 		Renderer renderer;
 
 		std::vector<SDL_Scancode> key_chord;
-		std::vector<Scene> scene_array;
+		std::vector<std::shared_ptr<Layer>> scene_array;
 
 		#ifdef DEBUG_ENABLE
 			FrameBuffer *main_fbo = nullptr;
 		#endif
+
+	public:
+		void ImGuiInit();
+		void ImGuiUpdate();
+		void ImGuiRender();
+		void ImGuiDestroy();
+
+		void CreateContext();
+		void Init();
+		void Mainloop();
+		void EventHandler();
+		void Update(double dt);
+		void Render();
+		void Destroy();
+
+		double& TimeStep();
+
+		template <typename T> void AddScene() {
+			auto scene = std::make_shared<T>();
+
+			scene->renderer = &renderer;
+			scene->width = width;
+			scene->height = height;
+
+			scene_array.push_back(std::static_pointer_cast<Layer>(scene));
+		}
 	};
-
-	void ImGuiInit();
-	void ImGuiUpdate();
-	void ImGuiRender();
-	void ImGuiDestroy();
-
-	template <typename T> void AddScene() {
-		auto scene = std::make_shared<T>();
-	}
-
-	void Init();
-	void Mainloop();
-	void EventHandler();
-	void Update(double dt);
-	void Render();
-	void Destroy();
-
-	double& TimeStep();
-
-	Engine* GetEngine();
 }

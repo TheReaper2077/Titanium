@@ -133,6 +133,8 @@ struct Shader {
 	ShaderId id;
 	std::unordered_map<std::string, unsigned int> uniform_location_map;
 
+	std::string name;
+
 	bool textures = false;
 	bool texture_array = false;
 	bool material = false;
@@ -186,7 +188,7 @@ IndexBuffer* IndexBuffer_Create(VertexArray* vertexarray);
 
 UniformBuffer* UniformBuffer_Create();
 
-Shader* Shader_Create(const std::string &vs_filename, const std::string &fs_filename, bool file = true);
+Shader* Shader_Create(std::string name, const std::string &vs_filename, const std::string &fs_filename, bool file = true);
 
 Texture* Texture_Create();
 Texture* LoadFile(const char* filename);

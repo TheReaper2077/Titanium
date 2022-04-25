@@ -1,14 +1,16 @@
 #pragma once
 
-#include "Engine.h"
+// #ifndef ENGINE
+#include "Renderer.h"
+// #endif
 
-namespace ti {
-	class Scene {
-	protected:
-		Engine *engine;
+class Layer {
+public:
+	ti::Renderer* renderer;
+	int width, height;
 
-	public:
-		virtual void Init() = 0;
-		virtual void Update(double dt) = 0;
-	};
-}
+public:
+	virtual void Init() = 0;
+	virtual void Update(double dt) = 0;
+	virtual void Render() = 0;
+};
