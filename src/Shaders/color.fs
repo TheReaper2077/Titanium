@@ -4,18 +4,18 @@ in vec3 f_attr;
 in vec3 f_normals;
 in vec3 frag_pos;
 
-struct Material {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float shininess;
-}; 
+// struct Material {
+//     vec3 ambient;
+//     vec3 diffuse;
+//     vec3 specular;
+//     float shininess;
+// }; 
   
-uniform Material material;
+// uniform Material material;
 
-uniform vec3 light_color;
-uniform vec3 light_pos;
-uniform vec3 view_pos;
+// uniform vec3 light_color;
+// uniform vec3 light_pos;
+// uniform vec3 view_pos;
 
 void main() {
 	// vec3 ambient = light_color * material.ambient;
@@ -35,5 +35,5 @@ void main() {
     // vec3 result = ambient + diffuse + specular + f_attr;
 
 	// gl_FragColor = vec4(result, 1.0f);
-	gl_FragColor = vec4(0, 1, 0, 1.0f);
+	gl_FragColor = vec4(f_attr, 1.0f);
 }

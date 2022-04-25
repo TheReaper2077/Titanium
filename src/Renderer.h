@@ -70,11 +70,11 @@ namespace ti {
 		void SetProjection(const glm::mat4& projection);
 		void RenderMesh(Mesh* mesh, Shader* shader);
 		
-		Camera* AddCamera(Camera* camera);
+		void AddCamera(Camera* camera);
 		Camera* GetCamera(std::string name);
 		void SetCamera(Camera* camera);
 		void SetCamera(std::string name);
-		Shader* AddShader(std::string name, Shader* shader);
+		void AddShader(Shader* shader);
 		Shader* GetShader(std::string name);
 		void SetShader(Shader* shader);
 		void SetShader(std::string name);

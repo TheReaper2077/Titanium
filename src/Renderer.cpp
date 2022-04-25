@@ -10,17 +10,13 @@ void ti::Renderer::Init(SDL_Window *window) {
 	drawbuffer.indexbuffer = IndexBuffer_Create(drawbuffer.vertexarray);
 	drawbuffer.vertexbuffer = VertexBuffer_Create();
 
-	auto* a = Shader_Create("color", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\color.vs");
-	a->Bind();
-
-	AddShader("color", a);
-	AddShader("texture", Shader_Create("texture", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\texture.vs"));
-	AddShader("sprite", Shader_Create("sprite", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\sprite.vs"));
+	AddShader(Shader_Create("color", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\color.fs"));
+	AddShader(Shader_Create("texture", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\texture.fs"));
+	AddShader(Shader_Create("sprite", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\sprite.fs"));
 }
 
-Shader* ti::Renderer::AddShader(std::string name, Shader* shader) {
-	shader_map[name] = shader;
-	return shader_map[name];
+void ti::Renderer::AddShader(Shader* shader) {
+	shader_map[shader->name] = shader;
 }
 
 Shader* ti::Renderer::GetShader(std::string name) {
@@ -73,9 +69,8 @@ void ti::Renderer::RenderMesh(Mesh* mesh, Shader* shader) {
 		glDrawElements(GL_TRIANGLES, mesh->vertexcount * 1.5, GL_UNSIGNED_INT, nullptr);
 }
 
-ti::Camera* ti::Renderer::AddCamera(Camera* camera) {
+void ti::Renderer::AddCamera(Camera* camera) {
 	camera_map[camera->name] = camera;
-	return camera_map[camera->name];
 }
 
 ti::Camera* ti::Renderer::GetCamera(std::string name) {
@@ -84,10 +79,6 @@ ti::Camera* ti::Renderer::GetCamera(std::string name) {
 
 void ti::Renderer::SetCamera(Camera* camera) {
 	this->camera = camera;
-
-	SetProjection(camera->projection);
-	SetView(camera->view);
-	SetModel(camera->model);
 }
 
 void ti::Renderer::SetCamera(std::string name) {
@@ -121,14 +112,18 @@ void ti::Renderer::SetMaterial(Material material) {
 
 void ti::Renderer::RenderPreset() {
 	if (!drawbuffer.vertices.size()) return;
+	
+	SetProjection(camera->projection);
+	SetView(camera->view);
+	SetModel(camera->model);
 
 	shader->Bind();
 
 	drawbuffer.vertexarray->Bind();
 	drawbuffer.vertexarray->BindVertexBuffer(drawbuffer.vertexbuffer, drawbuffer.vertexarray->stride);
-	// drawbuffer.vertexbuffer->Allocate(drawbuffer.vertices.size()*sizeof(Vertex));
-	// drawbuffer.vertexbuffer->AddDataDynamic(drawbuffer.vertices.data(), drawbuffer.vertices.size()*sizeof(Vertex));
-	drawbuffer.vertexbuffer->AddDataStatic(drawbuffer.vertices.data(), drawbuffer.vertices.size()*sizeof(Vertex));
+	drawbuffer.vertexbuffer->Allocate(drawbuffer.vertices.size()*sizeof(Vertex));
+	drawbuffer.vertexbuffer->AddDataDynamic(drawbuffer.vertices.data(), drawbuffer.vertices.size()*sizeof(Vertex));
+	// drawbuffer.vertexbuffer->AddDataStatic(drawbuffer.vertices.data(), drawbuffer.vertices.size()*sizeof(Vertex));
 
 	if (drawbuffer.primitive == QUAD) {
 		if (!drawbuffer.indices.size()) return;

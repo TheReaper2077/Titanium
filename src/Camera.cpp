@@ -2,8 +2,8 @@
 
 ti::Camera::Camera(std::string name, ProjectionMode mode, int width, int height) {
 	if (mode == ORTHOGRAPHIC) {
-		// this->projection = glm::ortho<float>(-(width/height), (width/height), 1, -1, -1000, 1000);
-		this->projection = glm::ortho<float>(0, width, height, 0, -1000, 1000);
+		this->projection = glm::ortho<float>(-(width/height)*5, (width/height)*5, -1*5, 1*5, -1000, 1000);
+		// this->projection = glm::ortho<float>(0, width, height, 0, -1000, 1000);
 		this->view = glm::mat4(1.0f);
 		this->model = glm::mat4(1.0f);
 		this->speed = 5.0f;
