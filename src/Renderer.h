@@ -32,6 +32,8 @@ namespace ti {
 		IndexBuffer* indexbuffer;
 		VertexBuffer* vertexbuffer;
 
+		uint32_t indexcount;
+
 		Primitive primitive;
 
 		void Clear() {

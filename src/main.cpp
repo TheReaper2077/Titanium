@@ -215,16 +215,47 @@
 // 	return 0;
 // }
 
-#include "Engine.h"
-#include "Game/Game.h"
+// #include "Engine.h"
+// #include "Game/Game.h"
+
+// int main(int ArgCount, char **Args) {
+// 	ti::Engine engine;
+// 	engine.CreateContext();
+	
+// 	engine.AddScene<Game>();
+
+// 	engine.Mainloop();
+
+// 	return 0;
+// }
+
+#include "ECS.h"
+#include <iostream>
+
+struct Pos {
+	int x, y, z;
+};
 
 int main(int ArgCount, char **Args) {
-	ti::Engine engine;
-	engine.CreateContext();
+	Registry registry;
+
+	auto entity = registry.Create();
+	auto entity1 = registry.Create();
+
+	registry.Add<Pos>(entity, 0, 1, 1);
+	registry.Add<Pos>(entity1, 2314324, 13144, 1);
+
+	auto& pos = registry.Get<Pos>(entity);
+
+	std::cout << pos.x << ' ' << pos.y << ' ' << pos.z << '\n';
+
+	auto& posas = registry.Get<Pos>(entity1);
+
+	std::cout << posas.x << ' ' << posas.y << ' ' << posas.z << '\n';
+
+	registry.Destroy(entity);
 	
-	engine.AddScene<Game>();
+	auto& asd = registry.Get<Pos>(entity1);
 
-	engine.Mainloop();
-
-	return 0;
+	std::cout << asd.x << ' ' << asd.y << ' ' << asd.z << '\n';
 }
