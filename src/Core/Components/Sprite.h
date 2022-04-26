@@ -2,8 +2,7 @@
 
 namespace ti {
 	namespace Component {
-		struct MeshRenderer {
-			bool cleanup;
+		struct Sprite {
 			
 		};
 	}
