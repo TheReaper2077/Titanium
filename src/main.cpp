@@ -243,19 +243,19 @@ int main(int ArgCount, char **Args) {
 	auto entity1 = registry.Create();
 
 	registry.Add<Pos>(entity, 0, 1, 1);
-	registry.Add<Pos>(entity1, 2314324, 13144, 1);
+	registry.Add<Pos>(entity1, 5, 6, 1);
 
 	auto& pos = registry.Get<Pos>(entity);
 
-	std::cout << pos.x << ' ' << pos.y << ' ' << pos.z << '\n';
+	std::cout << "--next" << pos.x << ' ' << pos.y << ' ' << pos.z << '\n';
 
 	auto& posas = registry.Get<Pos>(entity1);
 
-	std::cout << posas.x << ' ' << posas.y << ' ' << posas.z << '\n';
+	std::cout << "--next" << posas.x << ' ' << posas.y << ' ' << posas.z << '\n';
 
 	registry.Destroy(entity);
 	
 	auto& asd = registry.Get<Pos>(entity1);
 
-	std::cout << asd.x << ' ' << asd.y << ' ' << asd.z << '\n';
+	std::cout << "--next" << asd.x << ' ' << asd.y << ' ' << asd.z << '\n';
 }

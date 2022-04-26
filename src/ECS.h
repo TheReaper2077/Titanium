@@ -20,20 +20,24 @@ private:
 	std::unordered_map<Entity, uint32_t> entity_index_map;
 	std::unordered_map<uint32_t, Entity> index_entity_map;
 	std::vector<T> componentarray;
+	uint32_t next_index = 0;
 
 public:
 	void Add(Entity entity, T data) {
 		if (entity_index_map.find(entity) != entity_index_map.end()) {
 			componentarray[entity_index_map[entity]] = data;
 		} else {
-			entity_index_map[entity] = componentarray.size();
-			entity_index_map[componentarray.size()] = entity;
+			entity_index_map[entity] = next_index;
+			index_entity_map[next_index] = entity;
 			componentarray.push_back(data);
+			next_index++;
 		}
 	}
 
 	T& Get(Entity entity) {
 		assert(entity_index_map.find(entity) != entity_index_map.end());
+
+		std::cout << entity << " s " << entity_index_map[entity] << '\n';
 
 		return componentarray[entity_index_map[entity]];
 	}
@@ -41,18 +45,19 @@ public:
 	void Destroy(Entity entity) override {
 		assert(entity_index_map.find(entity) != entity_index_map.end());
 
-		auto last_index = componentarray.size() - 1;
-		auto last_entity = index_entity_map[last_index];
-		auto remove_index = entity_index_map[entity];
+		next_index--;
 
-		std::swap(componentarray[remove_index], componentarray[last_index]);
-
-		index_entity_map[remove_index] = last_entity;
-		entity_index_map[last_entity] = remove_index;
+		unsigned int index_removed = entity_index_map[entity];
+		Entity last_entity = index_entity_map[next_index];
 		
+		entity_index_map[index_removed] = last_entity;
+		index_entity_map[last_entity] = index_removed;
+
+		componentarray[index_removed] = componentarray[next_index];
+
 		componentarray.pop_back();
-		index_entity_map.erase(last_index);
 		entity_index_map.erase(entity);
+		index_entity_map.erase(next_index);
 	}
 };
 
