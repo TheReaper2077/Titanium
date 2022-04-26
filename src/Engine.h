@@ -2,17 +2,17 @@
 
 #define ENGINE
 
-#include "Transform.h"
+#include "Components/Transform.h"
 #include "Renderer.h"
 #include <entt/entt.hpp>
 #include <memory>
 #include "Scene.h"
-#include "define.h"
+#include "ECS.h"
 // #define DEBUG_ENABLE
 
 namespace ti {
 	class Engine {
-		entt::registry registry;
+		ti::ECS::Registry registry;
 
 		bool quit = false;
 
@@ -54,6 +54,7 @@ namespace ti {
 			auto scene = std::make_shared<T>();
 
 			scene->renderer = &renderer;
+			scene->registry = &registry;
 			scene->width = width;
 			scene->height = height;
 

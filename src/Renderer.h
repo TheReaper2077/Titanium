@@ -6,7 +6,7 @@
 
 #include "Mesh.h"
 #include "Camera.h"
-#include "Transform.h"
+#include "Components/Transform.h"
 #include <OpenGL.h>
 
 namespace ti {
@@ -64,7 +64,8 @@ namespace ti {
 
 		Shader* shader = nullptr;
 		Camera* camera = nullptr;
-		// DrawCmd drawcmd;
+
+		std::vector<Texture*> tex_array;
 
 		void Init(SDL_Window* window);
 		void SetModel(const glm::mat4& model);
@@ -97,13 +98,13 @@ namespace ti {
 				drawbuffer.primitive = QUAD;
 			}
 
-			// if (shader == nullptr)
-			// 	SetShader("color");
+			if (shader == nullptr)
+				SetShader("color");
 
-			// if (shader->name != std::string("color")) {
-			// 	RenderPreset();
-			// 	SetShader("color");
-			// }
+			if (shader->name != std::string("color")) {
+				RenderPreset();
+				SetShader("color");
+			}
 
 			drawbuffer.vertices.reserve(4 + drawbuffer.vertices.size());
 
@@ -129,7 +130,7 @@ namespace ti {
 			drawbuffer.indices.emplace_back(idx + 0);
 		}
 
-		void TexRect(int x, int y, int w, int h, const Vec2& uv0, const Vec2& uv1) {
+		void TexRect(int x, int y, int w, int h, Texture* texture, const Vec2& uv0, const Vec2& uv1) {
 			// auto& renderer = GetEngine()->renderer;
 			// auto& vertices = GetEngine()->renderer.drawbuffer.vertices;
 			// auto& indices = GetEngine()->renderer.drawbuffer.indices;
@@ -141,13 +142,13 @@ namespace ti {
 				drawbuffer.primitive = QUAD;
 			}
 
-			// if (shader == nullptr)
-			// 	SetShader("texture");
+			if (shader == nullptr)
+				SetShader("texture");
 
-			// if (shader->name != std::string("texture")) {
-			// 	RenderPreset();
-			// 	SetShader("texture");
-			// }
+			if (shader->name != std::string("texture")) {
+				RenderPreset();
+				SetShader("texture");
+			}
 
 			auto A = Vec3(x, y, 0);
 			auto B = Vec3(x + w, y, 0);
@@ -157,10 +158,10 @@ namespace ti {
 
 			drawbuffer.vertices.reserve(4 + drawbuffer.vertices.size());
 
-			drawbuffer.vertices.emplace_back(Vertex{A, Vec3(uv0.x, uv0.y, 0), normal});
-			drawbuffer.vertices.emplace_back(Vertex{B, Vec3(uv1.x, uv0.y, 0), normal});
-			drawbuffer.vertices.emplace_back(Vertex{C, Vec3(uv1.x, uv1.y, 0), normal});
-			drawbuffer.vertices.emplace_back(Vertex{Vec3(x, y + h, 0), Vec3(uv0.x, uv1.y, 0), normal});
+			drawbuffer.vertices.emplace_back(Vertex{A, Vec3(uv0.x, uv0.y, tex_array.size()), normal});
+			drawbuffer.vertices.emplace_back(Vertex{B, Vec3(uv1.x, uv0.y, tex_array.size()), normal});
+			drawbuffer.vertices.emplace_back(Vertex{C, Vec3(uv1.x, uv1.y, tex_array.size()), normal});
+			drawbuffer.vertices.emplace_back(Vertex{Vec3(x, y + h, tex_array.size()), Vec3(uv0.x, uv1.y, 0), normal});
 
 			auto idx = drawbuffer.indices.size();
 			drawbuffer.indices.reserve(6 + drawbuffer.indices.size());

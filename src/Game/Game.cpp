@@ -8,6 +8,7 @@ ti::Camera *camera;
 void Game::Init() {
 	camera = new ti::Camera("cam0", ti::ProjectionMode::ORTHOGRAPHIC, width, height);
 	renderer->SetCamera(camera);
+	
 }
 
 void Game::Update(double dt) {
@@ -21,5 +22,5 @@ void Game::Render() {
 	glClearColor(0.2, 0.2, 0.2, 0.2);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	renderer->DrawRect(0, 0, 1, 1);
+	// renderer->DrawRect(0, 0, 100, 100);
 }
