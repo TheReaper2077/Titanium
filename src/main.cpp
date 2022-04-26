@@ -236,26 +236,23 @@ struct Pos {
 	int x, y, z;
 };
 
+struct Vel {
+
+};
+
 int main(int ArgCount, char **Args) {
 	Registry registry;
 
 	auto entity = registry.Create();
 	auto entity1 = registry.Create();
+	auto entity2 = registry.Create();
 
 	registry.Add<Pos>(entity, 0, 1, 1);
+	registry.Add<Vel>(entity);
 	registry.Add<Pos>(entity1, 5, 6, 1);
-
-	auto& pos = registry.Get<Pos>(entity);
-
-	std::cout << "--next" << pos.x << ' ' << pos.y << ' ' << pos.z << '\n';
-
-	auto& posas = registry.Get<Pos>(entity1);
-
-	std::cout << "--next" << posas.x << ' ' << posas.y << ' ' << posas.z << '\n';
-
-	registry.Destroy(entity);
+	registry.Add<Pos>(entity2, 7, 4, 1);
 	
-	auto& asd = registry.Get<Pos>(entity1);
-
-	std::cout << "--next" << asd.x << ' ' << asd.y << ' ' << asd.z << '\n';
+	for (auto& entity: registry.View<Pos, Vel>()) {
+		std::cout << entity << '\n';
+	}
 }
