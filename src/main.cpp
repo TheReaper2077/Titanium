@@ -217,12 +217,14 @@
 
 #include "Engine.h"
 #include "Game/Game.h"
+#include "Sandbox.h"
 
 int main(int ArgCount, char **Args) {
 	ti::Engine engine;
 	engine.CreateContext();
 	
-	engine.AddScene<Game>();
+	// engine.AddScene<Game>();
+	engine.AddScene<Sandbox>();
 
 	engine.Mainloop();
 

@@ -156,6 +156,7 @@ struct Shader {
 
 struct Texture {
 	TextureId id;
+	std::string type;
 	uint32_t width, height, channels;
 
 	void Bind();
@@ -191,5 +192,5 @@ UniformBuffer* UniformBuffer_Create();
 Shader* Shader_Create(std::string name, const std::string &vs_filename, const std::string &fs_filename, bool file = true);
 
 Texture* Texture_Create();
-Texture* LoadFile(const char* filename);
+Texture* Texture_LoadFile(const char* filename);
 TextureArray* TextureArray_LoadFile(int tilew, int tileh, const char* filename);

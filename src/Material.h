@@ -1,16 +1,16 @@
-#pragma once
+// #pragma once
 
-#include "math/math.h"
+// #include "math/math.h"
 
-namespace ti {
-	struct Material {
-		Vec3 ambient;
-		Vec3 specular;
-		Vec3 diffuse;
-		float shininess;
+// namespace ti {
+// 	struct Material {
+// 		Vec3 ambient;
+// 		Vec3 specular;
+// 		Vec3 diffuse;
+// 		float shininess;
 		
-		float roughness;
-		float diffuse_texture;
-		float specular_texture;
-	};
-}
+// 		float roughness;
+// 		float diffuse_texture;
+// 		float specular_texture;
+// 	};
+// }

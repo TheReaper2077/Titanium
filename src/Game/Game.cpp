@@ -16,8 +16,9 @@ Shader* shader;
 Assimp::Importer importer;
 
 struct Material {
+	glm::vec3 ambient;
 	glm::vec3 diffuse;
-
+	glm::vec3 specular;
 };
 
 struct Mesh {
@@ -72,8 +73,10 @@ Mesh process_mesh(aiMesh *ai_mesh, const aiScene *scene) {
 		for (int i = 0; i < ai_material->GetTextureCount(aiTextureType_DIFFUSE); i++) {
 			ai_material->GetTexture(aiTextureType_DIFFUSE, i, &str);
 
-			std::cout << str.C_Str();
+			mesh.textures.push_back(Texture_LoadFile(str.C_Str()));
 		}
+		
+		// for (int)
 	}
 
 	return mesh;
@@ -119,7 +122,6 @@ void Game::Init() {
 	}
 
 	SDL_ShowCursor(SDL_DISABLE);
-	// SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 void Game::Update(double dt) {
@@ -151,6 +153,8 @@ void Game::Update(double dt) {
 		mesh.vertexarray->Bind();
 		mesh.vertexarray->BindVertexBuffer(mesh.vertexbuffer, mesh.vertexarray->stride);
 		mesh.vertexarray->BindIndexBuffer(mesh.indexbuffer);
+
+		shader->SetUniformi("", 0);
 
 		glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
 	}

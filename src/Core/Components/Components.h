@@ -7,4 +7,4 @@
 #include "Transform.h"
 #include "Material.h"
 #include "Properties.h"
-
+#include "MeshRenderer.h"

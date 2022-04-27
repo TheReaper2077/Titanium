@@ -6,28 +6,59 @@
 #include <vector>
 
 namespace ti {
-	struct VertexN {
-		glm::vec3 pos;
-		glm::vec2 uv;
-		glm::vec3 normal;
+	// enum VertexArrayAttrib {
+	// 	position,
+	// 	normal,
+	// 	color,
+	// 	uv0,
+	// 	uv1,
+	// 	uv2,
+	// 	uv3,
+	// 	uv4,
+	// 	uv5,
+	// 	uv6,
+	// 	uv7,
+	// };
 
-		static VertexArray* GetVertexArray() {
-			static VertexArray* vertexarray;
+	// using VertexArrayDescriptor = uint32_t;
 
-			if (vertexarray == nullptr)
-				vertexarray = VertexArray_Create({{ 0, 3, GL_FLOAT }, { 1, 2, GL_FLOAT }, { 2, 3, GL_FLOAT }});
+	// #define POSITION_ATTR_BIT (1 << ti::VertexArrayAttrib::position)
+	// #define NORMAL_ATTR_BIT (1 << ti::VertexArrayAttrib::normal)
+	// #define COLOR_ATTR_BIT (1 << ti::VertexArrayAttrib::color)
+	// #define UV0_ATTR_BIT (1 << ti::VertexArrayAttrib::uv0)
+	// #define UV1_ATTR_BIT (1 << ti::VertexArrayAttrib::uv1)
+	// #define UV2_ATTR_BIT (1 << ti::VertexArrayAttrib::uv2)
+	// #define UV3_ATTR_BIT (1 << ti::VertexArrayAttrib::uv3)
+	// #define UV4_ATTR_BIT (1 << ti::VertexArrayAttrib::uv4)
+	// #define UV5_ATTR_BIT (1 << ti::VertexArrayAttrib::uv5)
+	// #define UV6_ATTR_BIT (1 << ti::VertexArrayAttrib::uv6)
+	// #define UV7_ATTR_BIT (1 << ti::VertexArrayAttrib::uv7)
 
-			return vertexarray;
-		}
-	};
+	// #define POSITION_ATTR_SIZE sizeof(glm::vec3)
+	// #define NORMAL_ATTR_SIZE sizeof(glm::vec3)
+	// #define COLOR_ATTR_SIZE sizeof(glm::vec3)
+	// #define UV0_ATTR_SIZE sizeof(glm::vec2)
+	// #define UV1_ATTR_SIZE sizeof(glm::vec2)
+	// #define UV2_ATTR_SIZE sizeof(glm::vec2)
+	// #define UV3_ATTR_SIZE sizeof(glm::vec2)
+	// #define UV4_ATTR_SIZE sizeof(glm::vec2)
+	// #define UV5_ATTR_SIZE sizeof(glm::vec2)
+	// #define UV6_ATTR_SIZE sizeof(glm::vec2)
+	// #define UV7_ATTR_SIZE sizeof(glm::vec2)
 
 	namespace Component {
 		struct Mesh {
-			std::vector<VertexN> vertices;
+			void* vertices = nullptr;
+			std::size_t size = 0;
 			std::vector<unsigned int> indices;
 			
 			unsigned int vertexcount = 0;
 			unsigned int indexcount = 0;
+
+			VertexArrayLayout vertexarraydesc;
+
+			void Clear();
+			void AppendVertices();
 		};
 	}
 }
