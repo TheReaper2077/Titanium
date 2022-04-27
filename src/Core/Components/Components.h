@@ -8,10 +8,3 @@
 #include "Material.h"
 #include "Properties.h"
 
-#pragma once
-
-namespace ti {
-	namespace Component {
-		
-	}
-}

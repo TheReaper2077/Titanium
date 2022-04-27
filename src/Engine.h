@@ -2,12 +2,13 @@
 
 #define ENGINE
 
-#include "Components/Transform.h"
+#include "Transform.h"
 #include "Renderer.h"
 #include <entt/entt.hpp>
 #include <memory>
 #include "Scene.h"
 #include "ECS.h"
+#include "Events.h"
 // #define DEBUG_ENABLE
 
 namespace ti {
@@ -27,8 +28,9 @@ namespace ti {
 
 		Renderer renderer;
 
-		std::vector<SDL_Scancode> key_chord;
 		std::vector<std::shared_ptr<Layer>> scene_array;
+
+		Events eventdata;
 
 		#ifdef DEBUG_ENABLE
 			FrameBuffer *main_fbo = nullptr;
@@ -55,6 +57,7 @@ namespace ti {
 
 			scene->renderer = &renderer;
 			scene->registry = &registry;
+			scene->eventdata = &eventdata;
 			scene->width = width;
 			scene->height = height;
 

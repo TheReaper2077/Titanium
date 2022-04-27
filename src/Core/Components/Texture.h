@@ -6,7 +6,8 @@
 namespace ti {
 	namespace Component {
 		struct Texture {
-			Texture *texture;
+			Texture* texture;
+
 			glm::vec3 uv0;
 			glm::vec3 uv1;
 		};

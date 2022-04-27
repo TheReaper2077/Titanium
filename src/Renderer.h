@@ -6,7 +6,7 @@
 
 #include "Mesh.h"
 #include "Camera.h"
-#include "Components/Transform.h"
+#include "Transform.h"
 #include <OpenGL.h>
 
 namespace ti {

@@ -9,15 +9,31 @@
 #include <glm/gtx/matrix_cross_product.hpp>
 
 namespace ti {
+	enum ForceMode {
+		Impulse,
+		Acceleration,
+		Force,
+		VelocityChange
+	};
+
 	namespace Component {
 		struct Rigidbody {
 			glm::vec3 velocity;
 			glm::vec3 acceleration;
 			glm::vec3 force;
-			float mass;
-			bool use_gravity = true;
 
+			float mass;
 			float drag;
+			bool use_gravity;
+
+			glm::bvec3 rotation_lock;
+			glm::bvec3 axis_lock;
+
+			void AddForce(const glm::vec3& force) {
+				this->force += force;
+			}
+			
+			
 		};
 	}
 }

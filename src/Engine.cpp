@@ -24,7 +24,6 @@ void ti::Engine::Mainloop() {
 
 		EventHandler();
 		Update(this->dt);
-		Render();
 
 		const auto& end_time = std::chrono::high_resolution_clock::now();
 		this->dt = std::chrono::duration<double, std::ratio<1, 60>>(end_time - start_time).count();
@@ -35,9 +34,9 @@ void ti::Engine::Mainloop() {
 
 void ti::Engine::Init() {	
 	auto& registry = this->registry;
-	auto& renderer = this->renderer;
+	// auto& renderer = this->renderer;
 
-	renderer.Init(this->window);
+	// renderer.Init(this->window);
 
 	for (auto& scene: this->scene_array) {
 		scene->Init();
@@ -59,7 +58,7 @@ void ti::Engine::Init() {
 		this->main_fbo = FrameBuffer_Create(this->width, this->height);
 	#endif
 
-	
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 void ti::Engine::EventHandler() {
@@ -73,13 +72,32 @@ void ti::Engine::EventHandler() {
 			this->quit = true;
 		}
 		if (this->event.type == SDL_KEYDOWN) {
-			if (this->key_chord.size() == 0)
-				this->key_chord.push_back(this->event.key.keysym.scancode);
-			else if (this->key_chord.back() != this->event.key.keysym.scancode)
-				this->key_chord.push_back(this->event.key.keysym.scancode);
+			this->eventdata.key_pressed.insert(this->event.key.keysym.scancode);
+			if (this->eventdata.key_chord.size() == 0)
+				this->eventdata.key_chord.push_back(this->event.key.keysym.scancode);
+			else if (this->eventdata.key_chord.back() != this->event.key.keysym.scancode)
+				this->eventdata.key_chord.push_back(this->event.key.keysym.scancode);
 		}
 		if (this->event.type == SDL_KEYUP) {
-			this->key_chord.clear();
+			this->eventdata.key_chord.clear();
+			this->eventdata.key_pressed.erase(this->event.key.keysym.scancode);
+		}
+		if (this->event.type == SDL_MOUSEBUTTONDOWN) {
+			this->eventdata.mouse_pressed.insert(this->event.button.button);
+		}
+		if (this->event.type == SDL_MOUSEBUTTONUP) {
+			this->eventdata.mouse_pressed.erase(this->event.button.button);
+		}
+		if (this->event.type == SDL_MOUSEMOTION) {
+			// if (SDL_GetRelativeMouseMode()) {
+				this->eventdata.mouseposx += this->event.motion.xrel;
+				this->eventdata.mouseposy += this->event.motion.yrel;
+			// } else {
+			// 	this->eventdata.mouseposx = this->event.motion.x;
+			// 	this->eventdata.mouseposy = this->event.motion.y;
+			// }
+			this->eventdata.relmouseposx = this->event.motion.xrel;
+			this->eventdata.relmouseposy = this->event.motion.yrel;
 		}
 	}
 }
@@ -90,10 +108,12 @@ void ti::Engine::Update(double dt) {
 	for (auto& scene: this->scene_array) {
 		scene->Update(dt);
 	}
+
+	SDL_GL_SwapWindow(this->window);
 }
 
 void ti::Engine::Render() {
-	auto& renderer = this->renderer;
+	// // auto& renderer = this->renderer;
 	auto& registry = this->registry;
 
 	#ifdef DEBUG_ENABLE
@@ -141,12 +161,8 @@ void ti::Engine::Render() {
 			this->main_fbo->Bind();
 			{
 	#endif
-	
-	for (auto& scene: this->scene_array) {
-		scene->Render();
-	}
 
-	this->renderer.RenderPreset();
+	// this->renderer.RenderPreset();
 
 	#ifdef DEBUG_ENABLE
 			}
@@ -159,8 +175,6 @@ void ti::Engine::Render() {
 		ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	#endif
-
-	SDL_GL_SwapWindow(this->window);
 }
 
 // double& ti::TimeStep() {

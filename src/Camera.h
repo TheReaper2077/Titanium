@@ -2,6 +2,7 @@
 
 // #include <glm/glm.hpp>
 #include "define.h"
+#include "Events.h"
 
 namespace ti {
 
@@ -34,10 +35,10 @@ namespace ti {
 
 		std::string name;
 
-		void MouseCallback();
+		void MouseCallback(Events *eventdata);
 		void View(const glm::vec3 &mag);
 		void View(float zoom);
-		void Update(double dt);
+		void Update(double dt, Events *eventdata);
 
 		Camera(std::string name, ProjectionMode mode, int width, int height);
 	};
