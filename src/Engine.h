@@ -2,12 +2,9 @@
 
 #define ENGINE
 
-#include "Transform.h"
-#include "Renderer.h"
-#include <entt/entt.hpp>
 #include <memory>
 #include "Scene.h"
-#include "ECS.h"
+#include "Core/ECS.h"
 #include "Events.h"
 // #define DEBUG_ENABLE
 
@@ -25,8 +22,6 @@ namespace ti {
 
 		const char* title = "Titanium";
 		int width = 1280, height = 640, posx = 50, posy = 50;
-
-		Renderer renderer;
 
 		std::vector<std::shared_ptr<Layer>> scene_array;
 
@@ -55,7 +50,6 @@ namespace ti {
 		template <typename T> void AddScene() {
 			auto scene = std::make_shared<T>();
 
-			scene->renderer = &renderer;
 			scene->registry = &registry;
 			scene->eventdata = &eventdata;
 			scene->width = width;

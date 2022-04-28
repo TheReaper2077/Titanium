@@ -3,10 +3,10 @@
 extern std::shared_ptr<OpenGLContext> gl_context;
 
 // experimental Haven't Tested
-TextureArray *TextureArray_LoadFile(int tilew, int tileh, const char* filename) {
+TextureArray2D *TextureArray_LoadFile(int tilew, int tileh, const char* filename) {
 	assert(gl_context != nullptr);
 
-	auto spriteatlas = std::make_shared<TextureArray>();
+	auto spriteatlas = std::make_shared<TextureArray2D>();
 
 	spriteatlas->texture = Texture_Create();
 	spriteatlas->texture->Bind();
@@ -73,10 +73,10 @@ TextureArray *TextureArray_LoadFile(int tilew, int tileh, const char* filename) 
 	return spriteatlas.get();
 }
 
-void TextureArray::Bind() {
+void TextureArray2D::Bind() {
 	glBindTexture(GL_TEXTURE_2D_ARRAY, this->texture->id);
 }
 
-void TextureArray::UnBind() {
+void TextureArray2D::UnBind() {
 	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }

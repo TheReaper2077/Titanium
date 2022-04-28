@@ -16,6 +16,7 @@ namespace ti {
 			Texture2D *texture;
 			glm::vec2 uv0;
 			glm::vec2 uv1;
+			float index;
 		};
 	}
 }

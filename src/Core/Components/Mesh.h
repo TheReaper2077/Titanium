@@ -4,21 +4,9 @@
 
 #include <OpenGL.h>
 #include <vector>
+#include "Material.h"
 
 namespace ti {
-	// enum VertexArrayAttrib {
-	// 	position,
-	// 	normal,
-	// 	color,
-	// 	uv0,
-	// 	uv1,
-	// 	uv2,
-	// 	uv3,
-	// 	uv4,
-	// 	uv5,
-	// 	uv6,
-	// 	uv7,
-	// };
 
 	// using VertexArrayDescriptor = uint32_t;
 
@@ -46,16 +34,35 @@ namespace ti {
 	// #define UV6_ATTR_SIZE sizeof(glm::vec2)
 	// #define UV7_ATTR_SIZE sizeof(glm::vec2)
 
+	struct Vertex {
+		glm::vec3 position;
+		glm::vec3 uv;
+		glm::vec3 normal;
+	};
+
+	enum Primitive {
+		POINT,
+		LINE,
+		LINE_STRIP,
+		TRIANGLE,
+		TRIANGLE_FAN,
+		TRIANGLE_STRIP,
+	};
+
 	namespace Component {
 		struct Mesh {
-			void* vertices = nullptr;
-			std::size_t size = 0;
+			std::vector<Vertex> vertices;
 			std::vector<unsigned int> indices;
 			
 			unsigned int vertexcount = 0;
 			unsigned int indexcount = 0;
 
-			VertexArrayLayout vertexarraydesc;
+			VertexBuffer* vertexbuffer;
+			VertexArray* vertexarray;
+			IndexBuffer* indexbuffer;
+
+			std::string material;
+			Primitive primitive;
 
 			void Clear();
 			void AppendVertices();

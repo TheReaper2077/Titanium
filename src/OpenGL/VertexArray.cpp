@@ -4,7 +4,7 @@
 
 extern std::shared_ptr<OpenGLContext> gl_context;
 
-VertexArray* VertexArray_Create(std::vector<VertexArrayLayout> layouts) {
+VertexArray* VertexArray_Create(std::vector<VertexArrayAttribDescriptor> layouts) {
 	assert(gl_context != nullptr);
 
 	auto vertexarray = std::make_shared<VertexArray>();

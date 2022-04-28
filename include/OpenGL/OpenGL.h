@@ -23,14 +23,14 @@ typedef unsigned int TextureColorBufferId;
 typedef unsigned int RenderBufferId;
 
 struct OpenGLContext;
-struct VertexArrayLayout;
+struct VertexArrayAttribDescriptor;
 struct VertexArray;
 struct VertexBuffer;
 struct IndexBuffer;
 struct UniformBuffer;
 struct Shader;
-struct Texture;
-struct TextureArray;
+struct Texture2D;
+struct TextureArray2D;
 struct FrameBuffer;
 struct TextureColorBuffer;
 struct RenderBuffer;
@@ -42,8 +42,8 @@ struct OpenGLContext {
 	std::vector<std::shared_ptr<UniformBuffer>> uniform_buffer_store;
 	std::vector<std::shared_ptr<FrameBuffer>> frame_buffer_store;
 	std::vector<std::shared_ptr<Shader>> shader_store;
-	std::vector<std::shared_ptr<Texture>> texture_store;
-	std::vector<std::shared_ptr<TextureArray>> sprite_atlas_store;
+	std::vector<std::shared_ptr<Texture2D>> texture_store;
+	std::vector<std::shared_ptr<TextureArray2D>> sprite_atlas_store;
 
 	VertexArrayId binding_vertexarray;
 	VertexBufferId binding_vertexbuffer;
@@ -67,13 +67,31 @@ struct FrameBuffer {
 	void Destroy();
 };
 
-struct VertexArrayLayout {
-	unsigned int idx, size, type;
+enum VertexArrayAttrib {
+	position,
+	normal,
+	color,
+	uv0,
+	uv1,
+	uv2,
+	uv3,
+	uv4,
+	uv5,
+	uv6,
+	uv7,
+};
 
-	VertexArrayLayout(unsigned int idx, unsigned int size, unsigned int type) {
+struct VertexArrayAttribDescriptor {
+	VertexArrayAttrib attr_type;
+	unsigned int idx;
+	unsigned int size;
+	unsigned int type;
+
+	VertexArrayAttribDescriptor(VertexArrayAttrib attr_type, unsigned int idx, unsigned int size, unsigned int type) {
 		this->idx = idx;
 		this->size = size;
 		this->type = type;
+		this->attr_type = attr_type;
 	}
 };
 
@@ -154,7 +172,7 @@ struct Shader {
 	void SetUniformArray(std::string uniform, std::size_t count, const float* v);
 };
 
-struct Texture {
+struct Texture2D {
 	TextureId id;
 	std::string type;
 	uint32_t width, height, channels;
@@ -164,8 +182,8 @@ struct Texture {
 	void UnBind();
 };
 
-struct TextureArray {
-	Texture* texture = nullptr;
+struct TextureArray2D {
+	Texture2D* texture = nullptr;
 
 	int tilecount;
 	int tileheight;
@@ -181,7 +199,7 @@ void OpenGL_DestroyContext();
 
 FrameBuffer* FrameBuffer_Create(int width, int height);
 
-VertexArray* VertexArray_Create(std::vector<VertexArrayLayout> layouts);
+VertexArray* VertexArray_Create(std::vector<VertexArrayAttribDescriptor> layouts);
 
 VertexBuffer* VertexBuffer_Create();
 
@@ -191,6 +209,6 @@ UniformBuffer* UniformBuffer_Create();
 
 Shader* Shader_Create(std::string name, const std::string &vs_filename, const std::string &fs_filename, bool file = true);
 
-Texture* Texture_Create();
-Texture* Texture_LoadFile(const char* filename);
-TextureArray* TextureArray_LoadFile(int tilew, int tileh, const char* filename);
+Texture2D* Texture_Create();
+Texture2D* Texture_LoadFile(const char* filename);
+TextureArray2D* TextureArray_LoadFile(int tilew, int tileh, const char* filename);

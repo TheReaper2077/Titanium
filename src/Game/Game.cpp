@@ -24,7 +24,7 @@ struct Material {
 struct Mesh {
 	std::vector<ti::Vertex> vertices;
 	std::vector<uint32_t> indices;
-    std::vector<Texture*> textures;
+    std::vector<Texture2D*> textures;
 	
 	VertexArray* vertexarray;
 	VertexBuffer* vertexbuffer;
