@@ -39,15 +39,15 @@ void ti::Camera::MouseCallback(Events *eventdata) {
 
 	if (this->mode == ProjectionMode::PERSPECTIVE) {
 		if (this->first_mouse) {
-			this->lastX = eventdata->mouseposx;
-			this->lastY = eventdata->mouseposy;
+			this->lastX = eventdata->posx;
+			this->lastY = eventdata->posy;
 			this->first_mouse = false;
 		}
 
-		float xoffset = eventdata->mouseposx - this->lastX;
-		float yoffset = this->lastY - eventdata->mouseposy;
-		this->lastX = eventdata->mouseposx;
-		this->lastY = eventdata->mouseposy;
+		float xoffset = eventdata->posx - this->lastX;
+		float yoffset = this->lastY - eventdata->posy;
+		this->lastX = eventdata->posx;
+		this->lastY = eventdata->posy;
 		
 		// float xoffset = eventdata->relmouseposx;
 		// float yoffset = eventdata->relmouseposy;

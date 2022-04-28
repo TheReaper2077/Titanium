@@ -107,23 +107,23 @@ namespace ti {
 				shader->SetUniformVec3("material.specular", &material.specular[0]);
 				shader->SetUniformf("material.shininess", material.shininess);
 
-				// if (material.ambient_map != nullptr) {
-				// 	glActiveTexture(GL_TEXTURE0);
-				// 	material.ambient_map->BindUnit(0);
-				// 	shader->SetUniformi("material.ambient_map", 0);
-				// }
+				if (material.ambient_map != nullptr) {
+					glActiveTexture(GL_TEXTURE0);
+					material.ambient_map->BindUnit(0);
+					shader->SetUniformi("material.ambient_map", 0);
+				}
 
-				// if (material.diffuse_map != nullptr) {
-				// 	glActiveTexture(GL_TEXTURE1);
-				// 	material.diffuse_map->BindUnit(1);
-				// 	shader->SetUniformi("material.diffuse_map", 1);
-				// }
+				if (material.diffuse_map != nullptr) {
+					glActiveTexture(GL_TEXTURE1);
+					material.diffuse_map->BindUnit(1);
+					shader->SetUniformi("material.diffuse_map", 1);
+				}
 
-				// if (material.specular_map != nullptr) {
-				// 	glActiveTexture(GL_TEXTURE2);
-				// 	material.specular_map->BindUnit(2);
-				// 	shader->SetUniformi("material.specular_map", 2);
-				// }
+				if (material.specular_map != nullptr) {
+					glActiveTexture(GL_TEXTURE2);
+					material.specular_map->BindUnit(2);
+					shader->SetUniformi("material.specular_map", 2);
+				}
 			}
 
 			template <typename T>
@@ -214,7 +214,6 @@ namespace ti {
 
 					SetShader("material");
 					SetModel(transform.GetModel());
-					SetMaterial(mesh.material);
 					RenderMesh(mesh);
 				}
 
@@ -224,7 +223,6 @@ namespace ti {
 
 					SetShader("material");
 					SetModel(transform.GetModel());
-					shader->Bind();
 
 					for (auto& mesh: model.meshes) {
 						RenderMesh(mesh);

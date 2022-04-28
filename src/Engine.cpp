@@ -26,6 +26,8 @@ void ti::Engine::Mainloop() {
 		EventHandler();
 		Update(this->dt);
 
+		SDL_GL_SwapWindow(this->window);
+
 		const auto& end_time = std::chrono::high_resolution_clock::now();
 		this->dt = std::chrono::duration<double, std::ratio<1, 60>>(end_time - start_time).count();
 	}
@@ -91,14 +93,14 @@ void ti::Engine::EventHandler() {
 		}
 		if (this->event.type == SDL_MOUSEMOTION) {
 			// if (SDL_GetRelativeMouseMode()) {
-				this->eventdata.mouseposx += this->event.motion.xrel;
-				this->eventdata.mouseposy += this->event.motion.yrel;
+				this->eventdata.posx += this->event.motion.xrel;
+				this->eventdata.posy += this->event.motion.yrel;
 			// } else {
 			// 	this->eventdata.mouseposx = this->event.motion.x;
 			// 	this->eventdata.mouseposy = this->event.motion.y;
 			// }
-			this->eventdata.relmouseposx = this->event.motion.xrel;
-			this->eventdata.relmouseposy = this->event.motion.yrel;
+			this->eventdata.relx = this->event.motion.xrel;
+			this->eventdata.rely = this->event.motion.yrel;
 		}
 	}
 }
@@ -109,8 +111,6 @@ void ti::Engine::Update(double dt) {
 	for (auto& scene: this->scene_array) {
 		scene->Update(dt);
 	}
-
-	SDL_GL_SwapWindow(this->window);
 }
 
 void ti::Engine::Render() {

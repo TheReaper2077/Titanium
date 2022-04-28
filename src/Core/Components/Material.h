@@ -21,9 +21,9 @@ namespace ti {
 			glm::vec3 specular;
 			float shininess;
 
-			Texture2D* ambient_map;
-			Texture2D* diffuse_map;
-			Texture2D* specular_map;
+			Texture2D* ambient_map = nullptr;
+			Texture2D* diffuse_map = nullptr;
+			Texture2D* specular_map = nullptr;
 
 			// Shader* shader;
 			std::string name;

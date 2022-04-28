@@ -1,6 +1,7 @@
 #pragma once
 
 #include <set>
+#include <vector>
 #include <SDL2/SDL_events.h>
 
 namespace ti {

@@ -81,7 +81,7 @@ namespace ti {
 			std::unordered_map<std::size_t, Entity> store_map;
 
 		public:
-			Entity Create() {
+			Entity Create(bool system_findable = true) {
 				Entity entity;
 
 				if (available_entities.size()) {
@@ -91,7 +91,8 @@ namespace ti {
 					entity = next_entity++;
 				}
 
-				entityid_map[entity] = 0;
+				if (system_findable)
+					entityid_map[entity] = 0;
 
 				return entity;
 			}
@@ -166,7 +167,10 @@ namespace ti {
 
 			template <typename T>
 			T& Store() {
-				if (t)
+				if (store_map.find(typeid(T).hash_code()) == store_map.end())
+					store_map[typeid(T).hash_code()] = Create(false);
+
+				return GetComponentArray<T>(store_map[typeid(T).hash_code()]);
 			}
 
 		private:
