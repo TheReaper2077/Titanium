@@ -165,12 +165,14 @@ namespace ti {
 				return system_map[system];
 			}
 
-			template <typename T>
-			T& Store() {
-				if (store_map.find(typeid(T).hash_code()) == store_map.end())
+			template <typename T, typename ...Args>
+			T& Store(Args ...args) {
+				if (store_map.find(typeid(T).hash_code()) == store_map.end()) {
 					store_map[typeid(T).hash_code()] = Create(false);
+					GetComponentArray<T>()->Add(store_map[typeid(T).hash_code()], T{args...});
+				}
 
-				return GetComponentArray<T>(store_map[typeid(T).hash_code()]);
+				return GetComponentArray<T>()->Get(store_map[typeid(T).hash_code()]);
 			}
 
 		private:

@@ -215,15 +215,13 @@
 // 	return 0;
 // }
 
-#include "Engine.h"
-#include "Game/Game.h"
+#include "Core/Engine.h"
 #include "Sandbox.h"
 
 int main(int ArgCount, char **Args) {
 	ti::Engine engine;
 	engine.CreateContext();
 	
-	// engine.AddScene<Game>();
 	engine.AddScene<Sandbox>();
 
 	engine.Mainloop();

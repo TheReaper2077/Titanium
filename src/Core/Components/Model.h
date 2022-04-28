@@ -10,6 +10,8 @@
 
 #include "Mesh.h"
 
+#include "assert.h"
+
 namespace ti {
 	namespace Component {
 		struct Model {
@@ -17,6 +19,8 @@ namespace ti {
 
 			Model() {}
 			Model(const aiScene *ai_scene) {
+				assert(ai_scene && !(ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) && ai_scene->mRootNode);
+				
 				process_node(ai_scene, ai_scene->mRootNode);
 			}
 

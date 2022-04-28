@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Scene.h"
+#include "Core/Layer.h"
 
-class Sandbox: public Layer {
+class Sandbox: public ti::Layer {
 public:
 	void Init() override;
 	void Update(double dt) override;
-	// void Render() override;
 };

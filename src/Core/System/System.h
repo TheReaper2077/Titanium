@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Engine.h"
 #include "../ECS.h"
 #include "../Components/Components.h"
 
@@ -15,3 +16,6 @@ namespace ti {
 		};
 	}
 }
+
+// #include "RenderSystem.h"
+// #include "CameraSystem.h"

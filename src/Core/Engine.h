@@ -12,7 +12,7 @@
 namespace ti {
 	class Engine {
 		ti::ECS::Registry registry;
-		std::vector<Layer> scene_array;
+		std::vector<std::shared_ptr<Layer>> scene_array;
 
 	public:
 		void CreateContext() {

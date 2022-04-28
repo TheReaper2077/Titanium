@@ -1,29 +1,34 @@
 #include "Sandbox.h"
-#include "Camera.h"
 #include "Core/System/RenderSystem.h"
+#include "Core/System/CameraSystem.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 ti::System::RenderSystem rendersystem;
-ti::Camera* camera;
+ti::System::CameraSystem camerasystem;
 Assimp::Importer importer;
 
 void Sandbox::Init() {
-	camera = new ti::Camera("cam0", ti::PERSPECTIVE, width, height);
+	auto& engine = registry->Store<ti::EngineProperties>();
 
 	const aiScene *scene = importer.ReadFile("D:\\C++\\2.5D Engine\\res\\cylinder.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
-	assert(scene && !(scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) && scene->mRootNode);
-
+	
 	auto entity = registry->Create();
 	registry->Add<ti::Component::Model>(entity, scene);
 	registry->Add<ti::Component::Transform>(entity);
 	registry->Add<ti::Component::Properties>(entity, "name", entity);
 
-	rendersystem.registry = registry;
+	auto camera = registry->Create();
+	registry->Add<ti::Component::Camera>(camera, ti::Projection::PERSPECTIVE, (float)engine.width, (float)engine.height, true);
+	registry->Add<ti::Component::Transform>(camera);
+	registry->Add<ti::Component::Properties>(camera, "cam0", camera);
 
+	rendersystem.registry = registry;
+	camerasystem.registry = registry;
 	rendersystem.Init();
+	camerasystem.Init();
 
 	for (int i = 0; i < scene->mNumMaterials; i++)
 		rendersystem.RegisterMaterial(ti::Component::Material(scene->mMaterials[i]));
@@ -32,17 +37,13 @@ void Sandbox::Init() {
 }
 
 void Sandbox::Update(double dt) {
-	glViewport(0, 0, this->width, this->height);
+	auto& engine = registry->Store<ti::EngineProperties>();
+
+	glViewport(0, 0, engine.width, engine.height);
 	glClearColor(0.2, 0.2, 0.2, 0.2);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	camera->Update(dt, eventdata);
-
-	rendersystem.SetView(camera->view);
-	// rendersystem.SetModel(camera->model);
-	rendersystem.SetProjection(camera->projection);
 	
+	camerasystem.Update(dt);
 	rendersystem.Update(dt);
 }
