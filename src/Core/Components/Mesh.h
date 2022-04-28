@@ -57,15 +57,16 @@ namespace ti {
 			unsigned int vertexcount = 0;
 			unsigned int indexcount = 0;
 
-			VertexBuffer* vertexbuffer;
-			VertexArray* vertexarray;
-			IndexBuffer* indexbuffer;
+			VertexBuffer* vertexbuffer = nullptr;
+			VertexArray* vertexarray = nullptr;
+			IndexBuffer* indexbuffer = nullptr;
 
 			std::string material;
-			Primitive primitive;
+			Primitive primitive = TRIANGLE;
+
+			bool changed = true;
 
 			void Clear();
-			void AppendVertices();
 		};
 	}
 }

@@ -52,13 +52,15 @@ namespace ti {
 					break;
 				}
 
-				aiColor3D color(0.f, 0.f, 0.f);
-				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_AMBIENT, &color))
-					this->ambient = glm::vec3(color.r, color.g, color.b);
-				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_DIFFUSE, &color))
-					this->diffuse = glm::vec3(color.r, color.g, color.b);
-				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_SPECULAR, &color))
-					this->specular = glm::vec3(color.r, color.g, color.b);
+				name = std::string(ai_material->GetName().C_Str());
+
+				// aiColor3D color(0.f, 0.f, 0.f);
+				// if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_AMBIENT, color))
+				// 	this->ambient = glm::vec3(color.r, color.g, color.b);
+				// if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_DIFFUSE, color))
+				// 	this->diffuse = glm::vec3(color.r, color.g, color.b);
+				// if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_SPECULAR, color))
+				// 	this->specular = glm::vec3(color.r, color.g, color.b);
 			}
 		};
 	}

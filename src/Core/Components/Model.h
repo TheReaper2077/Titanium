@@ -16,7 +16,9 @@ namespace ti {
 			std::vector<Mesh> meshes;
 
 			Model() {}
-			Model(const aiScene *ai_scene);
+			Model(const aiScene *ai_scene) {
+				process_node(ai_scene, ai_scene->mRootNode);
+			}
 
 			void process_mesh(const aiScene *ai_scene, aiMesh *ai_mesh) {
 				Mesh mesh;
@@ -65,6 +67,6 @@ namespace ti {
 					process_node(ai_scene, ai_node->mChildren[i]);
 				}
 			}
-		}
+		};
 	}
 }

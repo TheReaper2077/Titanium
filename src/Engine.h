@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "Core/ECS.h"
 #include "Events.h"
+#include "define.h"
 // #define DEBUG_ENABLE
 
 namespace ti {

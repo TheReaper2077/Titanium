@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <OpenGL.h>
 
 void ti::Engine::CreateContext() {
 	this->quit = false;

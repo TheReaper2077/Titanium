@@ -5,7 +5,7 @@
 
 namespace ti {
 	namespace System {
-		class RenderSystem: System {
+		class RenderSystem: public System {
 			UniformBuffer* uniformbuffer;
 
 			glm::mat4 model;
@@ -22,15 +22,30 @@ namespace ti {
 			uint32_t indexcount;
 			std::vector<Vertex> vertices;
 			uint32_t vertexcount;
+		
+		public:
+			RenderSystem() {}
 
 			void Init() override {
 				uniformbuffer = UniformBuffer_Create();
 				uniformbuffer->Allocate(sizeof(glm::mat4) * 3);
 				uniformbuffer->BindRange(0, sizeof(glm::mat4) * 3);
+
+				auto* shader = Shader_Create("material", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\color.fs");
+				shader->BindUniformBlock("ProjectionMatrix", 0);
+				RegisterShader(shader);
+
+				RegisterVertexArray<Vertex>(
+					{
+						{ position, 0, 3, GL_FLOAT },
+						{ uv0, 1, 3, GL_FLOAT },
+						{ normal, 2, 3, GL_FLOAT },
+					}
+				);
 			}
 
 			template <typename T>
-			void RegisterVertexArray(const VertexArrayAttribDescriptor& vertexarraydesc) {
+			void RegisterVertexArray(std::vector<VertexArrayAttribDescriptor> vertexarraydesc) {
 				assert(vertexarray_registry.find(typeid(T).hash_code()) == vertexarray_registry.end());
 
 				vertexarray_registry[typeid(T).hash_code()] = VertexArray_Create(vertexarraydesc);
@@ -56,21 +71,26 @@ namespace ti {
 
 			template <typename T>
 			void SetMeshVertexArray(ti::Component::Mesh& mesh, std::vector<T> vertices) {
-				if (mesh.vertexarray == nullptr);
+				if (mesh.vertexarray != nullptr) return;
 				
 				assert(vertexarray_registry.find(typeid(T).hash_code()) != vertexarray_registry.end());
 
 				mesh.vertexarray = vertexarray_registry[typeid(T).hash_code()];
+
+				if (mesh.vertexbuffer == nullptr)
+					mesh.vertexbuffer = VertexBuffer_Create();
+				if (mesh.indexbuffer == nullptr)
+					mesh.indexbuffer = IndexBuffer_Create(mesh.vertexarray);
 			}
 			
-			void RegisterMaterial(std::string name, ti::Component::Material material) {
-				assert(material_registry.find(material.name) == material_registry.end());
+			void RegisterMaterial(ti::Component::Material material) {
+				// assert(material_registry.find(material.name) == material_registry.end());
 
 				material_registry[material.name] = material;
 			}
 
 			ti::Component::Material& GetMaterial(std::string name) {
-				assert(material_registry.find(name) == material_registry.end());
+				assert(material_registry.find(name) != material_registry.end());
 
 				return material_registry[name];
 			}
@@ -87,32 +107,34 @@ namespace ti {
 				shader->SetUniformVec3("material.specular", &material.specular[0]);
 				shader->SetUniformf("material.shininess", material.shininess);
 
-				if (material.ambient_map) {
-					glActiveTexture(GL_TEXTURE0);
-					material.ambient_map->BindUnit(0);
-					shader->SetUniformi("material.ambient_map", 0);
-				}
+				// if (material.ambient_map != nullptr) {
+				// 	glActiveTexture(GL_TEXTURE0);
+				// 	material.ambient_map->BindUnit(0);
+				// 	shader->SetUniformi("material.ambient_map", 0);
+				// }
 
-				if (material.diffuse_map) {
-					glActiveTexture(GL_TEXTURE1);
-					material.diffuse_map->BindUnit(1);
-					shader->SetUniformi("material.diffuse_map", 1);
-				}
+				// if (material.diffuse_map != nullptr) {
+				// 	glActiveTexture(GL_TEXTURE1);
+				// 	material.diffuse_map->BindUnit(1);
+				// 	shader->SetUniformi("material.diffuse_map", 1);
+				// }
 
-				if (material.specular_map) {
-					glActiveTexture(GL_TEXTURE2);
-					material.specular_map->BindUnit(2);
-					shader->SetUniformi("material.specular_map", 2);
-				}
+				// if (material.specular_map != nullptr) {
+				// 	glActiveTexture(GL_TEXTURE2);
+				// 	material.specular_map->BindUnit(2);
+				// 	shader->SetUniformi("material.specular_map", 2);
+				// }
 			}
 
 			template <typename T>
 			void TransferVertices(const std::vector<T>& vertices, VertexBuffer* vertexbuffer) {
-				vertexbuffer->AddDataStatic(vertices.data(), vertices.size()*sizeof(T));
+				if (vertices.size())
+					vertexbuffer->AddDataStatic((void*)vertices.data(), vertices.size()*sizeof(T));
 			}
 
 			void TransferIndices(std::vector<uint32_t>& indices, IndexBuffer* indexbuffer) {
-				indexbuffer->AddData(indices.data(), indices.size()*sizeof(uint32_t));
+				if (indices.size())
+					indexbuffer->AddData(indices.data(), indices.size()*sizeof(uint32_t));
 			}
 
 			void TransferMesh(ti::Component::Mesh& mesh) {
@@ -121,6 +143,7 @@ namespace ti {
 
 				mesh.vertexcount = mesh.vertices.size();
 				mesh.indexcount = mesh.indices.size();
+				mesh.changed = false;
 			}
 
 			void SetModel(const glm::mat4& model) {
@@ -142,16 +165,21 @@ namespace ti {
 			}
 
 			void RenderMesh(ti::Component::Mesh& mesh) {
-				SetMaterial(mesh.material);
-
 				if (mesh.vertexarray == nullptr)
 					SetMeshVertexArray(mesh, mesh.vertices);
+
+				SetMaterial(mesh.material);
+
+				if (mesh.changed) {
+					TransferMesh(mesh);
+				}
 				
 				mesh.vertexarray->Bind();
 				mesh.vertexarray->BindVertexBuffer(mesh.vertexbuffer, mesh.vertexarray->stride);
 
 				if (mesh.indexcount) {
 					mesh.vertexarray->BindIndexBuffer(mesh.indexbuffer);
+					
 					if (mesh.primitive == ti::Primitive::TRIANGLE) glDrawElements(GL_TRIANGLES, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
 					if (mesh.primitive == ti::Primitive::TRIANGLE_FAN) glDrawElements(GL_TRIANGLE_FAN, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
 					if (mesh.primitive == ti::Primitive::TRIANGLE_STRIP) glDrawElements(GL_TRIANGLE_STRIP, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
@@ -171,14 +199,11 @@ namespace ti {
 			void Update(double dt) override {
 				using namespace ti::Component;
 
-				glEnable(GL_DEPTH_TEST);
-
-				for (auto& entity: registry->View<Properties, Transform, Camera>()) {
-					auto& camera = registry->Get<Camera>(entity);
+				for (auto& entity: registry->View<Properties, Transform, ti::Component::Camera>()) {
+					auto& camera = registry->Get<ti::Component::Camera>(entity);
 
 					if (camera.enable) {
 						SetView(camera.view);
-						// SetModel(camera.model);
 						SetProjection(camera.projection);
 					}
 				}
@@ -199,6 +224,7 @@ namespace ti {
 
 					SetShader("material");
 					SetModel(transform.GetModel());
+					shader->Bind();
 
 					for (auto& mesh: model.meshes) {
 						RenderMesh(mesh);

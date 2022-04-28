@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <assert.h>
 #include <set>
+#include <iostream>
 
 namespace ti {
 	namespace ECS {
@@ -74,6 +75,7 @@ namespace ti {
 			ComponentType next_component_type = 0;
 
 			std::unordered_map<std::size_t, std::shared_ptr<ComponentArrayT>> componentarray_map;
+			std::unordered_map<std::size_t, ComponentType> componenttype_map;
 			std::unordered_map<Entity, ID> entityid_map;
 			std::unordered_map<ID, std::set<Entity>> system_map;
 
@@ -117,8 +119,8 @@ namespace ti {
 			}
 
 			template <typename T, typename ...Args>
-			void Add(Entity entity, Args ...params) {
-				GetComponentArray<T>()->Add(entity, T{params...});
+			void Add(Entity entity, Args ...args) {
+				GetComponentArray<T>()->Add(entity, T{args...});
 
 				entityid_map[entity] |= (1 << GetComponentArray<T>()->type);
 
@@ -148,9 +150,7 @@ namespace ti {
 			std::set<Entity>& View() {
 				ID system = 0;
 				for (auto type_id: {typeid(Tc).hash_code()...}) {
-					assert(componentarray_map.find(type_id) != componentarray_map.end());
-					
-					system |= (1 << componentarray_map[type_id]->type);
+					system |= (1 << RegisterComponentType(type_id));
 				}
 
 				if (system_map.find(system) == system_map.end()) {
@@ -163,13 +163,30 @@ namespace ti {
 				return system_map[system];
 			}
 
+			void GetStore() {
+
+			}
+
+			void AddStore() {
+				
+			}
+
 		private:
+			ComponentType RegisterComponentType(std::size_t type_id) {
+				if (componenttype_map.find(type_id) == componenttype_map.end()) {
+					assert(next_component_type < 32);
+
+					componenttype_map[type_id] = next_component_type++;
+				}
+
+				return componenttype_map[type_id];
+			}
+
 			template <typename T>
 			std::shared_ptr<ComponentArray<T>> GetComponentArray() {
 				if (componentarray_map.find(typeid(T).hash_code()) == componentarray_map.end()) {
 					auto ptr = std::make_shared<ComponentArray<T>>();
-					assert(next_component_type < 32);
-					ptr->type = next_component_type++;
+					ptr->type = RegisterComponentType(typeid(T).hash_code());
 					componentarray_map[typeid(T).hash_code()] = std::static_pointer_cast<ComponentArrayT>(ptr);
 				}
 
