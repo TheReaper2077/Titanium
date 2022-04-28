@@ -78,6 +78,7 @@ namespace ti {
 			std::unordered_map<std::size_t, ComponentType> componenttype_map;
 			std::unordered_map<Entity, ID> entityid_map;
 			std::unordered_map<ID, std::set<Entity>> system_map;
+			std::unordered_map<std::size_t, Entity> store_map;
 
 		public:
 			Entity Create() {
@@ -163,12 +164,9 @@ namespace ti {
 				return system_map[system];
 			}
 
-			void GetStore() {
-
-			}
-
-			void AddStore() {
-				
+			template <typename T>
+			T& Store() {
+				if (t)
 			}
 
 		private:
