@@ -237,6 +237,8 @@ namespace ti {
 					}
 				}
 
+				// shader->UnBind();
+
 				// for (auto& entity: registry->View<Properties, Transform, Sprite>()) {
 				// 	auto& sprite = registry->Get<Sprite>(entity);
 				// 	auto& transform = registry->Get<Transform>(entity);
