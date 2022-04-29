@@ -31,7 +31,7 @@ void Sandbox::Init() {
 	camerasystem.Init();
 
 	for (int i = 0; i < scene->mNumMaterials; i++)
-		rendersystem.RegisterMaterial(ti::Component::Material(scene->mMaterials[i]));
+		registry->Store<ti::MaterialRegistry>().RegisterMaterial(ti::Component::Material(scene->mMaterials[i]));
 
 	SDL_ShowCursor(SDL_DISABLE);
 }
@@ -43,6 +43,9 @@ void Sandbox::Update(double dt) {
 	glClearColor(0.2, 0.2, 0.2, 0.2);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_CULL_FACE);
 	
 	camerasystem.Update(dt);
 	rendersystem.Update(dt);

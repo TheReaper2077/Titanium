@@ -2,6 +2,8 @@
 
 #include "System.h"
 #include <unordered_map>
+#include <iostream>
+#include "../MaterialRegistry.h"
 
 namespace ti {
 	namespace System {
@@ -11,10 +13,10 @@ namespace ti {
 			glm::mat4 model;
 			glm::mat4 view;
 			glm::mat4 projection;
+			glm::vec3 view_position;
 
 			std::unordered_map<std::size_t, VertexArray*> vertexarray_registry;
 			std::unordered_map<std::string, Shader*> shader_registry;
-			std::unordered_map<std::string, ti::Component::Material> material_registry;
 
 			Shader* shader;
 
@@ -28,11 +30,11 @@ namespace ti {
 
 			void Init() override {
 				uniformbuffer = UniformBuffer_Create();
-				uniformbuffer->Allocate(sizeof(glm::mat4) * 3);
-				uniformbuffer->BindRange(0, sizeof(glm::mat4) * 3);
+				uniformbuffer->Allocate(sizeof(glm::mat4) * 4);
+				uniformbuffer->BindRange(0, sizeof(glm::mat4) * 4);
 
 				auto* shader = Shader_Create("material", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\color.fs");
-				shader->BindUniformBlock("ProjectionMatrix", 0);
+				// shader->BindUniformBlock("ProjectionMatrix", 0);
 				RegisterShader(shader);
 
 				RegisterVertexArray<Vertex>(
@@ -82,21 +84,9 @@ namespace ti {
 				if (mesh.indexbuffer == nullptr)
 					mesh.indexbuffer = IndexBuffer_Create(mesh.vertexarray);
 			}
-			
-			void RegisterMaterial(ti::Component::Material material) {
-				// assert(material_registry.find(material.name) == material_registry.end());
-
-				material_registry[material.name] = material;
-			}
-
-			ti::Component::Material& GetMaterial(std::string name) {
-				assert(material_registry.find(name) != material_registry.end());
-
-				return material_registry[name];
-			}
 
 			void SetMaterial(std::string name) {
-				SetMaterial(GetMaterial(name));
+				SetMaterial(registry->Store<MaterialRegistry>().GetMaterial(name));
 			}
 
 			void SetMaterial(ti::Component::Material& material) {
@@ -164,6 +154,12 @@ namespace ti {
 				uniformbuffer->AddDataDynamic(&this->projection[0][0], sizeof(glm::mat4), sizeof(glm::mat4) * 2);
 			}
 
+			void SetViewPosition(const glm::vec3& view_position) {
+				if (this->view_position == view_position) return;
+				this->view_position = view_position;
+				uniformbuffer->AddDataDynamic(&this->view_position[0], sizeof(glm::vec3), sizeof(glm::mat4) * 3);
+			}
+
 			void RenderMesh(ti::Component::Mesh& mesh) {
 				if (mesh.vertexarray == nullptr)
 					SetMeshVertexArray(mesh, mesh.vertices);
@@ -199,10 +195,12 @@ namespace ti {
 			void Update(double dt) override {
 				using namespace ti::Component;
 
-				for (auto& entity: registry->View<Properties, Transform, ti::Component::Camera>()) {
-					auto& camera = registry->Get<ti::Component::Camera>(entity);
+				for (auto& entity: registry->View<Properties, Transform, Camera>()) {
+					auto& camera = registry->Get<Camera>(entity);
+					auto& transform = registry->Get<Transform>(entity);
 
 					if (camera.enable) {
+						SetViewPosition(transform.position);
 						SetView(camera.view);
 						SetProjection(camera.projection);
 					}
@@ -222,6 +220,16 @@ namespace ti {
 					auto& transform = registry->Get<Transform>(entity);
 
 					SetShader("material");
+					
+					shader->SetUniformVec3("light.position", &glm::vec3(1.2f, 1000.0f, 2.0f)[0]);
+					shader->SetUniformVec3("light.direction", &glm::vec3(-0.2f, -1.0f, -0.3f)[0]);
+					shader->SetUniformVec3("light.ambient", &glm::vec3(0.2f, 0.2f, 0.2f)[0]);
+					shader->SetUniformVec3("light.diffuse", &glm::vec3(0.5f, 0.5f, 0.5f)[0]);
+					shader->SetUniformVec3("light.specular", &glm::vec3(1.0f, 1.0f, 1.0f)[0]);
+					shader->SetUniformi("light.constant", 1.0f);
+					shader->SetUniformi("light.linear", 0.09f);
+					shader->SetUniformi("light.quadratic", 0.032f);
+
 					SetModel(transform.GetModel());
 
 					for (auto& mesh: model.meshes) {

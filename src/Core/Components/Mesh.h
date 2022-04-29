@@ -5,48 +5,13 @@
 #include <OpenGL.h>
 #include <vector>
 #include "Material.h"
+#include "../Enumerations.h"
 
 namespace ti {
-
-	// using VertexArrayDescriptor = uint32_t;
-
-	// #define POSITION_ATTR_BIT (1 << ti::VertexArrayAttrib::position)
-	// #define NORMAL_ATTR_BIT (1 << ti::VertexArrayAttrib::normal)
-	// #define COLOR_ATTR_BIT (1 << ti::VertexArrayAttrib::color)
-	// #define UV0_ATTR_BIT (1 << ti::VertexArrayAttrib::uv0)
-	// #define UV1_ATTR_BIT (1 << ti::VertexArrayAttrib::uv1)
-	// #define UV2_ATTR_BIT (1 << ti::VertexArrayAttrib::uv2)
-	// #define UV3_ATTR_BIT (1 << ti::VertexArrayAttrib::uv3)
-	// #define UV4_ATTR_BIT (1 << ti::VertexArrayAttrib::uv4)
-	// #define UV5_ATTR_BIT (1 << ti::VertexArrayAttrib::uv5)
-	// #define UV6_ATTR_BIT (1 << ti::VertexArrayAttrib::uv6)
-	// #define UV7_ATTR_BIT (1 << ti::VertexArrayAttrib::uv7)
-
-	// #define POSITION_ATTR_SIZE sizeof(glm::vec3)
-	// #define NORMAL_ATTR_SIZE sizeof(glm::vec3)
-	// #define COLOR_ATTR_SIZE sizeof(glm::vec3)
-	// #define UV0_ATTR_SIZE sizeof(glm::vec2)
-	// #define UV1_ATTR_SIZE sizeof(glm::vec2)
-	// #define UV2_ATTR_SIZE sizeof(glm::vec2)
-	// #define UV3_ATTR_SIZE sizeof(glm::vec2)
-	// #define UV4_ATTR_SIZE sizeof(glm::vec2)
-	// #define UV5_ATTR_SIZE sizeof(glm::vec2)
-	// #define UV6_ATTR_SIZE sizeof(glm::vec2)
-	// #define UV7_ATTR_SIZE sizeof(glm::vec2)
-
 	struct Vertex {
 		glm::vec3 position;
 		glm::vec3 uv;
 		glm::vec3 normal;
-	};
-
-	enum Primitive {
-		POINT,
-		LINE,
-		LINE_STRIP,
-		TRIANGLE,
-		TRIANGLE_FAN,
-		TRIANGLE_STRIP,
 	};
 
 	namespace Component {
@@ -66,6 +31,41 @@ namespace ti {
 
 			bool changed = true;
 
+			Mesh() {}
+			Mesh(const aiScene* ai_scene, aiMesh* ai_mesh) {
+				for (int i = 0; i < ai_mesh->mNumVertices; i++) {
+					Vertex vertex;
+
+					vertex.position.x = ai_mesh->mVertices[i].x;
+					vertex.position.y = ai_mesh->mVertices[i].y;
+					vertex.position.z = ai_mesh->mVertices[i].z;
+
+					vertex.normal.x = ai_mesh->mNormals[i].x;
+					vertex.normal.y = ai_mesh->mNormals[i].y;
+					vertex.normal.z = ai_mesh->mNormals[i].z;
+
+					if (ai_mesh->mTextureCoords[0]) {
+						vertex.uv.x = ai_mesh->mTextureCoords[0][i].x;
+						vertex.uv.y = ai_mesh->mTextureCoords[0][i].y;
+						vertex.uv.z = 0;
+					}
+
+					vertices.push_back(vertex);
+				}
+
+				for (int i = 0; i < ai_mesh->mNumFaces; i++) {
+					aiFace face = ai_mesh->mFaces[i];
+
+					for(unsigned int j = 0; j < face.mNumIndices; j++) {
+						indices.push_back(face.mIndices[j]);
+					}
+				}
+
+				if (ai_mesh->mMaterialIndex >= 0) {
+					material = std::string(ai_scene->mMaterials[ai_mesh->mMaterialIndex]->GetName().C_Str());
+				}
+			}
+			
 			void Clear();
 		};
 	}

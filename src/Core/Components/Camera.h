@@ -7,13 +7,9 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_cross_product.hpp>
+#include "../Enumerations.h"
 
 namespace ti {
-	enum Projection {
-		ORTHOGRAPHIC,
-		PERSPECTIVE
-	};
-
 	namespace Component {
 		struct Camera {
 			glm::mat4 projection;

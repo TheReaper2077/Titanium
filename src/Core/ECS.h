@@ -5,7 +5,6 @@
 #include <unordered_map>
 #include <assert.h>
 #include <set>
-#include <iostream>
 
 namespace ti {
 	namespace ECS {
