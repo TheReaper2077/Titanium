@@ -206,11 +206,11 @@ namespace ti {
 					auto& camera = registry->Get<Camera>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
-					if (camera.enable) {
-						SetViewPosition(transform.position);
-						SetView(camera.view);
-						SetProjection(camera.projection);
-					}
+					if (!camera.enable) continue;
+
+					SetViewPosition(transform.position);
+					SetView(camera.view);
+					SetProjection(camera.projection);
 				}
 
 				for (auto& entity: registry->View<Tag, Transform, MeshFilter>()) {

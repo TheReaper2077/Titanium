@@ -23,6 +23,8 @@ namespace ti {
 					auto& camera = registry->Get<Camera>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
+					if (!camera.enable) continue;
+
 					if (camera.mode == PERSPECTIVE) {
 						if (camera.width != engine.width || camera.height != engine.height) {
 							camera.width = engine.width;

@@ -12,8 +12,14 @@
 namespace ti {
 	namespace Component {
 		struct MeshRenderer {
-			// Material material;
-			bool cleanup = true;
+			std::string material;
+
+			VertexArray* vertexarray;
+			VertexBuffer* vertexbuffer;
+			IndexBuffer* indexbuffer;
+
+			int indexcount;
+			int vertexcount;
 		};
 	}
 }
