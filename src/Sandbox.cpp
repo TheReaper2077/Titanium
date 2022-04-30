@@ -18,12 +18,12 @@ void Sandbox::Init() {
 	auto entity = registry->Create();
 	registry->Add<ti::Component::Model>(entity, scene);
 	registry->Add<ti::Component::Transform>(entity);
-	registry->Add<ti::Component::Properties>(entity, "name", entity);
+	registry->Add<ti::Component::Tag>(entity, "name", entity);
 
 	auto camera = registry->Create();
-	registry->Add<ti::Component::Camera>(camera, ti::Projection::PERSPECTIVE, (float)engine.width, (float)engine.height, true);
+	registry->Add<ti::Component::Camera>(camera, ti::Projection::PERSPECTIVE, true);
 	registry->Add<ti::Component::Transform>(camera);
-	registry->Add<ti::Component::Properties>(camera, "cam0", camera);
+	registry->Add<ti::Component::Tag>(camera, "cam0", camera);
 
 	rendersystem.registry = registry;
 	camerasystem.registry = registry;
@@ -40,8 +40,8 @@ void Sandbox::Update(double dt) {
 	auto& engine = registry->Store<ti::EngineProperties>();
 
 	glEnable(GL_DEPTH_TEST);
-	// glEnable(GL_BLEND);
-	// glBlendFunc(GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_CULL_FACE);
 	glViewport(0, 0, engine.width, engine.height);
 	glClearColor(0.2, 0.2, 0.2, 0.2);

@@ -2,6 +2,7 @@
 
 #include "BoxCollider.h"
 #include "MeshCollider.h"
+#include "MeshFilter.h"
 #include "SphereCollider.h"
 #include "Camera.h"
 #include "PhysicMaterial.h"

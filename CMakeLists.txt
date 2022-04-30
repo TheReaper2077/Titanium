@@ -15,11 +15,8 @@ add_executable(main ${TARGET_SRC})
 find_package(glad CONFIG REQUIRED)
 target_link_libraries(main PRIVATE glad::glad)
 
-# find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
-# target_link_libraries(main PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
-
-# If you want SFML to provide an implementation of main():
-# target_link_libraries(main PRIVATE sfml-main)
+find_package(implot CONFIG REQUIRED)
+target_link_libraries(main PRIVATE implot::implot)
 
 find_path(STB_INCLUDE_DIRS "stb.h")
 target_include_directories(main PRIVATE ${STB_INCLUDE_DIRS})

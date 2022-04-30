@@ -15,7 +15,7 @@ namespace ti {
 	};
 
 	namespace Component {
-		struct Mesh {
+		struct MeshFilter {
 			std::vector<Vertex> vertices;
 			std::vector<unsigned int> indices;
 			
@@ -31,8 +31,8 @@ namespace ti {
 
 			bool changed = true;
 
-			Mesh() {}
-			Mesh(const aiScene* ai_scene, aiMesh* ai_mesh) {
+			MeshFilter() {}
+			MeshFilter(const aiScene* ai_scene, aiMesh* ai_mesh) {
 				for (int i = 0; i < ai_mesh->mNumVertices; i++) {
 					Vertex vertex;
 

@@ -72,7 +72,7 @@ namespace ti {
 			}
 
 			template <typename T>
-			void SetMeshVertexArray(ti::Component::Mesh& mesh, std::vector<T> vertices) {
+			void SetMeshVertexArray(ti::Component::MeshFilter& mesh, std::vector<T> vertices) {
 				if (mesh.vertexarray != nullptr) return;
 				
 				assert(vertexarray_registry.find(typeid(T).hash_code()) != vertexarray_registry.end());
@@ -127,7 +127,7 @@ namespace ti {
 					indexbuffer->AddData(indices.data(), indices.size()*sizeof(uint32_t));
 			}
 
-			void TransferMesh(ti::Component::Mesh& mesh) {
+			void TransferMesh(ti::Component::MeshFilter& mesh) {
 				TransferVertices(mesh.vertices, mesh.vertexbuffer);
 				TransferIndices(mesh.indices, mesh.indexbuffer);
 
@@ -160,7 +160,9 @@ namespace ti {
 				uniformbuffer->AddDataDynamic(&this->view_position[0], sizeof(glm::vec3), sizeof(glm::mat4) * 3);
 			}
 
-			void RenderMesh(ti::Component::Mesh& mesh) {
+			void RenderMesh(ti::Component::MeshFilter& mesh) {
+				auto& engine = registry->Store<EngineProperties>();
+
 				if (mesh.vertexarray == nullptr)
 					SetMeshVertexArray(mesh, mesh.vertices);
 
@@ -172,9 +174,11 @@ namespace ti {
 				
 				mesh.vertexarray->Bind();
 				mesh.vertexarray->BindVertexBuffer(mesh.vertexbuffer, mesh.vertexarray->stride);
+				engine.vertexcount += mesh.vertexcount;
 
 				if (mesh.indexcount) {
 					mesh.vertexarray->BindIndexBuffer(mesh.indexbuffer);
+					engine.indexcount += mesh.indexcount;
 					
 					if (mesh.primitive == ti::Primitive::TRIANGLE) glDrawElements(GL_TRIANGLES, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
 					if (mesh.primitive == ti::Primitive::TRIANGLE_FAN) glDrawElements(GL_TRIANGLE_FAN, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
@@ -182,6 +186,8 @@ namespace ti {
 					if (mesh.primitive == ti::Primitive::LINE) glDrawElements(GL_LINES, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
 					if (mesh.primitive == ti::Primitive::LINE_STRIP) glDrawElements(GL_LINE_STRIP, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
 					if (mesh.primitive == ti::Primitive::POINT) glDrawElements(GL_POINTS, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
+
+					engine.drawcalls++;
 				} else {
 					if (mesh.primitive == ti::Primitive::TRIANGLE) glDrawArrays(GL_TRIANGLES, 0, mesh.vertexcount);
 					if (mesh.primitive == ti::Primitive::TRIANGLE_FAN) glDrawArrays(GL_TRIANGLE_FAN, 0, mesh.vertexcount);
@@ -189,13 +195,14 @@ namespace ti {
 					if (mesh.primitive == ti::Primitive::LINE) glDrawArrays(GL_LINES, 0, mesh.vertexcount);
 					if (mesh.primitive == ti::Primitive::LINE_STRIP) glDrawArrays(GL_LINE_STRIP, 0, mesh.vertexcount);
 					if (mesh.primitive == ti::Primitive::POINT) glDrawArrays(GL_POINTS, 0, mesh.vertexcount);
+					engine.drawcalls++;
 				}
 			}
 
 			void Update(double dt) override {
 				using namespace ti::Component;
 
-				for (auto& entity: registry->View<Properties, Transform, Camera>()) {
+				for (auto& entity: registry->View<Tag, Transform, Camera>()) {
 					auto& camera = registry->Get<Camera>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
@@ -206,8 +213,8 @@ namespace ti {
 					}
 				}
 
-				for (auto& entity: registry->View<Properties, Transform, Mesh>()) {
-					auto& mesh = registry->Get<Mesh>(entity);
+				for (auto& entity: registry->View<Tag, Transform, MeshFilter>()) {
+					auto& mesh = registry->Get<MeshFilter>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
 					SetShader("material");
@@ -215,12 +222,13 @@ namespace ti {
 					RenderMesh(mesh);
 				}
 
-				for (auto& entity: registry->View<Properties, Transform, Model>()) {
+				for (auto& entity: registry->View<Tag, Transform, Model>()) {
 					auto& model = registry->Get<Model>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
 					SetShader("material");
 					
+					shader->SetUniformVec3("camera_pos", &view_position[0]);
 					shader->SetUniformVec3("light.position", &glm::vec3(1.2f, 1000.0f, 2.0f)[0]);
 					shader->SetUniformVec3("light.direction", &glm::vec3(-0.2f, -1.0f, -0.3f)[0]);
 					shader->SetUniformVec3("light.ambient", &glm::vec3(0.2f, 0.2f, 0.2f)[0]);

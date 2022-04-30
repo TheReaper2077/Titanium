@@ -8,12 +8,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_cross_product.hpp>
 
-#include "Mesh.h"
+#include "MeshFilter.h"
 
 namespace ti {
 	namespace Component {
 		struct MeshCollider {
-			Mesh* mesh;
+			MeshFilter* mesh;
 			bool convex;
 		};
 	}

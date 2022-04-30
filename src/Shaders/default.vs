@@ -16,13 +16,11 @@ out vec3 f_normals;
 out vec3 frag_pos;
 out vec3 view_pos;
 	
-uniform vec3 offset;
-
 void main() {
 	f_uv = v_attr;
 	f_normals = v_normal;
 
-	frag_pos = vec3(model * vec4(v_pos + offset, 1.0));
+	frag_pos = vec3(model * vec4(v_pos, 1.0));
     // f_normals = mat3(transpose(inverse(model))) * v_normal;
 
 	gl_Position = projection * view * vec4(frag_pos, 1.0);

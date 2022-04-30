@@ -8,14 +8,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_cross_product.hpp>
 
-#include "Mesh.h"
+#include "MeshFilter.h"
 
 #include "assert.h"
 
 namespace ti {
 	namespace Component {
 		struct Model {
-			std::vector<Mesh> meshes;
+			std::vector<MeshFilter> meshes;
 
 			Model() {}
 			Model(const aiScene *ai_scene) {
@@ -26,7 +26,7 @@ namespace ti {
 
 			void process_node(const aiScene *ai_scene, aiNode *ai_node) {
 				for (int i = 0; i < ai_node->mNumMeshes; i++) {
-					meshes.push_back(Mesh(ai_scene, ai_scene->mMeshes[ai_node->mMeshes[i]]));
+					meshes.push_back(MeshFilter(ai_scene, ai_scene->mMeshes[ai_node->mMeshes[i]]));
 				}
 
 				for (int i = 0; i < ai_node->mNumChildren; i++) {

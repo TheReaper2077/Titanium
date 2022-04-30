@@ -37,6 +37,8 @@ struct Light {
 uniform Material material;
 uniform Light light;
 
+uniform vec3 camera_pos;
+
 vec3 CalculateDirLight(Material mat, Light light) {
 	vec3 light_dir = normalize(-light.direction);
 
@@ -46,7 +48,7 @@ vec3 CalculateDirLight(Material mat, Light light) {
     float diff = max(dot(norm, light_dir), 0.0);
     vec3 diffuse = light.diffuse * (diff * (texture(mat.diffuse_map, f_uv.xy).rgb * mat.diffuse));
 
-	vec3 viewDir = normalize(view_pos - frag_pos);
+	vec3 viewDir = normalize(camera_pos - frag_pos);
     vec3 reflectDir = reflect(-light_dir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), mat.shininess);
     vec3 specular = light.specular * (spec * (1 * mat.specular));

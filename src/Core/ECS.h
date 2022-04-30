@@ -6,6 +6,9 @@
 #include <assert.h>
 #include <set>
 
+#include <iostream>
+#include <bitset>
+
 namespace ti {
 	namespace ECS {
 		using Entity = uint32_t;
@@ -70,7 +73,7 @@ namespace ti {
 
 		class Registry {
 			std::vector<Entity> available_entities;
-			Entity next_entity = 0;
+			Entity next_entity = 1;
 			ComponentType next_component_type = 0;
 
 			std::unordered_map<std::size_t, std::shared_ptr<ComponentArrayT>> componentarray_map;
@@ -99,7 +102,7 @@ namespace ti {
 			template <typename T>
 			bool Contains(Entity entity) {
 				if (componentarray_map.find(typeid(T).hash_code()) != componentarray_map.end())
-					return ((entityid_map[entity] & (1 << GetComponentArray<T>()->type)) == entityid_map[entity]);
+					return ((entityid_map[entity] & (1 << GetComponentArray<T>()->type)) == (1 << GetComponentArray<T>()->type));
 				
 				return false;
 			}
@@ -177,7 +180,7 @@ namespace ti {
 		private:
 			ComponentType RegisterComponentType(std::size_t type_id) {
 				if (componenttype_map.find(type_id) == componenttype_map.end()) {
-					assert(next_component_type < 32);
+					assert(next_component_type < 30);
 
 					componenttype_map[type_id] = next_component_type++;
 				}

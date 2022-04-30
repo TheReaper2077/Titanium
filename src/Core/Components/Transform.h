@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/common.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace ti {
 	namespace Component {
@@ -17,12 +19,12 @@ namespace ti {
 				return glm::scale(glm::mat4(1.0f), scale);
 			}
 
+			glm::quat GetRotationQuat() {
+				return glm::quat(glm::radians(rotation));
+			}
+
 			glm::mat4 GetRotationMatrix() {
-				auto model = glm::mat4(1.0f);
-				model = glm::rotate(model, rotation.x, glm::vec3(1, 0, 0));
-				model = glm::rotate(model, rotation.y, glm::vec3(0, 1, 0));
-				model = glm::rotate(model, rotation.z, glm::vec3(0, 0, 1));
-				return model;
+				return glm::mat4_cast(glm::conjugate(GetRotationQuat()));
 			}
 
 			glm::mat4 GetModel() {

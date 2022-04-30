@@ -4,7 +4,7 @@
 
 namespace ti {
 	namespace Component {
-		struct Properties {
+		struct Tag {
 			std::string name;
 			unsigned int id;
 		};

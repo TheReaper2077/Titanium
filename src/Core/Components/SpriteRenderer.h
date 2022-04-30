@@ -1,5 +1,7 @@
 #pragma once
 
+#include <OpenGL.h>
+
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -7,13 +9,12 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_cross_product.hpp>
-#include <OpenGL.h>
 
 namespace ti {
 	namespace Component {
-		struct MeshRenderer {
-			// Material material;
-			bool cleanup = true;
+		struct SpriteRenderer {
+			glm::vec3 color;
+			Texture* texture;
 		};
 	}
 }

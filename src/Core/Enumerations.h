@@ -3,7 +3,9 @@
 namespace ti {
 	enum Projection {
 		ORTHOGRAPHIC,
-		PERSPECTIVE
+		PERSPECTIVE,
+
+		Projection_COUNT
 	};
 
 	enum Primitive {
@@ -13,13 +15,25 @@ namespace ti {
 		TRIANGLE,
 		TRIANGLE_FAN,
 		TRIANGLE_STRIP,
+
+		Primitive_COUNT
+	};
+
+	enum CameraType {
+		FPS,
+		TPS,
+		Editor,
+
+		CameraType_COUNT
 	};
 	
 	enum ForceMode {
 		Impulse,
 		Acceleration,
 		Force,
-		VelocityChange
+		VelocityChange,
+
+		ForceMode_COUNT
 	};
 
 	enum LightMode {
@@ -28,5 +42,7 @@ namespace ti {
 		Spot,
 		Area,
 		Directional,
+
+		LightMode_COUNT
 	};
 }
