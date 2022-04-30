@@ -73,11 +73,11 @@ namespace ti {
 		}
 
 		void EventHandler() {
-			auto& eventdata = registry.Store<Events>();
+			auto& events = registry.Store<Events>();
 			auto& engine = registry.Store<EngineProperties>();
 
-			eventdata.mouse_scrollup = false;
-			eventdata.mouse_scrolldown = false;
+			events.mouse_scrollup = false;
+			events.mouse_scrolldown = false;
 			static bool in_window;
 
 			while (SDL_PollEvent(&engine.event)) {
@@ -90,40 +90,44 @@ namespace ti {
 					in_window = (engine.event.motion.x >= engine.posx && engine.event.motion.x < engine.width + engine.posx && engine.event.motion.y >= engine.posy && engine.event.motion.y < engine.height + engine.posy);
 
 					if (in_window) {
-						eventdata.posx += engine.event.motion.xrel;
-						eventdata.posy += engine.event.motion.yrel;
+						events.posx += engine.event.motion.xrel;
+						events.posy += engine.event.motion.yrel;
 						
-						eventdata.relx = engine.event.motion.xrel;
-						eventdata.rely = engine.event.motion.yrel;
+						events.relx = engine.event.motion.xrel;
+						events.rely = engine.event.motion.yrel;
+
+						events.normalized_mouse.x = ((engine.event.motion.x - engine.posx) / (engine.width * 0.5)) - 1.0;
+						events.normalized_mouse.y = 1.0 - ((engine.event.motion.y - engine.posy) / (engine.height * 0.5));
+						events.normalized_mouse.z = 0;
 					}
 				}
 				if (engine.event.type == SDL_KEYDOWN && (!engine.debug_mode || in_window)) {
-					eventdata.key_pressed.insert(engine.event.key.keysym.scancode);
-					if (eventdata.key_chord.size() == 0)
-						eventdata.key_chord.push_back(engine.event.key.keysym.scancode);
-					else if (eventdata.key_chord.back() != engine.event.key.keysym.scancode)
-						eventdata.key_chord.push_back(engine.event.key.keysym.scancode);
+					events.key_pressed.insert(engine.event.key.keysym.scancode);
+					if (events.key_chord.size() == 0)
+						events.key_chord.push_back(engine.event.key.keysym.scancode);
+					else if (events.key_chord.back() != engine.event.key.keysym.scancode)
+						events.key_chord.push_back(engine.event.key.keysym.scancode);
 				}
 				if (engine.event.type == SDL_KEYUP && (!engine.debug_mode || in_window)) {
-					eventdata.key_chord.clear();
-					eventdata.key_pressed.erase(engine.event.key.keysym.scancode);
+					events.key_chord.clear();
+					events.key_pressed.erase(engine.event.key.keysym.scancode);
 				}
 				if (engine.event.type == SDL_MOUSEBUTTONDOWN && (!engine.debug_mode || in_window)) {
-					eventdata.mouse_pressed.insert(engine.event.button.button);
+					events.mouse_pressed.insert(engine.event.button.button);
 				}
 				if (engine.event.type == SDL_MOUSEBUTTONUP && (!engine.debug_mode || in_window)) {
-					eventdata.mouse_pressed.erase(engine.event.button.button);
+					events.mouse_pressed.erase(engine.event.button.button);
 				}
 				if (engine.event.type == SDL_MOUSEWHEEL && (!engine.debug_mode || in_window)) {
-					eventdata.mouse_scrollup = (engine.event.wheel.y > 0);
-					eventdata.mouse_scrolldown = (engine.event.wheel.y < 0);
+					events.mouse_scrollup = (engine.event.wheel.y > 0);
+					events.mouse_scrolldown = (engine.event.wheel.y < 0);
 				}
 				if (engine.debug_mode && !in_window) {
-					eventdata.mouse_pressed.clear();
-					eventdata.key_pressed.clear();
+					events.mouse_pressed.clear();
+					events.key_pressed.clear();
 
-					eventdata.mouse_scrollup = false;
-					eventdata.mouse_scrolldown = false;
+					events.mouse_scrollup = false;
+					events.mouse_scrolldown = false;
 				}
 			}
 		}

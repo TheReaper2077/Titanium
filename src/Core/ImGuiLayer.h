@@ -170,9 +170,6 @@ namespace ti {
 				if (ImGui::CollapsingHeader("Transform", flags)) {
 					auto& transform = registry->Get<Transform>(entity);
 
-					// DrawVec3Control("Position", transform.position, 0, 80);
-					// DrawVec3Control("Rotation", transform.rotation, 0, 80);
-					// DrawVec3Control("Scale", transform.scale, 0, 80);
 					ImGui::DragFloat3("Position", &transform.position[0], 0.1);
 					ImGui::DragFloat3("Rotation", &transform.rotation[0], 0.1);
 					ImGui::DragFloat3("Scale", &transform.scale[0], 0.1);

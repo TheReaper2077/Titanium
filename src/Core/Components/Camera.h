@@ -20,7 +20,7 @@ namespace ti {
 			glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 			glm::vec3 WorldFront = glm::vec3(0.0f, 0.0f, -1.0f);
 			glm::vec3 Center = glm::vec3(0, 0, 0);
-			glm::vec3 Offset;
+			glm::vec3 Offset = glm::vec3(0, 0, 0);
 
 			Projection mode;
 			CameraType type;

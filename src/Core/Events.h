@@ -3,6 +3,7 @@
 #include <set>
 #include <vector>
 #include <SDL2/SDL_events.h>
+#include <glm/glm.hpp>
 
 namespace ti {
 	struct Events {
@@ -16,6 +17,8 @@ namespace ti {
 
 		std::set<SDL_Scancode> key_pressed;
 		std::vector<SDL_Scancode> key_chord;
+
+		glm::vec3 normalized_mouse;
 
 		std::set<unsigned int> mouse_pressed;
 	};
