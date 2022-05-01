@@ -86,22 +86,22 @@ enum VertexArrayAttrib {
 struct VertexArrayAttribDescriptor {
 	VertexArrayAttrib attr_type;
 	unsigned int idx;
-	// unsigned int size;
+	unsigned int size;
 	unsigned int type;
 
-	// VertexArrayAttribDescriptor(VertexArrayAttrib attr_type, unsigned int idx, unsigned int size, unsigned int type) {
-	// 	// this->idx = idx;
-	// 	// this->size = size;
-	// 	// this->type = type;
-	// 	this->attr_type = attr_type;
-	// }
-
-	VertexArrayAttribDescriptor(VertexArrayAttrib attr_type, unsigned int idx, uint32_t type) {
-		// this->idx = idx;
-		// this->size = size;
+	VertexArrayAttribDescriptor(VertexArrayAttrib attr_type, unsigned int idx, unsigned int size, unsigned int type) {
+		this->idx = idx;
+		this->size = size;
 		this->type = type;
 		this->attr_type = attr_type;
 	}
+
+	// VertexArrayAttribDescriptor(VertexArrayAttrib attr_type, unsigned int idx, uint32_t type) {
+	// 	// this->idx = idx;
+	// 	// this->size = size;
+	// 	this->type = type;
+	// 	this->attr_type = attr_type;
+	// }
 };
 
 struct VertexArray {
