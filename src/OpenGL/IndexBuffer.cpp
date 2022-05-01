@@ -44,6 +44,8 @@ void IndexBuffer::Allocate(std::size_t size) {
 };
 
 void IndexBuffer::AddData(unsigned int* data, std::size_t size, std::size_t offset) {
+	if (size == 0) return;
+
 	if (offset == 0 && size > this->size) {
 		Bind();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);

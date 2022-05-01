@@ -68,7 +68,7 @@ struct FrameBuffer {
 };
 
 enum VertexArrayAttrib {
-	position,
+	position = 0,
 	normal,
 	color,
 	uv0,
@@ -79,17 +79,26 @@ enum VertexArrayAttrib {
 	uv5,
 	uv6,
 	uv7,
+
+	VertexArrayAttrib_COUNT
 };
 
 struct VertexArrayAttribDescriptor {
 	VertexArrayAttrib attr_type;
 	unsigned int idx;
-	unsigned int size;
+	// unsigned int size;
 	unsigned int type;
 
-	VertexArrayAttribDescriptor(VertexArrayAttrib attr_type, unsigned int idx, unsigned int size, unsigned int type) {
-		this->idx = idx;
-		this->size = size;
+	// VertexArrayAttribDescriptor(VertexArrayAttrib attr_type, unsigned int idx, unsigned int size, unsigned int type) {
+	// 	// this->idx = idx;
+	// 	// this->size = size;
+	// 	// this->type = type;
+	// 	this->attr_type = attr_type;
+	// }
+
+	VertexArrayAttribDescriptor(VertexArrayAttrib attr_type, unsigned int idx, uint32_t type) {
+		// this->idx = idx;
+		// this->size = size;
 		this->type = type;
 		this->attr_type = attr_type;
 	}
@@ -97,7 +106,31 @@ struct VertexArrayAttribDescriptor {
 
 struct VertexArray {
 	VertexArrayId id;
-	uint32_t stride = 0;
+	std::size_t stride = 0;
+	uint32_t elem_stride = 0;
+
+	uint32_t position_offset = 0;
+	bool has_position = false;
+	uint32_t normal_offset = 0;
+	bool has_normal = false;
+	uint32_t color_offset = 0;
+	bool has_color = false;
+	uint32_t uv0_offset = 0;
+	bool has_uv0 = false;
+	uint32_t uv1_offset = 0;
+	bool has_uv1 = false;
+	uint32_t uv2_offset = 0;
+	bool has_uv2 = false;
+	uint32_t uv3_offset = 0;
+	bool has_uv3 = false;
+	uint32_t uv4_offset = 0;
+	bool has_uv4 = false;
+	uint32_t uv5_offset = 0;
+	bool has_uv5 = false;
+	uint32_t uv6_offset = 0;
+	bool has_uv6 = false;
+	uint32_t uv7_offset = 0;
+	bool has_uv7 = false;
 	
 	void Bind();
 	void BindVertexBuffer(VertexBuffer* vertexbuffer, std::size_t stride = 0, std::size_t offset = 0);

@@ -82,5 +82,6 @@ vec3 CalculatePointLight(Material mat, Light light) {
 
 void main() {
     // gl_FragColor = vec4(CalculatePointLight(material, light), 1.0f);
-    gl_FragColor = vec4(CalculateDirLight(material, light), 1.0f);
+    // gl_FragColor = vec4(CalculateDirLight(material, light), 1.0f);
+	gl_FragColor = vec4(1);
 }

@@ -15,15 +15,10 @@ namespace ti {
 			glm::mat4 projection;
 			glm::vec3 view_position;
 
-			std::unordered_map<std::size_t, VertexArray*> vertexarray_registry;
+			std::unordered_map<uint32_t, VertexArray*> vertexarray_registry;
 			std::unordered_map<std::string, Shader*> shader_registry;
 
 			Shader* shader;
-
-			std::vector<uint32_t> indices;
-			uint32_t indexcount;
-			std::vector<Vertex> vertices;
-			uint32_t vertexcount;
 		
 		public:
 			RenderSystem() {}
@@ -36,21 +31,52 @@ namespace ti {
 				auto* shader = Shader_Create("material", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\color.fs");
 				// shader->BindUniformBlock("ProjectionMatrix", 0);
 				RegisterShader(shader);
-
-				RegisterVertexArray<Vertex>(
-					{
-						{ position, 0, 3, GL_FLOAT },
-						{ uv0, 1, 3, GL_FLOAT },
-						{ normal, 2, 3, GL_FLOAT },
-					}
-				);
 			}
 
-			template <typename T>
-			void RegisterVertexArray(std::vector<VertexArrayAttribDescriptor> vertexarraydesc) {
-				assert(vertexarray_registry.find(typeid(T).hash_code()) == vertexarray_registry.end());
+			VertexArray* GetVertexArray(uint32_t flags) {
+				if (vertexarray_registry.find(flags) == vertexarray_registry.end()) {
+					std::vector<VertexArrayAttribDescriptor> descriptor;
 
-				vertexarray_registry[typeid(T).hash_code()] = VertexArray_Create(vertexarraydesc);
+					std::cout << std::bitset<16>(NORMAL_ATTRIB_BIT) << ' ' << std::bitset<16>(NORMAL_ATTRIB_BIT & flags) << '\n';
+
+					if (flags & POSITION_ATTRIB_BIT) {
+						descriptor.push_back({ position, 0, GL_FLOAT });
+					}
+					if (flags & NORMAL_ATTRIB_BIT) {
+						descriptor.push_back({ normal, 1, GL_FLOAT });
+					}
+					if (flags & COLOR_ATTRIB_BIT) {
+						descriptor.push_back({ color, 2, GL_FLOAT });
+					}
+					if (flags & UV0_ATTRIB_BIT) {
+						descriptor.push_back({ uv0, 3, GL_FLOAT });
+					}
+					if (flags & UV1_ATTRIB_BIT) {
+						descriptor.push_back({ uv1, 4, GL_FLOAT });
+					}
+					if (flags & UV2_ATTRIB_BIT) {
+						descriptor.push_back({ uv2, 5, GL_FLOAT });
+					}
+					if (flags & UV3_ATTRIB_BIT) {
+						descriptor.push_back({ uv3, 6, GL_FLOAT });
+					}
+					if (flags & UV4_ATTRIB_BIT) {
+						descriptor.push_back({ uv4, 7, GL_FLOAT });
+					}
+					if (flags & UV5_ATTRIB_BIT) {
+						descriptor.push_back({ uv5, 8, GL_FLOAT });
+					}
+					if (flags & UV6_ATTRIB_BIT) {
+						descriptor.push_back({ uv6, 9, GL_FLOAT });
+					}
+					if (flags & UV7_ATTRIB_BIT) {
+						descriptor.push_back({ uv7, 10, GL_FLOAT });
+					}
+
+					vertexarray_registry[flags] = VertexArray_Create(descriptor);
+				}
+
+				return vertexarray_registry[flags];
 			}
 
 			void RegisterShader(Shader* shader) {
@@ -69,20 +95,6 @@ namespace ti {
 
 			Shader* GetShader(std::string name) {
 				return shader_registry[name];
-			}
-
-			template <typename T>
-			void SetMeshVertexArray(ti::Component::MeshFilter& mesh, std::vector<T> vertices) {
-				if (mesh.vertexarray != nullptr) return;
-				
-				assert(vertexarray_registry.find(typeid(T).hash_code()) != vertexarray_registry.end());
-
-				mesh.vertexarray = vertexarray_registry[typeid(T).hash_code()];
-
-				if (mesh.vertexbuffer == nullptr)
-					mesh.vertexbuffer = VertexBuffer_Create();
-				if (mesh.indexbuffer == nullptr)
-					mesh.indexbuffer = IndexBuffer_Create(mesh.vertexarray);
 			}
 
 			void SetMaterial(std::string name) {
@@ -116,26 +128,6 @@ namespace ti {
 				}
 			}
 
-			template <typename T>
-			void TransferVertices(const std::vector<T>& vertices, VertexBuffer* vertexbuffer) {
-				if (vertices.size())
-					vertexbuffer->AddDataStatic((void*)vertices.data(), vertices.size()*sizeof(T));
-			}
-
-			void TransferIndices(std::vector<uint32_t>& indices, IndexBuffer* indexbuffer) {
-				if (indices.size())
-					indexbuffer->AddData(indices.data(), indices.size()*sizeof(uint32_t));
-			}
-
-			void TransferMesh(ti::Component::MeshFilter& mesh) {
-				TransferVertices(mesh.vertices, mesh.vertexbuffer);
-				TransferIndices(mesh.indices, mesh.indexbuffer);
-
-				mesh.vertexcount = mesh.vertices.size();
-				mesh.indexcount = mesh.indices.size();
-				mesh.changed = false;
-			}
-
 			void SetModel(const glm::mat4& model) {
 				if (this->model == model) return;
 				this->model = model;
@@ -160,41 +152,172 @@ namespace ti {
 				uniformbuffer->AddDataDynamic(&this->view_position[0], sizeof(glm::vec3), sizeof(glm::mat4) * 3);
 			}
 
-			void RenderMesh(ti::Component::MeshFilter& mesh) {
-				auto& engine = registry->Store<EngineProperties>();
+			void TransferMesh(ti::Component::Mesh& mesh, ti::Component::MeshRenderer& meshrenderer) {
+				if (!mesh.changed) return;
 
-				if (mesh.vertexarray == nullptr)
-					SetMeshVertexArray(mesh, mesh.vertices);
+				meshrenderer.indexcount = mesh.indices.size();
+				meshrenderer.vertexcount = mesh.positions.size();
 
-				SetMaterial(mesh.material);
-
-				if (mesh.changed) {
-					TransferMesh(mesh);
-				}
+				if (meshrenderer.vertexarray == nullptr)
+					meshrenderer.vertexarray = GetVertexArray(mesh.flags);
 				
-				mesh.vertexarray->Bind();
-				mesh.vertexarray->BindVertexBuffer(mesh.vertexbuffer, mesh.vertexarray->stride);
-				engine.vertexcount += mesh.vertexcount;
+				if (meshrenderer.vertexbuffer == nullptr && meshrenderer.vertexcount)
+					meshrenderer.vertexbuffer = VertexBuffer_Create();
 
-				if (mesh.indexcount) {
-					mesh.vertexarray->BindIndexBuffer(mesh.indexbuffer);
-					engine.indexcount += mesh.indexcount;
+				if (meshrenderer.indexbuffer == nullptr && meshrenderer.indexcount)
+					meshrenderer.indexbuffer = IndexBuffer_Create(meshrenderer.vertexarray);
+
+				// meshrenderer.data = (float*)malloc(meshrenderer.vertexcount * meshrenderer.vertexarray->stride);
+
+				// std::cout << meshrenderer.vertexarray->normal_offset << ' ' << meshrenderer.vertexarray->stride << ' ' << meshrenderer.vertexcount;
+
+				// for (int i = 0; i < meshrenderer.vertexcount; i++) {
+				// 	if (meshrenderer.vertexarray->has_position) {
+				// 		if (i < mesh.positions.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 0] = mesh.positions[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 1] = mesh.positions[i].y;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 2] = mesh.positions[i].z;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 1] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 2] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_normal) {
+				// 		if (i < mesh.normals.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 0] = mesh.normals[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 1] = mesh.normals[i].y;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 2] = mesh.normals[i].z;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 1] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 2] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_color) {
+				// 		if (i < mesh.color.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 0] = mesh.color[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 1] = mesh.color[i].y;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 2] = mesh.color[i].z;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 3] = mesh.color[i].w;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 1] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 2] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 3] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_uv0) {
+				// 		if (i < mesh.uv0.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 0] = mesh.uv0[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 1] = mesh.uv0[i].y;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 1] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_uv1) {
+				// 		if (i < mesh.uv1.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 0] = mesh.uv1[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 1] = mesh.uv1[i].y;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 1] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_uv2) {
+				// 		if (i < mesh.uv2.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 0] = mesh.uv2[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 1] = mesh.uv2[i].y;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 1] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_uv3) {
+				// 		if (i < mesh.uv3.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 0] = mesh.uv3[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 1] = mesh.uv3[i].y;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 1] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_uv4) {
+				// 		if (i < mesh.uv4.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 0] = mesh.uv4[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 1] = mesh.uv4[i].y;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 1] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_uv5) {
+				// 		if (i < mesh.uv5.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 0] = mesh.uv5[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 1] = mesh.uv5[i].y;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 1] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_uv6) {
+				// 		if (i < mesh.uv6.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 0] = mesh.uv6[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 1] = mesh.uv6[i].y;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 1] = 0;
+				// 		}
+				// 	}
+				// 	if (meshrenderer.vertexarray->has_uv7) {
+				// 		if (i < mesh.uv7.size()) {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 0] = mesh.uv7[i].x;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 1] = mesh.uv7[i].y;
+				// 		} else {
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 0] = 0;
+				// 			meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 1] = 0;
+				// 		}
+				// 	}
+				// }
+
+				// meshrenderer.vertexbuffer->Allocate(meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				// meshrenderer.vertexbuffer->AddDataDynamic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				// meshrenderer.vertexbuffer->AddDataStatic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				meshrenderer.vertexbuffer->AddDataStatic(mesh.positions.data(), mesh.positions.size()*meshrenderer.vertexarray->stride);
+				meshrenderer.indexbuffer->AddData(mesh.indices.data(), sizeof(uint32_t)*meshrenderer.indexcount);
+
+				mesh.changed = false;
+				// free(meshrenderer.data);
+				// meshrenderer.data = nullptr;
+			}
+
+			void RenderMesh(ti::Component::MeshRenderer& meshrenderer) {
+				auto& engine = registry->Store<EngineProperties>();
+				SetMaterial(meshrenderer.material);
+				
+				meshrenderer.vertexarray->Bind();
+				meshrenderer.vertexarray->BindVertexBuffer(meshrenderer.vertexbuffer, meshrenderer.vertexarray->stride);
+				engine.vertexcount += meshrenderer.vertexcount;
+
+				if (meshrenderer.indexcount) {
+					meshrenderer.vertexarray->BindIndexBuffer(meshrenderer.indexbuffer);
+					engine.indexcount += meshrenderer.indexcount;
 					
-					if (mesh.primitive == ti::Primitive::TRIANGLE) glDrawElements(GL_TRIANGLES, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (mesh.primitive == ti::Primitive::TRIANGLE_FAN) glDrawElements(GL_TRIANGLE_FAN, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (mesh.primitive == ti::Primitive::TRIANGLE_STRIP) glDrawElements(GL_TRIANGLE_STRIP, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (mesh.primitive == ti::Primitive::LINE) glDrawElements(GL_LINES, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (mesh.primitive == ti::Primitive::LINE_STRIP) glDrawElements(GL_LINE_STRIP, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (mesh.primitive == ti::Primitive::POINT) glDrawElements(GL_POINTS, mesh.indexcount, GL_UNSIGNED_INT, nullptr);
-
+					if (meshrenderer.primitive == ti::Primitive::TRIANGLE) glDrawElements(GL_TRIANGLES, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
+					if (meshrenderer.primitive == ti::Primitive::TRIANGLE_FAN) glDrawElements(GL_TRIANGLE_FAN, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
+					if (meshrenderer.primitive == ti::Primitive::TRIANGLE_STRIP) glDrawElements(GL_TRIANGLE_STRIP, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
+					if (meshrenderer.primitive == ti::Primitive::LINE) glDrawElements(GL_LINES, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
+					if (meshrenderer.primitive == ti::Primitive::LINE_STRIP) glDrawElements(GL_LINE_STRIP, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
+					if (meshrenderer.primitive == ti::Primitive::POINT) glDrawElements(GL_POINTS, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
 					engine.drawcalls++;
 				} else {
-					if (mesh.primitive == ti::Primitive::TRIANGLE) glDrawArrays(GL_TRIANGLES, 0, mesh.vertexcount);
-					if (mesh.primitive == ti::Primitive::TRIANGLE_FAN) glDrawArrays(GL_TRIANGLE_FAN, 0, mesh.vertexcount);
-					if (mesh.primitive == ti::Primitive::TRIANGLE_STRIP) glDrawArrays(GL_TRIANGLE_STRIP, 0, mesh.vertexcount);
-					if (mesh.primitive == ti::Primitive::LINE) glDrawArrays(GL_LINES, 0, mesh.vertexcount);
-					if (mesh.primitive == ti::Primitive::LINE_STRIP) glDrawArrays(GL_LINE_STRIP, 0, mesh.vertexcount);
-					if (mesh.primitive == ti::Primitive::POINT) glDrawArrays(GL_POINTS, 0, mesh.vertexcount);
+					if (meshrenderer.primitive == ti::Primitive::TRIANGLE) glDrawArrays(GL_TRIANGLES, 0, meshrenderer.vertexcount);
+					if (meshrenderer.primitive == ti::Primitive::TRIANGLE_FAN) glDrawArrays(GL_TRIANGLE_FAN, 0, meshrenderer.vertexcount);
+					if (meshrenderer.primitive == ti::Primitive::TRIANGLE_STRIP) glDrawArrays(GL_TRIANGLE_STRIP, 0, meshrenderer.vertexcount);
+					if (meshrenderer.primitive == ti::Primitive::LINE) glDrawArrays(GL_LINES, 0, meshrenderer.vertexcount);
+					if (meshrenderer.primitive == ti::Primitive::LINE_STRIP) glDrawArrays(GL_LINE_STRIP, 0, meshrenderer.vertexcount);
+					if (meshrenderer.primitive == ti::Primitive::POINT) glDrawArrays(GL_POINTS, 0, meshrenderer.vertexcount);
 					engine.drawcalls++;
 				}
 			}
@@ -213,17 +336,9 @@ namespace ti {
 					SetProjection(camera.projection);
 				}
 
-				for (auto& entity: registry->View<Tag, Transform, MeshFilter>()) {
-					auto& mesh = registry->Get<MeshFilter>(entity);
-					auto& transform = registry->Get<Transform>(entity);
-
-					SetShader("material");
-					SetModel(transform.GetModel());
-					RenderMesh(mesh);
-				}
-
-				for (auto& entity: registry->View<Tag, Transform, Model>()) {
-					auto& model = registry->Get<Model>(entity);
+				for (auto& entity: registry->View<Tag, Transform, Mesh, MeshRenderer>()) {
+					auto& mesh = registry->Get<Mesh>(entity);
+					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
 					SetShader("material");
@@ -239,28 +354,22 @@ namespace ti {
 					shader->SetUniformi("light.quadratic", 0.032f);
 
 					SetModel(transform.GetModel());
-
-					for (auto& mesh: model.meshes) {
-						RenderMesh(mesh);
-					}
+					
+					TransferMesh(mesh, meshrenderer);
+					RenderMesh(meshrenderer);
 				}
 
-				// shader->UnBind();
-
-				// for (auto& entity: registry->View<Properties, Transform, Sprite>()) {
-				// 	auto& sprite = registry->Get<Sprite>(entity);
+				// for (auto& entity: registry->View<Tag, Transform, Model>()) {
+				// 	auto& model = registry->Get<Model>(entity);
 				// 	auto& transform = registry->Get<Transform>(entity);
 
-				// 	SetModel(transform.GetModel());
-				// 	SetShader("sprite");
-				// }
-
-				// for (auto& entity: registry->View<Properties, Transform, Texture>()) {
-				// 	auto& sprite = registry->Get<Sprite>(entity);
-				// 	auto& transform = registry->Get<Transform>(entity);
+				// 	SetShader("material");
 
 				// 	SetModel(transform.GetModel());
-				// 	SetShader("texture");
+
+				// 	for (auto& mesh: model.meshes) {
+				// 		RenderMesh(mesh);
+				// 	}
 				// }
 			}
 		};

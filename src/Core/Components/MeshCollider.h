@@ -13,7 +13,7 @@
 namespace ti {
 	namespace Component {
 		struct MeshCollider {
-			MeshFilter* mesh;
+			Mesh* mesh;
 			bool convex;
 		};
 	}

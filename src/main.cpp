@@ -228,3 +228,13 @@ int main(int ArgCount, char **Args) {
 
 	return 0;
 }
+// #include <iostream>
+
+// int main() {
+// 	void* arr = (void*)calloc(10, sizeof(float));
+
+// 	((unsigned int*)arr)[0] = 10;
+// 	((unsigned char*)arr)[1] = 10;
+
+// 	std::cout << ((unsigned int*)arr)[0];
+// }

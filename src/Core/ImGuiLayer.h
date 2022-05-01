@@ -2,6 +2,7 @@
 
 #include "Engine.h"
 #include "Components/Components.h"
+#include "MaterialRegistry.h"
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_internal.h>
@@ -193,9 +194,9 @@ namespace ti {
 				}
 			}
 
-			if (registry->Contains<MeshFilter>(entity)) {
+			if (registry->Contains<Mesh>(entity)) {
 				if (ImGui::CollapsingHeader("MeshFilter", flags)) {
-					auto& meshfilter = registry->Get<MeshFilter>(entity);
+					auto& meshfilter = registry->Get<Mesh>(entity);
 
 					// ImGui::DragFloat3("Position", &meshfilter.position[0], 0.1, 0.0, 0.0, "%.2f", 0.1);
 					// ImGui::DragFloat3("Rotaion", &meshfilter.rotation[0], 0.1, 0.0, 0.0, "%.2f", 0.1);
@@ -228,6 +229,28 @@ namespace ti {
 			return selected_entity;
 		}
 
+		void MaterialRegistry() {
+			using namespace ti::Component;
+
+			ImGui::Begin("Material Registry");
+
+			for (auto& pair: registry->Store<ti::MaterialRegistry>().registry) {
+				auto& name = pair.first;
+				auto& material = pair.second;
+
+				if (ImGui::TreeNode(name.c_str())) {
+					ImGui::DragFloat3("Ambient", &material.ambient[0], 0.1);
+					ImGui::DragFloat3("Diffuse", &material.diffuse[0], 0.1);
+					ImGui::DragFloat3("Specular", &material.specular[0], 0.1);
+					ImGui::DragFloat("Shininess", &material.shininess, 0.1);
+
+					ImGui::TreePop();
+				}
+			}
+
+			ImGui::End();
+		}
+
 		void Status() {
 			ImGui::Begin("Status");
 
@@ -247,6 +270,7 @@ namespace ti {
 			auto entity = Heirarchy();
 			Inspector(entity);
 			Status();
+			MaterialRegistry();
 		}
 
 		void EventHandler() {

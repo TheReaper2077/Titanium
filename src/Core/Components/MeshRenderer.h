@@ -1,5 +1,9 @@
 #pragma once
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -8,18 +12,29 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_cross_product.hpp>
 #include <OpenGL.h>
+#include "../Enumerations.h"
 
 namespace ti {
 	namespace Component {
 		struct MeshRenderer {
 			std::string material;
 
-			VertexArray* vertexarray;
 			VertexBuffer* vertexbuffer;
 			IndexBuffer* indexbuffer;
+			VertexArray* vertexarray;
+
+			float* data = nullptr;
+
+			Primitive primitive = TRIANGLE;
 
 			int indexcount;
 			int vertexcount;
+
+			MeshRenderer() {}
+			MeshRenderer(const aiScene* ai_scene, aiMesh* ai_mesh) {
+				if (ai_mesh->mMaterialIndex >= 0)
+					material = std::string(ai_scene->mMaterials[ai_mesh->mMaterialIndex]->GetName().C_Str());
+			}
 		};
 	}
 }

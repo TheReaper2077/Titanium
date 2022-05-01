@@ -10,15 +10,25 @@ ti::System::RenderSystem rendersystem;
 ti::System::CameraSystem camerasystem;
 Assimp::Importer importer;
 
+void process_node(ti::ECS::Registry* registry, const aiScene *ai_scene, aiNode *ai_node) {
+	for (int i = 0; i < ai_node->mNumMeshes; i++) {
+		auto* ai_mesh = ai_scene->mMeshes[ai_node->mMeshes[i]];
+		auto mesh_name = std::string(ai_mesh->mName.C_Str());
+
+		auto entity = registry->Create();
+		registry->Add<ti::Component::Tag>(entity, mesh_name, entity);
+		registry->Add<ti::Component::Transform>(entity);
+		registry->Add<ti::Component::Mesh>(entity, ai_scene, ai_mesh);
+		registry->Add<ti::Component::MeshRenderer>(entity, ai_scene, ai_mesh);
+	}
+
+	for (int i = 0; i < ai_node->mNumChildren; i++) {
+		process_node(registry, ai_scene, ai_node->mChildren[i]);
+	}
+};
+
 void Sandbox::Init() {
 	auto& engine = registry->Store<ti::EngineProperties>();
-
-	const aiScene *scene = importer.ReadFile("D:\\C++\\2.5D Engine\\res\\cylinder.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
-	
-	auto entity = registry->Create();
-	registry->Add<ti::Component::Model>(entity, scene);
-	registry->Add<ti::Component::Transform>(entity);
-	registry->Add<ti::Component::Tag>(entity, "name", entity);
 
 	auto camera = registry->Create();
 	registry->Add<ti::Component::Camera>(camera, ti::Projection::PERSPECTIVE, true);
@@ -29,9 +39,14 @@ void Sandbox::Init() {
 	camerasystem.registry = registry;
 	rendersystem.Init();
 	camerasystem.Init();
+	
+	const aiScene *ai_scene = importer.ReadFile("D:\\C++\\2.5D Engine\\res\\cylinder.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+	assert(ai_scene && !(ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) && ai_scene->mRootNode);
 
-	for (int i = 0; i < scene->mNumMaterials; i++)
-		registry->Store<ti::MaterialRegistry>().RegisterMaterial(ti::Component::Material(scene->mMaterials[i]));
+	process_node(registry, ai_scene, ai_scene->mRootNode);
+
+	for (int i = 0; i < ai_scene->mNumMaterials; i++)
+		registry->Store<ti::MaterialRegistry>().RegisterMaterial(ti::Component::Material(ai_scene->mMaterials[i]));
 
 	// SDL_ShowCursor(SDL_DISABLE);
 }

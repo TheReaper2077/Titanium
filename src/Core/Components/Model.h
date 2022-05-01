@@ -12,27 +12,27 @@
 
 #include "assert.h"
 
-namespace ti {
-	namespace Component {
-		struct Model {
-			std::vector<MeshFilter> meshes;
+// namespace ti {
+// 	namespace Component {
+// 		struct Model {
+// 			std::vector<Mesh> meshes;
 
-			Model() {}
-			Model(const aiScene *ai_scene) {
-				assert(ai_scene && !(ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) && ai_scene->mRootNode);
+// 			Model() {}
+// 			Model(const aiScene *ai_scene) {
+// 				assert(ai_scene && !(ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) && ai_scene->mRootNode);
 				
-				process_node(ai_scene, ai_scene->mRootNode);
-			}
+// 				process_node(ai_scene, ai_scene->mRootNode);
+// 			}
 
-			void process_node(const aiScene *ai_scene, aiNode *ai_node) {
-				for (int i = 0; i < ai_node->mNumMeshes; i++) {
-					meshes.push_back(MeshFilter(ai_scene, ai_scene->mMeshes[ai_node->mMeshes[i]]));
-				}
+// 			void process_node(const aiScene *ai_scene, aiNode *ai_node) {
+// 				for (int i = 0; i < ai_node->mNumMeshes; i++) {
+// 					meshes.push_back(Mesh(ai_scene, ai_scene->mMeshes[ai_node->mMeshes[i]]));
+// 				}
 
-				for (int i = 0; i < ai_node->mNumChildren; i++) {
-					process_node(ai_scene, ai_node->mChildren[i]);
-				}
-			}
-		};
-	}
-}
+// 				for (int i = 0; i < ai_node->mNumChildren; i++) {
+// 					process_node(ai_scene, ai_node->mChildren[i]);
+// 				}
+// 			}
+// 		};
+// 	}
+// }
