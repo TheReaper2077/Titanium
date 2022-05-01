@@ -19,5 +19,9 @@ namespace ti {
 
 			return registry[name];
 		}
+
+		bool Contains(std::string material) {
+			return (registry.find(material) != registry.end());
+		}
 	};
 }

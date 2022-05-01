@@ -294,9 +294,9 @@ namespace ti {
 					}
 				}
 
-				// meshrenderer.vertexbuffer->Allocate(meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
-				// meshrenderer.vertexbuffer->AddDataDynamic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
-				meshrenderer.vertexbuffer->AddDataStatic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				meshrenderer.vertexbuffer->Allocate(meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				meshrenderer.vertexbuffer->AddDataDynamic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				// meshrenderer.vertexbuffer->AddDataStatic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
 				meshrenderer.indexbuffer->AddData(mesh.indices.data(), sizeof(uint32_t)*meshrenderer.indexcount);
 
 				mesh.changed = false;
@@ -357,7 +357,7 @@ namespace ti {
 					SetShader("material");
 					
 					shader->SetUniformVec3("camera_pos", &view_position[0]);
-					shader->SetUniformVec3("light.position", &glm::vec3(1.2f, 1000.0f, 2.0f)[0]);
+					shader->SetUniformVec3("light.position", &glm::vec3(1.2f, 10.0f, 2.0f)[0]);
 					shader->SetUniformVec3("light.direction", &glm::vec3(-0.2f, -1.0f, -0.3f)[0]);
 					shader->SetUniformVec3("light.ambient", &glm::vec3(0.2f, 0.2f, 0.2f)[0]);
 					shader->SetUniformVec3("light.diffuse", &glm::vec3(0.5f, 0.5f, 0.5f)[0]);

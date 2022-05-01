@@ -62,6 +62,9 @@ namespace ti {
 					this->diffuse = glm::vec3(color.r, color.g, color.b);
 				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_SPECULAR, &color))
 					this->specular = glm::vec3(color.r, color.g, color.b);
+
+				if (AI_SUCCESS != aiGetMaterialFloat(ai_material, AI_MATKEY_SHININESS, &shininess))
+					this->shininess = 20.f;
 			}
 		};
 	}

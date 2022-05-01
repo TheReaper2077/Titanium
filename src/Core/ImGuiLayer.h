@@ -6,6 +6,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_internal.h>
+#include <imgui_stdlib.h>
 #include <imgui_impl_opengl3.h>
 
 #define DEGREE_TO_RADIANS(x) ((x) * (3.14159265359/180.0))
@@ -194,13 +195,18 @@ namespace ti {
 				}
 			}
 
-			if (registry->Contains<Mesh>(entity)) {
-				if (ImGui::CollapsingHeader("MeshFilter", flags)) {
-					auto& meshfilter = registry->Get<Mesh>(entity);
+			if (registry->Contains<MeshRenderer>(entity)) {
+				if (ImGui::CollapsingHeader("Material", flags)) {
+					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
 
-					// ImGui::DragFloat3("Position", &meshfilter.position[0], 0.1, 0.0, 0.0, "%.2f", 0.1);
-					// ImGui::DragFloat3("Rotaion", &meshfilter.rotation[0], 0.1, 0.0, 0.0, "%.2f", 0.1);
-					// ImGui::DragFloat3("Scale", &meshfilter.scale[0], 0.1, 0.0, 0.0, "%.2f", 0.1);
+					if (ImGui::BeginCombo("Material", meshrenderer.material.c_str(), ImGuiComboFlags_NoArrowButton)) {
+						for (auto& pair: registry->Store<ti::MaterialRegistry>().registry) {
+							if (meshrenderer.material != pair.first)
+								if (ImGui::Selectable(pair.first.c_str(), true))
+									meshrenderer.material = pair.first;
+						}
+						ImGui::EndCombo();
+					}
 				}
 			}
 
