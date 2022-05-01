@@ -19,9 +19,9 @@ namespace ti {
 		struct MeshRenderer {
 			std::string material;
 
-			VertexBuffer* vertexbuffer;
-			IndexBuffer* indexbuffer;
-			VertexArray* vertexarray;
+			VertexBuffer* vertexbuffer = nullptr;
+			IndexBuffer* indexbuffer = nullptr;
+			VertexArray* vertexarray = nullptr;
 
 			float* data = nullptr;
 

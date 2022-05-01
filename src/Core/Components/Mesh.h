@@ -33,7 +33,7 @@ namespace ti {
 			std::vector<uint32_t> indices;
 
 			Primitive primitive = TRIANGLE;
-			uint32_t flags = POSITION_ATTRIB_BIT | NORMAL_ATTRIB_BIT | UV0_ATTRIB_BIT;
+			uint32_t flags = 0;
 
 			bool changed = true;
 
@@ -62,10 +62,6 @@ namespace ti {
 						indices.push_back(face.mIndices[j]);
 					}
 				}
-
-				// if (ai_mesh->mMaterialIndex >= 0) {
-				// 	material = std::string(ai_scene->mMaterials[ai_mesh->mMaterialIndex]->GetName().C_Str());
-				// }
 			}
 		};
 	}

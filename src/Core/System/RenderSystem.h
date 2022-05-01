@@ -172,117 +172,116 @@ namespace ti {
 				for (int i = 0; i < meshrenderer.vertexcount; i++) {
 					if (meshrenderer.vertexarray->has_position) {
 						if (i < mesh.positions.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 0] = mesh.positions[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 1] = mesh.positions[i].y;
-							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 2] = mesh.positions[i].z;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 0] = mesh.positions[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 1] = mesh.positions[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 2] = mesh.positions[i].z;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 1] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 2] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 2] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_normal) {
 						if (i < mesh.normals.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 0] = mesh.normals[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 1] = mesh.normals[i].y;
-							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 2] = mesh.normals[i].z;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 0] = mesh.normals[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 1] = mesh.normals[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 2] = mesh.normals[i].z;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 1] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 2] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 2] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_color) {
 						if (i < mesh.color.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 0] = mesh.color[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 1] = mesh.color[i].y;
-							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 2] = mesh.color[i].z;
-							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 3] = mesh.color[i].w;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 0] = mesh.color[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 1] = mesh.color[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 2] = mesh.color[i].z;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 3] = mesh.color[i].w;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 1] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 2] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 3] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 2] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 3] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv0) {
 						if (i < mesh.uv0.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 0] = mesh.uv0[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 1] = mesh.uv0[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 0] = mesh.uv0[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 1] = mesh.uv0[i].y;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 1] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv1) {
 						if (i < mesh.uv1.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 0] = mesh.uv1[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 1] = mesh.uv1[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 0] = mesh.uv1[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 1] = mesh.uv1[i].y;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 1] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv2) {
 						if (i < mesh.uv2.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 0] = mesh.uv2[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 1] = mesh.uv2[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 0] = mesh.uv2[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 1] = mesh.uv2[i].y;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 1] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv3) {
 						if (i < mesh.uv3.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 0] = mesh.uv3[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 1] = mesh.uv3[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 0] = mesh.uv3[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 1] = mesh.uv3[i].y;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 1] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv4) {
 						if (i < mesh.uv4.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 0] = mesh.uv4[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 1] = mesh.uv4[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 0] = mesh.uv4[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 1] = mesh.uv4[i].y;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 1] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv5) {
 						if (i < mesh.uv5.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 0] = mesh.uv5[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 1] = mesh.uv5[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 0] = mesh.uv5[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 1] = mesh.uv5[i].y;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 1] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv6) {
 						if (i < mesh.uv6.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 0] = mesh.uv6[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 1] = mesh.uv6[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 0] = mesh.uv6[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 1] = mesh.uv6[i].y;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 1] = 0;
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv7) {
 						if (i < mesh.uv7.size() || true) {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 0] = mesh.uv7[i].x;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 1] = mesh.uv7[i].y;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 0] = mesh.uv7[i].x;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 1] = mesh.uv7[i].y;
 						} else {
-							meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 0] = 0;
-							meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 1] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 0] = 0;
+							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 1] = 0;
 						}
 					}
 				}
 
-				// meshrenderer.vertexbuffer->Allocate(meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
-				// meshrenderer.vertexbuffer->AddDataDynamic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
-				meshrenderer.vertexbuffer->AddDataStatic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
-				// meshrenderer.vertexbuffer->AddDataStatic((void*)mesh.positions.data(), mesh.positions.size()*sizeof(glm::vec3));
+				meshrenderer.vertexbuffer->Allocate(meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				meshrenderer.vertexbuffer->AddDataDynamic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				// meshrenderer.vertexbuffer->AddDataStatic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
 				meshrenderer.indexbuffer->AddData(mesh.indices.data(), sizeof(uint32_t)*meshrenderer.indexcount);
 
 				mesh.changed = false;
