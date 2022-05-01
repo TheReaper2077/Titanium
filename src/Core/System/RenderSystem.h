@@ -284,7 +284,7 @@ namespace ti {
 				// meshrenderer.vertexbuffer->Allocate(meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
 				// meshrenderer.vertexbuffer->AddDataDynamic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
 				// meshrenderer.vertexbuffer->AddDataStatic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
-				meshrenderer.vertexbuffer->AddDataStatic(mesh.positions.data(), mesh.positions.size()*meshrenderer.vertexarray->stride);
+				meshrenderer.vertexbuffer->AddDataStatic((void*)mesh.positions.data(), mesh.positions.size()*meshrenderer.vertexarray->stride);
 				meshrenderer.indexbuffer->AddData(mesh.indices.data(), sizeof(uint32_t)*meshrenderer.indexcount);
 
 				mesh.changed = false;
