@@ -29,7 +29,7 @@ namespace ti {
 				uniformbuffer->BindRange(0, sizeof(glm::mat4) * 4);
 
 				auto* shader = Shader_Create("material", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\color.fs");
-				shader->BindUniformBlock("ProjectionMatrix", 0);
+				// shader->BindUniformBlock("ProjectionMatrix", 0);
 				RegisterShader(shader);
 			}
 
