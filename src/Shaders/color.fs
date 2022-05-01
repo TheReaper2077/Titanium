@@ -1,6 +1,6 @@
 #version 400 core
 
-in vec3 f_uv;
+in vec2 f_uv;
 in vec3 f_normals;
 in vec3 frag_pos;
 in vec3 view_pos;
@@ -82,6 +82,6 @@ vec3 CalculatePointLight(Material mat, Light light) {
 
 void main() {
     // gl_FragColor = vec4(CalculatePointLight(material, light), 1.0f);
-    // gl_FragColor = vec4(CalculateDirLight(material, light), 1.0f);
-	gl_FragColor = vec4(1);
+    gl_FragColor = vec4(CalculateDirLight(material, light), 1.0f);
+	// gl_FragColor = vec4(1);
 }

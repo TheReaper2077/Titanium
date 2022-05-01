@@ -169,11 +169,9 @@ namespace ti {
 
 				meshrenderer.data = (float*)malloc(meshrenderer.vertexcount * meshrenderer.vertexarray->stride);
 
-				// std::cout << meshrenderer.vertexarray->normal_offset << ' ' << meshrenderer.vertexarray->stride << ' ' << meshrenderer.vertexcount;
-
 				for (int i = 0; i < meshrenderer.vertexcount; i++) {
 					if (meshrenderer.vertexarray->has_position) {
-						if (i < mesh.positions.size()) {
+						if (i < mesh.positions.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 0] = mesh.positions[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 1] = mesh.positions[i].y;
 							meshrenderer.data[i + meshrenderer.vertexarray->position_offset + 2] = mesh.positions[i].z;
@@ -184,7 +182,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_normal) {
-						if (i < mesh.normals.size()) {
+						if (i < mesh.normals.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 0] = mesh.normals[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 1] = mesh.normals[i].y;
 							meshrenderer.data[i + meshrenderer.vertexarray->normal_offset + 2] = mesh.normals[i].z;
@@ -195,7 +193,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_color) {
-						if (i < mesh.color.size()) {
+						if (i < mesh.color.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 0] = mesh.color[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 1] = mesh.color[i].y;
 							meshrenderer.data[i + meshrenderer.vertexarray->color_offset + 2] = mesh.color[i].z;
@@ -208,7 +206,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv0) {
-						if (i < mesh.uv0.size()) {
+						if (i < mesh.uv0.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 0] = mesh.uv0[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->uv0_offset + 1] = mesh.uv0[i].y;
 						} else {
@@ -217,7 +215,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv1) {
-						if (i < mesh.uv1.size()) {
+						if (i < mesh.uv1.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 0] = mesh.uv1[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->uv1_offset + 1] = mesh.uv1[i].y;
 						} else {
@@ -226,7 +224,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv2) {
-						if (i < mesh.uv2.size()) {
+						if (i < mesh.uv2.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 0] = mesh.uv2[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->uv2_offset + 1] = mesh.uv2[i].y;
 						} else {
@@ -235,7 +233,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv3) {
-						if (i < mesh.uv3.size()) {
+						if (i < mesh.uv3.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 0] = mesh.uv3[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->uv3_offset + 1] = mesh.uv3[i].y;
 						} else {
@@ -244,7 +242,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv4) {
-						if (i < mesh.uv4.size()) {
+						if (i < mesh.uv4.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 0] = mesh.uv4[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->uv4_offset + 1] = mesh.uv4[i].y;
 						} else {
@@ -253,7 +251,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv5) {
-						if (i < mesh.uv5.size()) {
+						if (i < mesh.uv5.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 0] = mesh.uv5[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->uv5_offset + 1] = mesh.uv5[i].y;
 						} else {
@@ -262,7 +260,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv6) {
-						if (i < mesh.uv6.size()) {
+						if (i < mesh.uv6.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 0] = mesh.uv6[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->uv6_offset + 1] = mesh.uv6[i].y;
 						} else {
@@ -271,7 +269,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv7) {
-						if (i < mesh.uv7.size()) {
+						if (i < mesh.uv7.size() || true) {
 							meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 0] = mesh.uv7[i].x;
 							meshrenderer.data[i + meshrenderer.vertexarray->uv7_offset + 1] = mesh.uv7[i].y;
 						} else {
@@ -294,7 +292,7 @@ namespace ti {
 
 			void RenderMesh(ti::Component::MeshRenderer& meshrenderer) {
 				auto& engine = registry->Store<EngineProperties>();
-				// SetMaterial(meshrenderer.material);
+				SetMaterial(meshrenderer.material);
 				shader->Bind();
 				
 				meshrenderer.vertexarray->Bind();

@@ -40,7 +40,7 @@ void Sandbox::Init() {
 	rendersystem.Init();
 	camerasystem.Init();
 	
-	const aiScene *ai_scene = importer.ReadFile("D:\\C++\\2.5D Engine\\res\\cylinder.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+	const aiScene *ai_scene = importer.ReadFile("D:\\C++\\2.5D Engine\\res\\cube.obj", aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
 	assert(ai_scene && !(ai_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) && ai_scene->mRootNode);
 
 	process_node(registry, ai_scene, ai_scene->mRootNode);

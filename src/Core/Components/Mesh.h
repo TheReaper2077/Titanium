@@ -41,10 +41,10 @@ namespace ti {
 			Mesh(const aiScene* ai_scene, aiMesh* ai_mesh) {
 				for (int i = 0; i < ai_mesh->mNumVertices; i++) {
 					if (ai_mesh->HasPositions())
-						positions.push_back({ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z});
+						positions.push_back(glm::vec3(ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z));
 
 					if (ai_mesh->HasNormals())
-						normals.push_back({ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z});
+						normals.push_back(glm::vec3(ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z));
 					
 					// if (ai_mesh->mColors[0]) {
 					// 	color.push_back({ai_mesh->mColors[0][i].r, ai_mesh->mColors[0][i].g, ai_mesh->mColors[0][i].b, ai_mesh->mColors[0][i].a});
