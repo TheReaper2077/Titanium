@@ -33,7 +33,7 @@ namespace ti {
 			std::vector<uint32_t> indices;
 
 			Primitive primitive = TRIANGLE;
-			uint32_t flags = POSITION_ATTRIB_BIT;// | NORMAL_ATTRIB_BIT | UV0_ATTRIB_BIT;
+			uint32_t flags = POSITION_ATTRIB_BIT | NORMAL_ATTRIB_BIT | UV0_ATTRIB_BIT;
 
 			bool changed = true;
 
