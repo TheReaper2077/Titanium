@@ -33,7 +33,6 @@ namespace ti {
 			std::vector<uint32_t> indices;
 
 			Primitive primitive = TRIANGLE;
-			uint32_t flags = 0;
 
 			bool changed = true;
 

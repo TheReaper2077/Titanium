@@ -24,6 +24,7 @@ namespace ti {
 			VertexArray* vertexarray = nullptr;
 
 			float* data = nullptr;
+			uint32_t flags = 0;
 
 			Primitive primitive = TRIANGLE;
 

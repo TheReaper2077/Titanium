@@ -46,7 +46,7 @@ vec3 CalculateDirLight(Material mat, Light light) {
 
     vec3 norm = normalize(f_normals);
     float diff = max(dot(norm, light_dir), 0.0);
-    vec3 diffuse = light.diffuse * (diff * (texture(mat.diffuse_map, f_uv.xy).rgb * mat.diffuse));
+    vec3 diffuse = light.diffuse * (diff * (1 * mat.diffuse));
 
 	vec3 viewDir = normalize(camera_pos - frag_pos);
     vec3 reflectDir = reflect(-light_dir, norm);
@@ -63,7 +63,7 @@ vec3 CalculatePointLight(Material mat, Light light) {
 
     vec3 norm = normalize(f_normals);
     float diff = max(dot(norm, light_dir), 0.0);
-    vec3 diffuse = light.diffuse * (diff * (texture(mat.diffuse_map, f_uv.xy).rgb * mat.diffuse));
+    vec3 diffuse = light.diffuse * (diff * 1 * mat.diffuse);
 
 	vec3 viewDir = normalize(view_pos - frag_pos);
     vec3 reflectDir = reflect(-light_dir, norm);

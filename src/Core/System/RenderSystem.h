@@ -153,13 +153,28 @@ namespace ti {
 			}
 
 			void TransferMesh(ti::Component::Mesh& mesh, ti::Component::MeshRenderer& meshrenderer) {
-				if (!mesh.changed) return;
+				uint32_t flags = 0;
+				if (mesh.positions.size()) flags |= POSITION_ATTRIB_BIT;
+				if (mesh.normals.size()) flags |= NORMAL_ATTRIB_BIT;
+				if (mesh.color.size()) flags |= COLOR_ATTRIB_BIT;
+				if (mesh.uv0.size()) flags |= UV0_ATTRIB_BIT;
+				if (mesh.uv1.size()) flags |= UV1_ATTRIB_BIT;
+				if (mesh.uv2.size()) flags |= UV2_ATTRIB_BIT;
+				if (mesh.uv3.size()) flags |= UV3_ATTRIB_BIT;
+				if (mesh.uv4.size()) flags |= UV4_ATTRIB_BIT;
+				if (mesh.uv5.size()) flags |= UV5_ATTRIB_BIT;
+				if (mesh.uv6.size()) flags |= UV6_ATTRIB_BIT;
+				if (mesh.uv7.size()) flags |= UV7_ATTRIB_BIT;
+
+				if (!mesh.changed && mesh.indices.size() == meshrenderer.indexcount && mesh.positions.size() == meshrenderer.vertexcount && meshrenderer.flags == flags) return;
+				mesh.changed = true;
+				meshrenderer.flags = flags;
 
 				meshrenderer.indexcount = mesh.indices.size();
 				meshrenderer.vertexcount = mesh.positions.size();
 
 				if (meshrenderer.vertexarray == nullptr)
-					meshrenderer.vertexarray = GetVertexArray(mesh.flags);
+					meshrenderer.vertexarray = GetVertexArray(meshrenderer.flags);
 				
 				if (meshrenderer.vertexbuffer == nullptr && meshrenderer.vertexcount)
 					meshrenderer.vertexbuffer = VertexBuffer_Create();
@@ -171,7 +186,7 @@ namespace ti {
 
 				for (int i = 0; i < meshrenderer.vertexcount; i++) {
 					if (meshrenderer.vertexarray->has_position) {
-						if (i < mesh.positions.size() || true) {
+						if (i < mesh.positions.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 0] = mesh.positions[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 1] = mesh.positions[i].y;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 2] = mesh.positions[i].z;
@@ -182,7 +197,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_normal) {
-						if (i < mesh.normals.size() || true) {
+						if (i < mesh.normals.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 0] = mesh.normals[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 1] = mesh.normals[i].y;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 2] = mesh.normals[i].z;
@@ -193,7 +208,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_color) {
-						if (i < mesh.color.size() || true) {
+						if (i < mesh.color.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 0] = mesh.color[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 1] = mesh.color[i].y;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 2] = mesh.color[i].z;
@@ -206,7 +221,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv0) {
-						if (i < mesh.uv0.size() || true) {
+						if (i < mesh.uv0.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 0] = mesh.uv0[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 1] = mesh.uv0[i].y;
 						} else {
@@ -215,7 +230,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv1) {
-						if (i < mesh.uv1.size() || true) {
+						if (i < mesh.uv1.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 0] = mesh.uv1[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 1] = mesh.uv1[i].y;
 						} else {
@@ -224,7 +239,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv2) {
-						if (i < mesh.uv2.size() || true) {
+						if (i < mesh.uv2.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 0] = mesh.uv2[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 1] = mesh.uv2[i].y;
 						} else {
@@ -233,7 +248,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv3) {
-						if (i < mesh.uv3.size() || true) {
+						if (i < mesh.uv3.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 0] = mesh.uv3[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 1] = mesh.uv3[i].y;
 						} else {
@@ -242,7 +257,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv4) {
-						if (i < mesh.uv4.size() || true) {
+						if (i < mesh.uv4.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 0] = mesh.uv4[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 1] = mesh.uv4[i].y;
 						} else {
@@ -251,7 +266,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv5) {
-						if (i < mesh.uv5.size() || true) {
+						if (i < mesh.uv5.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 0] = mesh.uv5[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 1] = mesh.uv5[i].y;
 						} else {
@@ -260,7 +275,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv6) {
-						if (i < mesh.uv6.size() || true) {
+						if (i < mesh.uv6.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 0] = mesh.uv6[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 1] = mesh.uv6[i].y;
 						} else {
@@ -269,7 +284,7 @@ namespace ti {
 						}
 					}
 					if (meshrenderer.vertexarray->has_uv7) {
-						if (i < mesh.uv7.size() || true) {
+						if (i < mesh.uv7.size()) {
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 0] = mesh.uv7[i].x;
 							meshrenderer.data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 1] = mesh.uv7[i].y;
 						} else {
@@ -279,9 +294,9 @@ namespace ti {
 					}
 				}
 
-				meshrenderer.vertexbuffer->Allocate(meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
-				meshrenderer.vertexbuffer->AddDataDynamic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
-				// meshrenderer.vertexbuffer->AddDataStatic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				// meshrenderer.vertexbuffer->Allocate(meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				// meshrenderer.vertexbuffer->AddDataDynamic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
+				meshrenderer.vertexbuffer->AddDataStatic((void*)meshrenderer.data, meshrenderer.vertexcount*meshrenderer.vertexarray->stride);
 				meshrenderer.indexbuffer->AddData(mesh.indices.data(), sizeof(uint32_t)*meshrenderer.indexcount);
 
 				mesh.changed = false;

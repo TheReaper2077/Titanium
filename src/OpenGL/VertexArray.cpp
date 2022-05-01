@@ -80,8 +80,6 @@ VertexArray* VertexArray_Create(std::vector<VertexArrayAttribDescriptor> layouts
 		glVertexArrayAttribBinding(vertexarray->id, attrib.idx, 0);
 		glEnableVertexArrayAttrib(vertexarray->id, attrib.idx);
 
-		std::cout << relativeoffset << '\n';
-
 		switch(attrib.type) {
 			case GL_FLOAT:
 				relativeoffset += sizeof(GLfloat)*attrib.size;
