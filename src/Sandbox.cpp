@@ -40,9 +40,9 @@ void Sandbox::Update(double dt) {
 	auto& engine = registry->Store<ti::EngineProperties>();
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_CULL_FACE);
+	// glEnable(GL_BLEND);
+	// glBlendFunc(GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// glEnable(GL_CULL_FACE);
 	glViewport(0, 0, engine.width, engine.height);
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

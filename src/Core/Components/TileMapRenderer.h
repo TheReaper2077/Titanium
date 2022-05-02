@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma once
+
 #include <OpenGL.h>
 
 #include <glm/glm.hpp>
@@ -12,10 +14,7 @@
 
 namespace ti {
 	namespace Component {
-		struct SpriteRenderer {
-			glm::vec4 color;
-			Texture2D* texture;
-
+		struct TileMapRenderer {
 			bool lighting = false;
 		};
 	}

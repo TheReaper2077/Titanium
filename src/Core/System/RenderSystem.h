@@ -92,6 +92,8 @@ namespace ti {
 					material.ambient_map->BindUnit(0);
 					shader->SetUniformi("material.ambient_map", 0);
 					shader->SetUniformi("ambient_index", 1);
+				} else {
+					shader->SetUniformi("ambient_index", 0);
 				}
 
 				if (material.diffuse_map != nullptr) {
@@ -99,6 +101,8 @@ namespace ti {
 					material.diffuse_map->BindUnit(1);
 					shader->SetUniformi("material.diffuse_map", 1);
 					shader->SetUniformi("diffuse_index", 1);
+				} else {
+					shader->SetUniformi("diffuse_index", 0);
 				}
 
 				if (material.specular_map != nullptr) {
@@ -106,6 +110,8 @@ namespace ti {
 					material.specular_map->BindUnit(2);
 					shader->SetUniformi("material.specular_map", 2);
 					shader->SetUniformi("specular_index", 1);
+				} else {
+					shader->SetUniformi("specular_index", 0);
 				}
 			}
 
@@ -314,6 +320,10 @@ namespace ti {
 					if (meshrenderer.primitive == ti::Primitive::POINT) glDrawArrays(GL_POINTS, 0, meshrenderer.vertexcount);
 					engine.drawcalls++;
 				}
+			}
+
+			void RenderSprite(ti::Component& transform, ti::Component::SpriteRenderer& spriterenderer) {
+				
 			}
 
 			void Update(double dt) override {
