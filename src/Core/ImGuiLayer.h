@@ -182,16 +182,47 @@ namespace ti {
 				if (ImGui::CollapsingHeader("Camera", flags)) {
 					auto& camera = registry->Get<Camera>(entity);
 
-					ImGui::DragFloat3("Up", &camera.Up[0], 0.1);
-					ImGui::DragFloat3("Front", &camera.Front[0], 0.1);
-					ImGui::DragFloat3("Center", &camera.Center[0], 0.1);
-					ImGui::DragFloat3("Offset", &camera.Offset[0], 0.1);
+					// ImGui::DragFloat3("Up", &camera.Up[0], 0.1);
+					// ImGui::DragFloat3("Front", &camera.Front[0], 0.1);
+					// ImGui::DragFloat3("Center", &camera.Center[0], 0.1);
+					// ImGui::DragFloat3("Offset", &camera.Offset[0], 0.1);
 
 					ImGui::Checkbox("Enable", &camera.enable);
 
 					ImGui::DragFloat("Sensitivity", &camera.sensitivity, 0.001);
 					ImGui::DragFloat("Speed", &camera.speed, 0.001);
 					ImGui::DragFloat("ScrollSpeed", &camera.scrollspeed, 0.001);
+				}
+			}
+
+			if (registry->Contains<Light>(entity)) {
+				if (ImGui::CollapsingHeader("Light", flags)) {
+					auto& light = registry->Get<Light>(entity);
+
+					static std::string total_modes[] = { "Point", "Flash", "Spot", "Area", "Directional" };
+					if (ImGui::BeginCombo("mode", total_modes[light.mode].c_str(), ImGuiComboFlags_NoArrowButton)) {
+						for (int i = 0; i < LightMode_COUNT; i++) {
+							if (total_modes[i] != total_modes[light.mode])
+								if (ImGui::Selectable(total_modes[i].c_str(), true))
+									light.mode = (LightMode)i;
+						}
+						ImGui::EndCombo();
+					}
+
+					if (light.mode == Directional) {
+						ImGui::DragFloat3("Ambient", &light.ambient[0], 0.001, 0.0, 1.0, "%.3f");
+						ImGui::DragFloat3("Diffuse", &light.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
+						ImGui::DragFloat3("Specular", &light.specular[0], 0.001, 0.0, 1.0, "%.3f");
+					}
+					if (light.mode == Point) {
+						ImGui::DragFloat3("Ambient", &light.ambient[0], 0.001, 0.0, 1.0, "%.3f");
+						ImGui::DragFloat3("Diffuse", &light.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
+						ImGui::DragFloat3("Specular", &light.specular[0], 0.001, 0.0, 1.0, "%.3f");
+
+						ImGui::DragFloat("Constant", &light.constant, 0.001, 0.0, 1.0, "%.3f");
+						ImGui::DragFloat("Linear", &light.linear, 0.001, 0.0, 1.0, "%.3f");
+						ImGui::DragFloat("Quadratic", &light.quadratic, 0.001, 0.0, 2.0, "%.3f");
+					}
 				}
 			}
 
@@ -245,9 +276,9 @@ namespace ti {
 				auto& material = pair.second;
 
 				if (ImGui::TreeNode(name.c_str())) {
-					ImGui::DragFloat3("Ambient", &material.ambient[0], 0.1);
-					ImGui::DragFloat3("Diffuse", &material.diffuse[0], 0.1);
-					ImGui::DragFloat3("Specular", &material.specular[0], 0.1);
+					ImGui::DragFloat3("Ambient", &material.ambient[0], 0.001, 0.0, 1.0, "%.3f");
+					ImGui::DragFloat3("Diffuse", &material.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
+					ImGui::DragFloat3("Specular", &material.specular[0], 0.001, 0.0, 1.0, "%.3f");
 					ImGui::DragFloat("Shininess", &material.shininess, 0.1);
 
 					ImGui::TreePop();

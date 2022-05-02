@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../ShaderRegistry.h"
 #include "System.h"
 #include <unordered_map>
 #include <iostream>
@@ -16,7 +17,6 @@ namespace ti {
 			glm::vec3 view_position;
 
 			std::unordered_map<uint32_t, VertexArray*> vertexarray_registry;
-			std::unordered_map<std::string, Shader*> shader_registry;
 
 			Shader* shader;
 		
@@ -27,17 +27,11 @@ namespace ti {
 				uniformbuffer = UniformBuffer_Create();
 				uniformbuffer->Allocate(sizeof(glm::mat4) * 4);
 				uniformbuffer->BindRange(0, sizeof(glm::mat4) * 4);
-
-				auto* shader = Shader_Create("material", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\color.fs");
-				// shader->BindUniformBlock("ProjectionMatrix", 0);
-				RegisterShader(shader);
 			}
 
 			VertexArray* GetVertexArray(uint32_t flags) {
 				if (vertexarray_registry.find(flags) == vertexarray_registry.end()) {
 					std::vector<VertexArrayAttribDescriptor> descriptor;
-
-					std::cout << std::bitset<16>(NORMAL_ATTRIB_BIT) << ' ' << std::bitset<16>(NORMAL_ATTRIB_BIT & flags) << '\n';
 
 					if (flags & POSITION_ATTRIB_BIT) {
 						descriptor.push_back({ position, 0, 3, GL_FLOAT });
@@ -79,22 +73,8 @@ namespace ti {
 				return vertexarray_registry[flags];
 			}
 
-			void RegisterShader(Shader* shader) {
-				assert(shader_registry.find(shader->name) == shader_registry.end());
-
-				shader_registry[shader->name] = shader;
-			}
-
 			void SetShader(Shader* shader) {
 				this->shader = shader;
-			}
-
-			void SetShader(std::string name) {
-				SetShader(GetShader(name));
-			}
-
-			Shader* GetShader(std::string name) {
-				return shader_registry[name];
 			}
 
 			void SetMaterial(std::string name) {
@@ -102,8 +82,6 @@ namespace ti {
 			}
 
 			void SetMaterial(ti::Component::Material& material) {
-				// SetShader("material");
-
 				shader->SetUniformVec3("material.ambient", &material.ambient[0]);
 				shader->SetUniformVec3("material.diffuse", &material.diffuse[0]);
 				shader->SetUniformVec3("material.specular", &material.specular[0]);
@@ -113,18 +91,21 @@ namespace ti {
 					glActiveTexture(GL_TEXTURE0);
 					material.ambient_map->BindUnit(0);
 					shader->SetUniformi("material.ambient_map", 0);
+					shader->SetUniformi("ambient_index", 1);
 				}
 
 				if (material.diffuse_map != nullptr) {
 					glActiveTexture(GL_TEXTURE1);
 					material.diffuse_map->BindUnit(1);
 					shader->SetUniformi("material.diffuse_map", 1);
+					shader->SetUniformi("diffuse_index", 1);
 				}
 
 				if (material.specular_map != nullptr) {
 					glActiveTexture(GL_TEXTURE2);
 					material.specular_map->BindUnit(2);
 					shader->SetUniformi("material.specular_map", 2);
+					shader->SetUniformi("specular_index", 1);
 				}
 			}
 
@@ -349,22 +330,52 @@ namespace ti {
 					SetProjection(camera.projection);
 				}
 
+				SetShader(registry->Store<ShaderRegistry>().GetShader(registry));
+
+				int point_light = 0;
+				int dir_light = 0;
+				int flash_light = 0;
+				int spot_light = 0;
+				int area_light = 0;
+
+				for (auto& entity: registry->View<Tag, Transform, Light>()) {
+					auto& transform = registry->Get<Transform>(entity);
+					auto& light = registry->Get<Light>(entity);
+
+					// auto direction = glm::vec3(-0.2f, -1.0f, -0.3f);
+
+					if (light.mode == Directional) {
+						auto direction = glm::normalize(transform.GetRotationQuat() * glm::vec3(0, -1.0, 0));
+						
+						shader->SetUniformVec3("directional" + std::to_string(dir_light) + ".direction", &direction[0]);
+						shader->SetUniformVec3("directional" + std::to_string(dir_light) + ".ambient", &light.ambient[0]);
+						shader->SetUniformVec3("directional" + std::to_string(dir_light) + ".diffuse", &light.diffuse[0]);
+						shader->SetUniformVec3("directional" + std::to_string(dir_light) + ".specular", &light.specular[0]);
+
+						dir_light++;
+					}
+					if (light.mode == Point) {
+						shader->SetUniformVec3("point" + std::to_string(point_light) + ".position", &transform.position[0]);
+						shader->SetUniformVec3("point" + std::to_string(point_light) + ".ambient", &light.ambient[0]);
+						shader->SetUniformVec3("point" + std::to_string(point_light) + ".diffuse", &light.diffuse[0]);
+						shader->SetUniformVec3("point" + std::to_string(point_light) + ".specular", &light.specular[0]);
+
+						shader->SetUniformVec3("point" + std::to_string(point_light) + ".constant", &light.constant);
+						shader->SetUniformVec3("point" + std::to_string(point_light) + ".linear", &light.linear);
+						shader->SetUniformVec3("point" + std::to_string(point_light) + ".quadratic", &light.quadratic);
+
+						point_light++;
+					}
+				}
+
 				for (auto& entity: registry->View<Tag, Transform, Mesh, MeshRenderer>()) {
 					auto& mesh = registry->Get<Mesh>(entity);
 					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
-					SetShader("material");
+					shader->Bind();
 					
-					shader->SetUniformVec3("camera_pos", &view_position[0]);
-					shader->SetUniformVec3("light.position", &glm::vec3(1.2f, 10.0f, 2.0f)[0]);
-					shader->SetUniformVec3("light.direction", &glm::vec3(-0.2f, -1.0f, -0.3f)[0]);
-					shader->SetUniformVec3("light.ambient", &glm::vec3(0.2f, 0.2f, 0.2f)[0]);
-					shader->SetUniformVec3("light.diffuse", &glm::vec3(0.5f, 0.5f, 0.5f)[0]);
-					shader->SetUniformVec3("light.specular", &glm::vec3(1.0f, 1.0f, 1.0f)[0]);
-					shader->SetUniformi("light.constant", 1.0f);
-					shader->SetUniformi("light.linear", 0.09f);
-					shader->SetUniformi("light.quadratic", 0.032f);
+					// shader->SetUniformVec3("camera_pos", &view_position[0]);
 
 					SetModel(transform.GetModel());
 					

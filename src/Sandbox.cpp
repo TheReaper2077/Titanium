@@ -28,6 +28,11 @@ void Sandbox::Init() {
 	registry->Store<ti::Functions>().ImportModel("D:\\C++\\2.5D Engine\\res\\cube.obj");
 	registry->Store<ti::Functions>().ImportModel("D:\\C++\\2.5D Engine\\res\\cylinder.obj");
 
+	auto light = registry->Create();
+	registry->Add<ti::Component::Tag>(light, "light", light);
+	registry->Add<ti::Component::Transform>(light);
+	registry->Add<ti::Component::Light>(light);
+
 	// SDL_ShowCursor(SDL_DISABLE);
 }
 

@@ -37,12 +37,28 @@ namespace ti {
 	};
 
 	enum LightMode {
-		Point,
+		Point = 0,
 		Flash,
 		Spot,
 		Area,
 		Directional,
 
 		LightMode_COUNT
+	};
+
+	enum MaterialAttrib {
+		Ambient_Color,
+		Diffuse_Color,
+		Specular_Color,
+		Ambient_Texture,
+		Diffuse_Texture,
+		Specular_Texture,
+		Shininess_Float,
+
+		MaterialAttrib_COUNT
+	};
+
+	enum ShaderAttrib {
+		
 	};
 }

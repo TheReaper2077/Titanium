@@ -13,7 +13,18 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "../Enumerations.h"
+
+// #define MAT_AMBIENT_COLOR_BIT (1 << ti::MaterialAttrib::Ambient_Color)
+// #define MAT_DIFFUSE_COLOR_BIT (1 << ti::MaterialAttrib::Diffuse_Color)
+// #define MAT_SPECULAR_COLOR_BIT (1 << ti::MaterialAttrib::Specular_Color)
+#define MAT_AMBIENT_TEXTURE_BIT (1 << ti::MaterialAttrib::Ambient_Texture)
+#define MAT_DIFFUSE_TEXTURE_BIT (1 << ti::MaterialAttrib::Diffuse_Texture)
+#define MAT_SPECULAR_TEXTURE_BIT (1 << ti::MaterialAttrib::Specular_Texture)
+// #define MAT_SHININESS_FLOAT_BIT (1 << ti::MaterialAttrib::Shininess_Float)
+
 namespace ti {
+
 	namespace Component {
 		struct Material {
 			glm::vec3 ambient;
@@ -28,6 +39,8 @@ namespace ti {
 			// Shader* shader;
 			std::string name;
 
+			uint32_t flags = 0;
+
 			Material() {}
 			Material(aiMaterial *ai_material) {
 				aiString str;
@@ -35,6 +48,7 @@ namespace ti {
 					ai_material->GetTexture(aiTextureType_DIFFUSE, i, &str);
 
 					this->diffuse_map = Texture_LoadFile(str.C_Str());
+					flags |= MAT_DIFFUSE_TEXTURE_BIT;
 					break;
 				}
 
@@ -42,6 +56,7 @@ namespace ti {
 					ai_material->GetTexture(aiTextureType_AMBIENT, i, &str);
 
 					this->ambient_map = Texture_LoadFile(str.C_Str());
+					flags |= MAT_AMBIENT_TEXTURE_BIT;
 					break;
 				}
 
@@ -49,6 +64,7 @@ namespace ti {
 					ai_material->GetTexture(aiTextureType_SPECULAR, i, &str);
 
 					this->specular_map = Texture_LoadFile(str.C_Str());
+					flags |= MAT_SPECULAR_TEXTURE_BIT;
 					break;
 				}
 
@@ -56,15 +72,25 @@ namespace ti {
 
 				aiColor4D color;
 				
-				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_AMBIENT, &color))
+				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_AMBIENT, &color)) {
 					this->ambient = glm::vec3(color.r, color.g, color.b);
-				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_DIFFUSE, &color))
+					// flags |= MAT_AMBIENT_COLOR_BIT;
+				}
+				
+				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_DIFFUSE, &color)) {
 					this->diffuse = glm::vec3(color.r, color.g, color.b);
-				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_SPECULAR, &color))
-					this->specular = glm::vec3(color.r, color.g, color.b);
+					// flags |= MAT_DIFFUSE_COLOR_BIT;
+				}
 
-				if (AI_SUCCESS != aiGetMaterialFloat(ai_material, AI_MATKEY_SHININESS, &shininess))
+				if (AI_SUCCESS == aiGetMaterialColor(ai_material, AI_MATKEY_COLOR_SPECULAR, &color)) {
+					this->specular = glm::vec3(color.r, color.g, color.b);
+					// flags |= MAT_SPECULAR_COLOR_BIT;
+				}
+
+				if (AI_SUCCESS != aiGetMaterialFloat(ai_material, AI_MATKEY_SHININESS, &shininess)) {
 					this->shininess = 20.f;
+					// flags |= MAT_SHININESS_FLOAT_BIT;
+				}
 			}
 		};
 	}

@@ -13,8 +13,8 @@
 namespace ti {
 	namespace Component {
 		struct SpriteRenderer {
-			glm::vec3 color;
-			Texture* texture;
+			glm::vec4 color;
+			Texture2D* texture;
 		};
 	}
 }

@@ -34,6 +34,10 @@ namespace ti {
 
 			Primitive primitive = TRIANGLE;
 
+			// VertexArray* vertexarray = nullptr;
+			// VertexBuffer* vertexbuffer = nullptr;
+			// IndexBuffer* indexbuffer = nullptr;
+
 			bool changed = true;
 
 			Mesh() {}
@@ -45,12 +49,40 @@ namespace ti {
 					if (ai_mesh->HasNormals())
 						normals.push_back(glm::vec3(ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z));
 					
-					// if (ai_mesh->mColors[0]) {
-					// 	color.push_back({ai_mesh->mColors[0][i].r, ai_mesh->mColors[0][i].g, ai_mesh->mColors[0][i].b, ai_mesh->mColors[0][i].a});
-					// }
+					if (ai_mesh->mColors[0]) {
+						color.push_back({ai_mesh->mColors[0][i].r, ai_mesh->mColors[0][i].g, ai_mesh->mColors[0][i].b, ai_mesh->mColors[0][i].a});
+					}
 
 					if (ai_mesh->mTextureCoords[0]) {
 						uv0.push_back({ai_mesh->mTextureCoords[0][i].x, ai_mesh->mTextureCoords[0][i].y});
+					}
+
+					if (ai_mesh->mTextureCoords[1]) {
+						uv1.push_back({ai_mesh->mTextureCoords[1][i].x, ai_mesh->mTextureCoords[1][i].y});
+					}
+
+					if (ai_mesh->mTextureCoords[2]) {
+						uv2.push_back({ai_mesh->mTextureCoords[2][i].x, ai_mesh->mTextureCoords[2][i].y});
+					}
+
+					if (ai_mesh->mTextureCoords[3]) {
+						uv3.push_back({ai_mesh->mTextureCoords[3][i].x, ai_mesh->mTextureCoords[3][i].y});
+					}
+
+					if (ai_mesh->mTextureCoords[4]) {
+						uv4.push_back({ai_mesh->mTextureCoords[4][i].x, ai_mesh->mTextureCoords[4][i].y});
+					}
+
+					if (ai_mesh->mTextureCoords[5]) {
+						uv5.push_back({ai_mesh->mTextureCoords[5][i].x, ai_mesh->mTextureCoords[5][i].y});
+					}
+
+					if (ai_mesh->mTextureCoords[6]) {
+						uv6.push_back({ai_mesh->mTextureCoords[6][i].x, ai_mesh->mTextureCoords[6][i].y});
+					}
+
+					if (ai_mesh->mTextureCoords[7]) {
+						uv7.push_back({ai_mesh->mTextureCoords[7][i].x, ai_mesh->mTextureCoords[7][i].y});
 					}
 				}
 

@@ -73,19 +73,21 @@ namespace ti {
 						static glm::vec3 initpos;
 						
 						if (events.mouse_pressed.contains(SDL_BUTTON_LEFT) && events.key_pressed.contains(SDL_SCANCODE_LALT)) {
-							glm::mat4 invVP = glm::inverse(camera.projection * camera.view);
-							glm::vec4 screenPos = glm::vec4(-events.normalized_mouse.x, -events.normalized_mouse.y, 1.0f, 1.0f);
-							glm::vec4 worldPos = invVP * screenPos;
-							glm::vec3 dir = glm::normalize(glm::vec3(worldPos));
-							glm::vec3 pos = dir * distance + (camera.Offset + transform.position);
+							glm::vec4 ray_clip = glm::vec4(events.normalized_mouse.x, events.normalized_mouse.y, -1.0, 1.0);
+							glm::vec4 ray_eye = glm::inverse(camera.projection) * ray_clip;
+							ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
+							glm::vec3 ray_wor = glm::inverse(camera.view) * ray_eye;
+							ray_wor = glm::normalize(ray_wor);
+							
+							float denom = glm::dot(camera.Front, ray_wor);
+							float t = -glm::dot((camera.Front * distance), camera.Front) / denom;
+							glm::vec3 pos = ray_wor * t + (camera.Offset + transform.position);
 
 							if (!toggle) {
 								initpos = pos;
 							}
 							
-							delta.x = pos.x - initpos.x;
-							delta.y = pos.y - initpos.y;
-							delta.z = pos.z - initpos.z;
+							delta = pos - initpos;
 							toggle = true;
 						}
 
