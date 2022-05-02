@@ -15,3 +15,4 @@
 #include "Sprite.h"
 #include "Texture.h"
 #include "Light.h"
+#include "SpriteRenderer.h"

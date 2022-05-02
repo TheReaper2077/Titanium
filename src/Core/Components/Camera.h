@@ -44,6 +44,7 @@ namespace ti {
 			float far = 1000.0;
 
 			bool changed = true;
+			bool init = false;
 
 			Camera() {}
 			Camera(Projection mode, bool enable = false, CameraType type = Editor) {

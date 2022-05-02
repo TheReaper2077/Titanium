@@ -15,6 +15,8 @@ namespace ti {
 		ti::ECS::Registry* registry;
 		Assimp::Importer* importer;
 
+		ti::ECS::Entity enable_camera;
+
 		Functions() {
 			importer = new Assimp::Importer();
 		}
@@ -57,6 +59,40 @@ namespace ti {
 				registry->Store<ti::MaterialRegistry>().RegisterMaterial(ti::Component::Material(ai_scene->mMaterials[i]));
 		}
 
-		
+		void AddEmptyEntity() {
+			auto entity = registry->Create();
+			
+			registry->Add<ti::Component::Tag>(entity, "Empty - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Transform>(entity);
+		}
+
+		void AddMeshEntity() {
+			auto entity = registry->Create();
+			
+			registry->Add<ti::Component::Tag>(entity, "Mesh - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Transform>(entity);
+			registry->Add<ti::Component::Mesh>(entity);
+			registry->Add<ti::Component::MeshRenderer>(entity);
+		}
+
+		void AddLightEntity() {
+			auto entity = registry->Create();
+			
+			registry->Add<ti::Component::Tag>(entity, "Light - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Transform>(entity);
+			registry->Add<ti::Component::Light>(entity);
+		}
+
+		void AddCameraEntity() {
+			auto entity = registry->Create();
+			
+			registry->Add<ti::Component::Tag>(entity, "Camera - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Transform>(entity);
+			registry->Add<ti::Component::Camera>(entity, ti::Projection::PERSPECTIVE, true);
+		}
+
+		void AddSpriteEntity() {
+
+		}
 	};
 }

@@ -4,6 +4,7 @@
 #include "System.h"
 #include <unordered_map>
 #include <iostream>
+#include "../Functions.h"
 #include "../MaterialRegistry.h"
 
 namespace ti {
@@ -291,39 +292,35 @@ namespace ti {
 				meshrenderer.data = nullptr;
 			}
 
-			void RenderMesh(ti::Component::MeshRenderer& meshrenderer) {
+			void Render(Primitive primitive, std::string material, VertexArray* vertexarray, int vertexcount, VertexBuffer* vertexbuffer, int indexcount = 0, IndexBuffer* indexbuffer = nullptr) {
 				auto& engine = registry->Store<EngineProperties>();
-				SetMaterial(meshrenderer.material);
+				SetMaterial(material);
 				shader->Bind();
 				
-				meshrenderer.vertexarray->Bind();
-				meshrenderer.vertexarray->BindVertexBuffer(meshrenderer.vertexbuffer, meshrenderer.vertexarray->stride);
-				engine.vertexcount += meshrenderer.vertexcount;
+				vertexarray->Bind();
+				vertexarray->BindVertexBuffer(vertexbuffer, vertexarray->stride);
+				engine.vertexcount += vertexcount;
 
-				if (meshrenderer.indexcount) {
-					meshrenderer.vertexarray->BindIndexBuffer(meshrenderer.indexbuffer);
-					engine.indexcount += meshrenderer.indexcount;
+				if (indexcount) {
+					vertexarray->BindIndexBuffer(indexbuffer);
+					engine.indexcount += indexcount;
 					
-					if (meshrenderer.primitive == ti::Primitive::TRIANGLE) glDrawElements(GL_TRIANGLES, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (meshrenderer.primitive == ti::Primitive::TRIANGLE_FAN) glDrawElements(GL_TRIANGLE_FAN, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (meshrenderer.primitive == ti::Primitive::TRIANGLE_STRIP) glDrawElements(GL_TRIANGLE_STRIP, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (meshrenderer.primitive == ti::Primitive::LINE) glDrawElements(GL_LINES, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (meshrenderer.primitive == ti::Primitive::LINE_STRIP) glDrawElements(GL_LINE_STRIP, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
-					if (meshrenderer.primitive == ti::Primitive::POINT) glDrawElements(GL_POINTS, meshrenderer.indexcount, GL_UNSIGNED_INT, nullptr);
+					if (primitive == ti::Primitive::TRIANGLE) glDrawElements(GL_TRIANGLES, indexcount, GL_UNSIGNED_INT, nullptr);
+					if (primitive == ti::Primitive::TRIANGLE_FAN) glDrawElements(GL_TRIANGLE_FAN, indexcount, GL_UNSIGNED_INT, nullptr);
+					if (primitive == ti::Primitive::TRIANGLE_STRIP) glDrawElements(GL_TRIANGLE_STRIP, indexcount, GL_UNSIGNED_INT, nullptr);
+					if (primitive == ti::Primitive::LINE) glDrawElements(GL_LINES, indexcount, GL_UNSIGNED_INT, nullptr);
+					if (primitive == ti::Primitive::LINE_STRIP) glDrawElements(GL_LINE_STRIP, indexcount, GL_UNSIGNED_INT, nullptr);
+					if (primitive == ti::Primitive::POINT) glDrawElements(GL_POINTS, indexcount, GL_UNSIGNED_INT, nullptr);
 					engine.drawcalls++;
 				} else {
-					if (meshrenderer.primitive == ti::Primitive::TRIANGLE) glDrawArrays(GL_TRIANGLES, 0, meshrenderer.vertexcount);
-					if (meshrenderer.primitive == ti::Primitive::TRIANGLE_FAN) glDrawArrays(GL_TRIANGLE_FAN, 0, meshrenderer.vertexcount);
-					if (meshrenderer.primitive == ti::Primitive::TRIANGLE_STRIP) glDrawArrays(GL_TRIANGLE_STRIP, 0, meshrenderer.vertexcount);
-					if (meshrenderer.primitive == ti::Primitive::LINE) glDrawArrays(GL_LINES, 0, meshrenderer.vertexcount);
-					if (meshrenderer.primitive == ti::Primitive::LINE_STRIP) glDrawArrays(GL_LINE_STRIP, 0, meshrenderer.vertexcount);
-					if (meshrenderer.primitive == ti::Primitive::POINT) glDrawArrays(GL_POINTS, 0, meshrenderer.vertexcount);
+					if (primitive == ti::Primitive::TRIANGLE) glDrawArrays(GL_TRIANGLES, 0, vertexcount);
+					if (primitive == ti::Primitive::TRIANGLE_FAN) glDrawArrays(GL_TRIANGLE_FAN, 0, vertexcount);
+					if (primitive == ti::Primitive::TRIANGLE_STRIP) glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexcount);
+					if (primitive == ti::Primitive::LINE) glDrawArrays(GL_LINES, 0, vertexcount);
+					if (primitive == ti::Primitive::LINE_STRIP) glDrawArrays(GL_LINE_STRIP, 0, vertexcount);
+					if (primitive == ti::Primitive::POINT) glDrawArrays(GL_POINTS, 0, vertexcount);
 					engine.drawcalls++;
 				}
-			}
-
-			void RenderSprite(ti::Component& transform, ti::Component::SpriteRenderer& spriterenderer) {
-				
 			}
 
 			void Update(double dt) override {
@@ -333,7 +330,12 @@ namespace ti {
 					auto& camera = registry->Get<Camera>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
-					if (!camera.enable) continue;
+					if (entity != registry->Store<ti::Functions>().enable_camera) {
+						if (!camera.enable)
+							continue;
+						
+						registry->Store<Functions>().enable_camera = entity;
+					}
 
 					SetViewPosition(transform.position);
 					SetView(camera.view);
@@ -351,8 +353,6 @@ namespace ti {
 				for (auto& entity: registry->View<Tag, Transform, Light>()) {
 					auto& transform = registry->Get<Transform>(entity);
 					auto& light = registry->Get<Light>(entity);
-
-					// auto direction = glm::vec3(-0.2f, -1.0f, -0.3f);
 
 					if (light.mode == Directional) {
 						auto direction = glm::normalize(transform.GetRotationQuat() * glm::vec3(0, -1.0, 0));
@@ -383,14 +383,17 @@ namespace ti {
 					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
-					shader->Bind();
-					
-					// shader->SetUniformVec3("camera_pos", &view_position[0]);
-
 					SetModel(transform.GetModel());
 					
 					TransferMesh(mesh, meshrenderer);
-					RenderMesh(meshrenderer);
+					Render(mesh.primitive, meshrenderer.material, meshrenderer.vertexarray, meshrenderer.vertexcount, meshrenderer.vertexbuffer, meshrenderer.indexcount, meshrenderer.indexbuffer);
+				}
+
+				for (auto& entity: registry->View<Tag, Transform, SpriteRenderer>()) {
+					auto& transform = registry->Get<Transform>(entity);
+					auto& spriterenderer = registry->Get<SpriteRenderer>(entity);
+
+					
 				}
 			}
 		};

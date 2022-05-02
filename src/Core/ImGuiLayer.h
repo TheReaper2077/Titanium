@@ -182,16 +182,21 @@ namespace ti {
 				if (ImGui::CollapsingHeader("Camera", flags)) {
 					auto& camera = registry->Get<Camera>(entity);
 
-					// ImGui::DragFloat3("Up", &camera.Up[0], 0.1);
-					// ImGui::DragFloat3("Front", &camera.Front[0], 0.1);
-					// ImGui::DragFloat3("Center", &camera.Center[0], 0.1);
-					// ImGui::DragFloat3("Offset", &camera.Offset[0], 0.1);
-
 					ImGui::Checkbox("Enable", &camera.enable);
 
 					ImGui::DragFloat("Sensitivity", &camera.sensitivity, 0.001);
 					ImGui::DragFloat("Speed", &camera.speed, 0.001);
 					ImGui::DragFloat("ScrollSpeed", &camera.scrollspeed, 0.001);
+
+					static std::string total_modes[] = { "FPS", "TPS", "Editor" };
+					if (ImGui::BeginCombo("Type", total_modes[camera.type].c_str(), ImGuiComboFlags_NoArrowButton)) {
+						for (int i = 0; i < LightMode_COUNT; i++) {
+							if (total_modes[i] != total_modes[camera.type])
+								if (ImGui::Selectable(total_modes[i].c_str(), true))
+									camera.type = (CameraType)i;
+						}
+						ImGui::EndCombo();
+					}
 				}
 			}
 
@@ -259,6 +264,10 @@ namespace ti {
 				if (ImGui::IsItemClicked()) {
 					selected_entity = entity;
 				}
+			}
+			
+			if (ImGui::Button("New Entity")) {
+				// if (ImGui::Popup)
 			}
 
 			ImGui::End();

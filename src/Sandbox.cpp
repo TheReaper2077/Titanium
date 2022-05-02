@@ -16,7 +16,7 @@ void Sandbox::Init() {
 	registry->Store<ti::Functions>(registry);
 
 	auto camera = registry->Create();
-	registry->Add<ti::Component::Camera>(camera, ti::Projection::PERSPECTIVE, true);
+	registry->Add<ti::Component::Camera>(camera, ti::Projection::PERSPECTIVE, false);
 	registry->Add<ti::Component::Transform>(camera);
 	registry->Add<ti::Component::Tag>(camera, "cam0", camera);
 
@@ -33,7 +33,7 @@ void Sandbox::Init() {
 	registry->Add<ti::Component::Transform>(light);
 	registry->Add<ti::Component::Light>(light);
 
-	// SDL_ShowCursor(SDL_DISABLE);
+	SDL_ShowCursor(SDL_DISABLE);
 }
 
 void Sandbox::Update(double dt) {
