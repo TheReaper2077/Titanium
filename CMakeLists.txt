@@ -4,7 +4,7 @@ project(Test VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
-file(GLOB TARGET_SRC "src/*.cpp" "src/OpenGL/*.cpp" "src/Game/*.cpp")
+file(GLOB TARGET_SRC "src/*.cpp" "src/OpenGL/*.cpp" "src/Core/*.cpp")
 
 set (CMAKE_CXX_STANDARD 20)
 
@@ -23,6 +23,9 @@ target_include_directories(main PRIVATE ${STB_INCLUDE_DIRS})
 
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(main PRIVATE imgui::imgui)
+
+find_package(imguizmo CONFIG REQUIRED)
+target_link_libraries(main PRIVATE imguizmo::imguizmo)
 
 find_package(EnTT CONFIG REQUIRED)
 target_link_libraries(main PRIVATE EnTT::EnTT)

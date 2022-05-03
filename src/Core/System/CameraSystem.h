@@ -9,8 +9,8 @@ namespace ti {
 			bool toggle = false;
 
 		public:
-			void Init() override {
-
+			void Init(ti::ECS::Registry *registry) override {
+				this->registry = registry;
 			}
 
 			void Update(double dt) override {
@@ -19,10 +19,11 @@ namespace ti {
 				auto& engine = registry->Store<EngineProperties>();
 				auto& events = registry->Store<Events>();
 
-				for (auto& entity : registry->View<Tag, Transform, Camera>()) {
+				for (auto& entity: registry->View<Transform, Camera>()) {
+					if (registry->Contains<Tag>(entity)) continue;
+
 					auto& camera = registry->Get<Camera>(entity);
 					auto& transform = registry->Get<Transform>(entity);
-
 					if (!camera.enable) continue;
 
 					if (camera.mode == PERSPECTIVE) {
@@ -50,13 +51,6 @@ namespace ti {
 							transform.rotation.y -= (events.posx - camera.lastX) * camera.sensitivity;
 							transform.rotation.x += (camera.lastY - events.posy) * camera.sensitivity;
 
-							if (camera.type != Editor) {
-								if (transform.rotation.x >= 89.0)
-									transform.rotation.x = 89.0;
-								if (transform.rotation.x <= -89.0)
-									transform.rotation.x = -89.0;
-							}
-
 							camera.lastX = events.posx;
 							camera.lastY = events.posy;
 						} else {
@@ -83,25 +77,23 @@ namespace ti {
 						static glm::vec3 delta;
 						static glm::vec3 initpos;
 						
-						if (camera.type == Editor) {
-							if (events.mouse_pressed.contains(SDL_BUTTON_LEFT) && events.key_pressed.contains(SDL_SCANCODE_LALT)) {
-								glm::vec4 ray_clip = glm::vec4(events.normalized_mouse.x, events.normalized_mouse.y, -1.0, 1.0);
-								glm::vec4 ray_eye = glm::inverse(camera.projection) * ray_clip;
-								ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
-								glm::vec3 ray_wor = glm::inverse(camera.view) * ray_eye;
-								ray_wor = glm::normalize(ray_wor);
-								
-								float denom = glm::dot(camera.Front, ray_wor);
-								float t = -glm::dot((camera.Front * distance), camera.Front) / denom;
-								glm::vec3 pos = ray_wor * t + (camera.Offset + transform.position);
+						if (events.mouse_pressed.contains(SDL_BUTTON_LEFT) && events.key_pressed.contains(SDL_SCANCODE_LALT)) {
+							glm::vec4 ray_clip = glm::vec4(events.normalized_mouse.x, events.normalized_mouse.y, -1.0, 1.0);
+							glm::vec4 ray_eye = glm::inverse(camera.projection) * ray_clip;
+							ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
+							glm::vec3 ray_wor = glm::inverse(camera.view) * ray_eye;
+							ray_wor = glm::normalize(ray_wor);
+							
+							float denom = glm::dot(camera.Front, ray_wor);
+							float t = -glm::dot((camera.Front * distance), camera.Front) / denom;
+							glm::vec3 pos = ray_wor * t + (camera.Offset + transform.position);
 
-								if (!toggle) {
-									initpos = pos;
-								}
-								
-								delta = pos - initpos;
-								toggle = true;
+							if (!toggle) {
+								initpos = pos;
 							}
+							
+							delta = pos - initpos;
+							toggle = true;
 						}
 
 						camera.view = glm::lookAt(transform.position + camera.Offset + delta, transform.position + camera.Front + camera.Offset + delta, camera.Up);

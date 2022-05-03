@@ -192,6 +192,8 @@ namespace ti {
 			for (auto& entity: registry->View<Tag, Transform, Light>()) {
 				auto& light = registry->Get<Light>(entity);
 
+				if (!light.active) continue;
+
 				if (light.active) {
 					if (light.mode == Point) point_light++;
 					if (light.mode == Flash) flash_light++;
@@ -205,7 +207,7 @@ namespace ti {
 		}
 
 		Shader* RegisterShader(uint32_t mat_flags, int point_light, int dir_light, int flash_light, int spot_light, int area_light) {
-			std::string id = std::to_string(mat_flags) + '_' + std::to_string(point_light) + '_' + std::to_string(flash_light) + '_' + std::to_string(spot_light) + '_' + std::to_string(area_light);
+			std::string id = std::to_string(mat_flags) + '_' + std::to_string(dir_light) + '_' + std::to_string(point_light) + '_' + std::to_string(flash_light) + '_' + std::to_string(spot_light) + '_' + std::to_string(area_light);
 
 			if (registry.find(id) == registry.end()) {
 				std::string fragmentshader = FS_INITIALISE;
@@ -219,7 +221,7 @@ namespace ti {
 
 				fragmentshader += "	gl_FragColor = vec4(result, 1.0);\n}\n";
 
-				// std::cout << fragmentshader << '\n';
+				// std::cout << fragmentshader << '\n' << id << '\n';
 
 				registry[id] = Shader_Create(id, VS_SHADER_MAIN, fragmentshader, false);
 			}

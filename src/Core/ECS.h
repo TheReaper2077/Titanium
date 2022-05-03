@@ -72,6 +72,7 @@ namespace ti {
 		};
 
 		class Registry {
+		private:
 			std::vector<Entity> available_entities;
 			Entity next_entity = 1;
 			ComponentType next_component_type = 0;

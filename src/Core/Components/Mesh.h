@@ -34,14 +34,19 @@ namespace ti {
 
 			Primitive primitive = TRIANGLE;
 
-			// VertexArray* vertexarray = nullptr;
-			// VertexBuffer* vertexbuffer = nullptr;
-			// IndexBuffer* indexbuffer = nullptr;
+			VertexBuffer* vertexbuffer = nullptr;
+			IndexBuffer* indexbuffer = nullptr;
+
+			int indexcount = 0;
+			int vertexcount = 0;
+
+			bool init = false;
 
 			bool changed = true;
 
-			Mesh() {}
-			Mesh(const aiScene* ai_scene, aiMesh* ai_mesh) {
+			void Initialize(const aiScene* ai_scene, aiMesh* ai_mesh) {
+				init = true;
+
 				for (int i = 0; i < ai_mesh->mNumVertices; i++) {
 					if (ai_mesh->HasPositions())
 						positions.push_back(glm::vec3(ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z));
@@ -93,6 +98,11 @@ namespace ti {
 						indices.push_back(face.mIndices[j]);
 					}
 				}
+			}
+
+			Mesh() {}
+			Mesh(const aiScene* ai_scene, aiMesh* ai_mesh) {
+				Initialize(ai_scene, ai_mesh);
 			}
 		};
 	}

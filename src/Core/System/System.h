@@ -10,7 +10,7 @@ namespace ti {
 		public:
 			ti::ECS::Registry *registry;
 
-			virtual void Init() = 0;
+			virtual void Init(ti::ECS::Registry *registry) = 0;
 			virtual void Update(double dt) = 0;
 			// virtual void FixedUpdate(double dt) = 0;
 		};

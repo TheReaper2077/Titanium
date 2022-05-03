@@ -3,11 +3,13 @@
 #include "Engine.h"
 #include "Components/Components.h"
 #include "MaterialRegistry.h"
+#include "Functions.h"
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_internal.h>
 #include <imgui_stdlib.h>
 #include <imgui_impl_opengl3.h>
+#include <ImGuizmo.h>
 
 #define DEGREE_TO_RADIANS(x) ((x) * (3.14159265359/180.0))
 #define RADIANS_TO_DEGREE(x) ((x) * (180.0/3.14159265359))
@@ -35,6 +37,11 @@ namespace ti {
 			ImGui_ImplOpenGL3_Init("#version 400");
 
 			ImGui::StyleColorsDark();
+			auto& style = ImGui::GetStyle();
+			style.TabRounding = 0;
+			style.WindowRounding = 0;
+			style.ScrollbarRounding = 0;
+			style.FrameBorderSize = 1;
 		}
 
 		void BeginMain() {
@@ -47,6 +54,7 @@ namespace ti {
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame();
 			ImGui::NewFrame();
+			ImGuizmo::BeginFrame();
 
 			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -100,63 +108,12 @@ namespace ti {
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
 
-		void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 50.0f) {
-			ImGuiIO& io = ImGui::GetIO();
-			auto boldFont = io.Fonts->Fonts[0];
-
-			ImGui::PushID(label.c_str());
-
-			ImGui::Columns(2);
-			ImGui::SetColumnWidth(0, columnWidth);
-			ImGui::Text("%s", label.c_str());
-			ImGui::NextColumn();
-
-			ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 5, 0 });
-
-			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-			ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
-
-			ImGui::PushFont(boldFont);
-			if (ImGui::Button("X", buttonSize))
-				values.x = resetValue;
-			ImGui::PopFont();
-
-			ImGui::SameLine();
-			ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
-			ImGui::PopItemWidth();
-			ImGui::SameLine();
-
-			ImGui::PushFont(boldFont);
-			if (ImGui::Button("Y", buttonSize))
-				values.y = resetValue;
-			ImGui::PopFont();
-
-			ImGui::SameLine();
-			ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
-			ImGui::PopItemWidth();
-			ImGui::SameLine();
-
-			ImGui::PushFont(boldFont);
-			if (ImGui::Button("Z", buttonSize))
-				values.z = resetValue;
-			ImGui::PopFont();
-
-			ImGui::SameLine();
-			ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
-			ImGui::PopItemWidth();
-
-			ImGui::PopStyleVar();
-
-			ImGui::Columns(1);
-
-			ImGui::PopID();
-		}
-
-		void Inspector(ti::ECS::Entity entity) {
+		void Inspector(ti::ECS::Entity& entity) {
 			using namespace ti::Component;
 
 			static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+
+			if (!entity) return;
 
 			ImGui::Begin("Inspector");
 
@@ -175,8 +132,12 @@ namespace ti {
 					ImGui::DragFloat3("Position", &transform.position[0], 0.1);
 					ImGui::DragFloat3("Rotation", &transform.rotation[0], 0.1);
 					ImGui::DragFloat3("Scale", &transform.scale[0], 0.1);
+
+					auto& editorcamera = registry->Get<Camera>(registry->Store<ti::Functions>().editor_camera);
 				}
 			}
+
+			static bool closing;
 
 			if (registry->Contains<Camera>(entity)) {
 				if (ImGui::CollapsingHeader("Camera", flags)) {
@@ -184,9 +145,13 @@ namespace ti {
 
 					ImGui::Checkbox("Enable", &camera.enable);
 
+					ImGui::Spacing();
+
 					ImGui::DragFloat("Sensitivity", &camera.sensitivity, 0.001);
 					ImGui::DragFloat("Speed", &camera.speed, 0.001);
 					ImGui::DragFloat("ScrollSpeed", &camera.scrollspeed, 0.001);
+
+					ImGui::Spacing();
 
 					static std::string total_modes[] = { "FPS", "TPS", "Editor" };
 					if (ImGui::BeginCombo("Type", total_modes[camera.type].c_str(), ImGuiComboFlags_NoArrowButton)) {
@@ -214,6 +179,12 @@ namespace ti {
 						ImGui::EndCombo();
 					}
 
+					ImGui::Spacing();
+
+					ImGui::Checkbox("Active", &light.active);
+
+					ImGui::Spacing();
+
 					if (light.mode == Directional) {
 						ImGui::DragFloat3("Ambient", &light.ambient[0], 0.001, 0.0, 1.0, "%.3f");
 						ImGui::DragFloat3("Diffuse", &light.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
@@ -231,19 +202,111 @@ namespace ti {
 				}
 			}
 
-			if (registry->Contains<MeshRenderer>(entity)) {
-				if (ImGui::CollapsingHeader("Material", flags)) {
-					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
-
-					if (ImGui::BeginCombo("Material", meshrenderer.material.c_str(), ImGuiComboFlags_NoArrowButton)) {
-						for (auto& pair: registry->Store<ti::MaterialRegistry>().registry) {
-							if (meshrenderer.material != pair.first)
-								if (ImGui::Selectable(pair.first.c_str(), true))
-									meshrenderer.material = pair.first;
+			if (registry->Contains<MeshFilter>(entity)) {
+				if (ImGui::CollapsingHeader("MeshFilter", flags)) {
+					auto& meshfilter = registry->Get<MeshFilter>(entity);
+					
+					if (ImGui::BeginCombo("Mesh", meshfilter.mesh.c_str(), ImGuiComboFlags_NoArrowButton)) {
+						for (auto& pair: registry->Store<ti::MeshRegistry>().registry) {
+							if (ImGui::Selectable(pair.first.c_str()))
+								meshfilter.mesh = pair.first;
 						}
 						ImGui::EndCombo();
 					}
 				}
+			}
+
+			if (registry->Contains<SpriteRenderer>(entity)) {
+				if (ImGui::CollapsingHeader("SpriteRenderer", flags)) {
+					auto& spriterenderer = registry->Get<SpriteRenderer>(entity);
+
+					// spriterenderer
+					ImGui::ColorPicker4("Color", &spriterenderer.color[0]);
+				}
+			}
+
+			if (registry->Contains<MeshRenderer>(entity)) {
+				if (ImGui::CollapsingHeader("MeshRenderer", flags)) {
+					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
+
+					if (ImGui::BeginCombo("Material", meshrenderer.material.c_str(), ImGuiComboFlags_NoArrowButton)) {
+						for (auto& pair: registry->Store<ti::MaterialRegistry>().registry) {
+							// if (meshrenderer.material != pair.first)
+								if (ImGui::Selectable(pair.first.c_str()))
+									meshrenderer.material = pair.first;
+						}
+						ImGui::EndCombo();
+					}
+
+					ImGui::Spacing();
+
+					static bool check;
+
+					check = (meshrenderer.flags & POSITION_ATTRIB_BIT);
+					ImGui::Checkbox("POSITION", &check);
+					check = (meshrenderer.flags & NORMAL_ATTRIB_BIT);
+					ImGui::Checkbox("NORMAL", &check);
+					check = (meshrenderer.flags & COLOR_ATTRIB_BIT);
+					ImGui::Checkbox("COLOR", &check);
+					check = (meshrenderer.flags & UV0_ATTRIB_BIT);
+					ImGui::Checkbox("UV0", &check);
+					check = (meshrenderer.flags & UV1_ATTRIB_BIT);
+					ImGui::Checkbox("UV1", &check);
+					check = (meshrenderer.flags & UV2_ATTRIB_BIT);
+					ImGui::Checkbox("UV2", &check);
+					check = (meshrenderer.flags & UV3_ATTRIB_BIT);
+					ImGui::Checkbox("UV3", &check);
+					check = (meshrenderer.flags & UV4_ATTRIB_BIT);
+					ImGui::Checkbox("UV4", &check);
+					check = (meshrenderer.flags & UV5_ATTRIB_BIT);
+					ImGui::Checkbox("UV5", &check);
+					check = (meshrenderer.flags & UV6_ATTRIB_BIT);
+					ImGui::Checkbox("UV6", &check);
+					check = (meshrenderer.flags & UV7_ATTRIB_BIT);
+					ImGui::Checkbox("UV7", &check);
+				}
+			}
+
+			ImGui::Spacing();
+
+			if (ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+				ImGui::OpenPopup("New Component");
+				
+			if (ImGui::BeginPopup("New Component")) {
+				if (ImGui::Selectable("MeshFilter") && !registry->Contains<MeshFilter>(entity)) {
+					registry->Add<MeshFilter>(entity);
+				}
+				if (ImGui::Selectable("MeshRenderer") && !registry->Contains<MeshRenderer>(entity)) {
+					registry->Add<MeshRenderer>(entity);
+				}
+				if (ImGui::Selectable("SpriteRenderer") && !registry->Contains<SpriteRenderer>(entity)) {
+					registry->Add<SpriteRenderer>(entity);
+				}
+				if (ImGui::Selectable("Camera") && !registry->Contains<Camera>(entity)) {
+					registry->Add<Camera>(entity);
+				}
+				if (ImGui::Selectable("Light") && !registry->Contains<Light>(entity)) {
+					registry->Add<Light>(entity);
+				}
+				if (ImGui::Selectable("Rigidbody") && !registry->Contains<Rigidbody>(entity)) {
+					registry->Add<Rigidbody>(entity);
+				}
+				// if (ImGui::Selectable("Rigidbody2D") && !registry->Contains<Rigidbody2D>(entity)) {
+					// registry->Add<Rigidbody2D>(entity);
+				// }
+				// if (ImGui::Selectable("AABBCollider") && !registry->Contains<AABBCollider>(entity)) {
+					// registry->Add<AABBCollider>(entity);
+				// }
+				// if (ImGui::Selectable("OBBCollider") && !registry->Contains<OBBCollider>(entity)) {
+					// registry->Add<OBBCollider>(entity);
+				// }
+				// if (ImGui::Selectable("MeshCollider") && !registry->Contains<MeshCollider>(entity)) {
+				// 	registry->Add<MeshCollider>(entity);
+				// }
+				// if (ImGui::Selectable("SphereCollider") && !registry->Contains<SphereCollider>(entity)) {
+				// 	registry->Add<SphereCollider>(entity);
+				// }
+				ImGui::EndPopup();
 			}
 
 			ImGui::End();
@@ -261,13 +324,34 @@ namespace ti {
 
 				ImGui::TreeNodeEx(tag.name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
 
-				if (ImGui::IsItemClicked()) {
+				if (ImGui::IsItemClicked() || !selected_entity) {
 					selected_entity = entity;
 				}
 			}
 			
-			if (ImGui::Button("New Entity")) {
-				// if (ImGui::Popup)
+			if (ImGui::Button("Add Enity", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
+				ImGui::OpenPopup("New Entity");
+				
+			if (ImGui::BeginPopup("New Entity")) {
+				auto& functions = registry->Store<ti::Functions>();
+				
+				if (ImGui::Selectable("Empty Entity")) {
+					selected_entity = functions.AddEmptyEntity();
+				}
+				if (ImGui::Selectable("Mesh Entity")) {
+					selected_entity = functions.AddMeshEntity();
+				}
+				if (ImGui::Selectable("Sprite Entity")) {
+					selected_entity = functions.AddSpriteEntity();
+				}
+				if (ImGui::Selectable("Camera Entity")) {
+					selected_entity = functions.AddCameraEntity();
+				}
+				if (ImGui::Selectable("Light Entity")) {
+					selected_entity = functions.AddLightEntity();
+				}
+
+				ImGui::EndPopup();
 			}
 
 			ImGui::End();
@@ -297,6 +381,25 @@ namespace ti {
 			ImGui::End();
 		}
 
+		void MeshRegistry() {
+			using namespace ti::Component;
+
+			ImGui::Begin("Mesh Registry");
+
+			for (auto& pair: registry->Store<ti::MeshRegistry>().registry) {
+				auto& name = pair.first;
+				auto& mesh = pair.second;
+
+				if (ImGui::TreeNode(name.c_str())) {
+					
+
+					ImGui::TreePop();
+				}
+			}
+
+			ImGui::End();
+		}
+
 		void Status() {
 			ImGui::Begin("Status");
 
@@ -317,6 +420,7 @@ namespace ti {
 			Inspector(entity);
 			Status();
 			MaterialRegistry();
+			MeshRegistry();
 		}
 
 		void EventHandler() {

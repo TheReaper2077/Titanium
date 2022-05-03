@@ -11,9 +11,8 @@
 namespace ti {
 	namespace Component {
 		struct MeshFilter {
-			Mesh *mesh;
-
-			bool changed = true;
+			std::string mesh;
+			bool init = false;
 
 			MeshFilter() {}
 		};

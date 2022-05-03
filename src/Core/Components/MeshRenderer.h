@@ -18,18 +18,10 @@ namespace ti {
 	namespace Component {
 		struct MeshRenderer {
 			std::string material;
+			bool lighting_enable = true;
 
-			VertexBuffer* vertexbuffer = nullptr;
-			IndexBuffer* indexbuffer = nullptr;
 			VertexArray* vertexarray = nullptr;
-
-			float* data = nullptr;
-			uint32_t flags = 0;
-
-			Primitive primitive = TRIANGLE;
-
-			int indexcount;
-			int vertexcount;
+			uint32_t flags = POSITION_ATTRIB_BIT;
 
 			MeshRenderer() {}
 			MeshRenderer(const aiScene* ai_scene, aiMesh* ai_mesh) {

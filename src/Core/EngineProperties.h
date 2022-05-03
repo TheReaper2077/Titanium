@@ -23,6 +23,7 @@ namespace ti {
 		int framerate;
 
 		bool debug_mode = true;
+		bool debug_render = false;
 
 		SDL_Window* window;
 		SDL_GLContext context;
