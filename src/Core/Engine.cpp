@@ -7,6 +7,7 @@ ti::System::CameraSystem camerasystem;
 
 void ti::Engine::CreateContext() {
 	auto& engine = registry.Store<EngineProperties>();
+	registry.Store<ti::Functions>(&registry);
 
 	engine.quit = false;
 
@@ -26,9 +27,12 @@ void ti::Engine::CreateContext() {
 void ti::Engine::Init() {
 	auto& engine = registry.Store<EngineProperties>();
 
-	for (auto& scene: this->scene_array) {
-		scene->Init();
-	}
+	registry.Store<ti::Functions>().ImportModel("D:\\C++\\2.5D Engine\\res\\cube.obj");
+	registry.Store<ti::Functions>().ImportModel("D:\\C++\\2.5D Engine\\res\\cylinder.obj");
+
+	SDL_ShowCursor(SDL_DISABLE);
+
+	registry.Store<ti::Functions>().LoadEntities();
 	
 	rendersystem.Init(&registry);
 	camerasystem.Init(&registry);
@@ -133,8 +137,18 @@ void ti::Engine::Update(double dt) {
 	engine.indexcount = 0;
 	engine.vertexcount = 0;
 
-	for (auto& scene: scene_array) {
-		scene->Update(dt);
+	auto& events = registry.Store<ti::Events>();
+
+	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_BLEND);
+	// glBlendFunc(GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	// glEnable(GL_CULL_FACE);`
+	glViewport(0, 0, engine.width, engine.height);
+	glClearColor(0, 0, 1, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if (events.key_pressed.contains(SDL_SCANCODE_S) && events.key_pressed.contains(SDL_SCANCODE_LCTRL)) {
+		registry.Store<ti::Functions>().SaveEntities();
 	}
 
 	camerasystem.Update(dt);
