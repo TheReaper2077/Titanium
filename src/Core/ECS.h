@@ -48,7 +48,7 @@ namespace ti {
 			}
 
 			void Destroy(Entity entity) override {
-				assert(entity_index_map.find(entity) != entity_index_map.end());
+				if (entity_index_map.find(entity) == entity_index_map.end()) return;
 
 				next_index--;
 
@@ -126,6 +126,10 @@ namespace ti {
 
 			void Destroy(Entity entity) {
 				available_entities.push_back(entity);
+
+				entityid_map[entity] = 0;
+
+				EntityChanged(entity);
 
 				for (auto& pair: componentarray_map) {
 					pair.second->Destroy(entity);

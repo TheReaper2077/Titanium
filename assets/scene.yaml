@@ -1,0 +1,32 @@
+- Name: Mesh - 8
+  ID: 8173b8e8-1820-4af8-8896-2107d7a2e2f2
+  Components:
+    Transform:
+      position: [0, 0, 0]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+    MeshFilter:
+      mesh: Cylinder
+    MeshRenderer:
+      visible: true
+      lighting: true
+      flags: 11
+      material: Material.001
+- Name: Light - 9
+  ID: 4e3e0386-e266-4c6f-8041-1214cb0d062b
+  Components:
+    Transform:
+      position: [0, 0, 0]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+    Light:
+      ambient: [0.200000003, 0.200000003, 0.200000003]
+      diffuse: [0.5, 0.5, 0.5]
+      specular: [1, 1, 1]
+      constant: 1
+      linear: 0.0900000036
+      quadratic: 0.0320000015
+      cutOff: 0
+      outerCutOff: 0
+      active: true
+      mode: 4

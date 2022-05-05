@@ -835,7 +835,7 @@ static void ShowDemoWindowWidgets()
                     if (test_drag_and_drop && ImGui::BeginDragDropSource())
                     {
                         ImGui::SetDragDropPayload("_TREENODE", NULL, 0);
-                        ImGui::Text("This is a drag and drop source");
+                        ImGui::Text("This is a drag and drop source");	
                         ImGui::EndDragDropSource();
                     }
                     if (node_open)

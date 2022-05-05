@@ -16,11 +16,12 @@
 void ti::ImGuiLayer::Init() {
 	auto& engine = registry->Store<EngineProperties>();
 
-	main_fbo = FrameBuffer_Create(engine.width, engine.height);
+	if (main_fbo == nullptr)
+		main_fbo = FrameBuffer_Create(engine.width, engine.height);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO &io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 	io.ConfigDockingWithShift = true;
@@ -59,17 +60,16 @@ void ti::ImGuiLayer::BeginMain() {
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(ImVec2(engine.context_width, engine.context_height));
 
-
 	static bool p_open;
-	
-	ImGui::Begin("DockSpace", &p_open, window_flags);
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar(2);
 
-		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-		}
+	ImGui::Begin("DockSpace", &p_open, window_flags);
+	ImGui::PopStyleVar();
+	ImGui::PopStyleVar(2);
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+	}
 	ImGui::End();
 
 	static bool show_demo = true;
@@ -93,9 +93,9 @@ void ti::ImGuiLayer::EndMain() {
 
 	main_fbo->UnBind();
 
-	ImGui::GetWindowDrawList()->AddImage((void*)main_fbo->id, ImVec2(engine.posx, engine.posy), ImVec2(engine.posx + engine.width, engine.posy + engine.height), ImVec2(0, (float)engine.height/engine.context_height), ImVec2((float)engine.width/engine.context_width, 0));
+	ImGui::GetWindowDrawList()->AddImage((void*)main_fbo->id, ImVec2(engine.posx, engine.posy), ImVec2(engine.posx + engine.width, engine.posy + engine.height), ImVec2(0, (float)engine.height / engine.context_height), ImVec2((float)engine.width / engine.context_width, 0));
 	ImGui::End();
-	
+
 	Update();
 
 	ImGui::Render();
@@ -221,9 +221,9 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 	if (registry->Contains<MeshFilter>(entity)) {
 		if (ImGui::CollapsingHeader("MeshFilter", &meshfilter_open, flags)) {
 			auto& meshfilter = registry->Get<MeshFilter>(entity);
-			
+
 			if (ImGui::BeginCombo("Mesh", meshfilter.mesh.c_str(), ImGuiComboFlags_NoArrowButton)) {
-				for (auto& pair: registry->Store<ti::MeshRegistry>().registry) {
+				for (auto& pair : registry->Store<ti::MeshRegistry>().registry) {
 					if (ImGui::Selectable(pair.first.c_str()))
 						meshfilter.mesh = pair.first;
 				}
@@ -261,7 +261,7 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 			ImGui::Spacing();
 
 			if (ImGui::BeginCombo("Material", meshrenderer.material.c_str(), ImGuiComboFlags_NoArrowButton)) {
-				for (auto& pair: registry->Store<ti::MaterialRegistry>().registry) {
+				for (auto& pair : registry->Store<ti::MaterialRegistry>().registry) {
 					if (ImGui::Selectable(pair.first.c_str()))
 						meshrenderer.material = pair.first;
 				}
@@ -303,7 +303,7 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 
 	if (ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
 		ImGui::OpenPopup("New Component");
-		
+
 	if (ImGui::BeginPopup("New Component")) {
 		if (ImGui::Selectable("MeshFilter") && !registry->Contains<MeshFilter>(entity)) {
 			registry->Add<MeshFilter>(entity);
@@ -325,25 +325,6 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 			registry->Add<Light>(entity);
 			light_open = true;
 		}
-		// if (ImGui::Selectable("Rigidbody") && !registry->Contains<Rigidbody>(entity)) {
-		// 	registry->Add<Rigidbody>(entity);
-		// 	rigidbody_open = true;
-		// }
-		// if (ImGui::Selectable("Rigidbody2D") && !registry->Contains<Rigidbody2D>(entity)) {
-			// registry->Add<Rigidbody2D>(entity);
-		// }
-		// if (ImGui::Selectable("AABBCollider") && !registry->Contains<AABBCollider>(entity)) {
-			// registry->Add<AABBCollider>(entity);
-		// }
-		// if (ImGui::Selectable("OBBCollider") && !registry->Contains<OBBCollider>(entity)) {
-			// registry->Add<OBBCollider>(entity);
-		// }
-		// if (ImGui::Selectable("MeshCollider") && !registry->Contains<MeshCollider>(entity)) {
-		// 	registry->Add<MeshCollider>(entity);
-		// }
-		// if (ImGui::Selectable("SphereCollider") && !registry->Contains<SphereCollider>(entity)) {
-		// 	registry->Add<SphereCollider>(entity);
-		// }
 		ImGui::EndPopup();
 	}
 
@@ -357,34 +338,43 @@ ti::ECS::Entity ti::ImGuiLayer::Heirarchy() {
 
 	static ti::ECS::Entity selected_entity;
 
-	for (auto& entity: registry->View<Tag>()) {
+	for (auto& entity : registry->View<Tag>()) {
 		auto& tag = registry->Get<Tag>(entity);
 
-		ImGui::TreeNodeEx(tag.name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		if (selected_entity == entity) flags |= ImGuiTreeNodeFlags_Selected;
+
+		ImGui::TreeNodeEx(tag.name.c_str(), flags);
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
-			// ImGui::OpenPopup("Properties");
-
-			// std::cout << "hello\n";
-
-			// if (ImGui::BeginPopup("Properties")) {
-			// 	if (ImGui::Selectable("Delete")) {
-			// 		registry->Destroy(entity);
-			// 	}
-
-			// 	ImGui::EndPopup();
-			// }
-		} else if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || !selected_entity) {
+			ImGui::OpenPopup("Properties");
+		}
+		
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || !selected_entity) {
 			selected_entity = entity;
 		}
 	}
-	
+
+	if (ImGui::BeginPopup("Properties")) {
+		if (ImGui::Selectable("Delete")) {
+			registry->Destroy(selected_entity);
+			selected_entity = 0;
+		}
+		if (ImGui::Selectable("Copy")) {
+			// registry->Store<Functions>().CopyEntity();
+			selected_entity = 0;
+		}
+
+		ImGui::EndPopup();
+	}
+
 	if (ImGui::Button("Add Enity", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
 		ImGui::OpenPopup("New Entity");
-		
+
 	if (ImGui::BeginPopup("New Entity")) {
 		auto& functions = registry->Store<ti::Functions>();
-		
+
 		if (ImGui::Selectable("Empty Entity")) {
 			selected_entity = functions.AddEmptyEntity();
 		}
@@ -414,7 +404,7 @@ void ti::ImGuiLayer::MaterialRegistry() {
 
 	ImGui::Begin("Material Registry");
 
-	for (auto& pair: registry->Store<ti::MaterialRegistry>().registry) {
+	for (auto& pair : registry->Store<ti::MaterialRegistry>().registry) {
 		auto& name = pair.first;
 		auto& material = pair.second;
 
@@ -436,12 +426,12 @@ void ti::ImGuiLayer::MeshRegistry() {
 
 	ImGui::Begin("Mesh Registry");
 
-	for (auto& pair: registry->Store<ti::MeshRegistry>().registry) {
+	for (auto& pair : registry->Store<ti::MeshRegistry>().registry) {
 		auto& name = pair.first;
 		auto& mesh = pair.second;
 
 		if (ImGui::TreeNode(name.c_str())) {
-			
+
 
 			ImGui::TreePop();
 		}

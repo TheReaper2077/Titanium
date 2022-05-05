@@ -14,6 +14,7 @@ namespace ti {
 	namespace Component {
 		struct Texture {
 			Texture2D *texture;
+			
 			glm::vec2 uv0;
 			glm::vec2 uv1;
 		};

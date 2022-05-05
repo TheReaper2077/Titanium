@@ -12,7 +12,7 @@ namespace ti {
 	public:
 		ti::ECS::Registry* registry;
 
-		FrameBuffer* main_fbo;
+		FrameBuffer* main_fbo = nullptr;
 
 		void Init();
 

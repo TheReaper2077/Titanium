@@ -102,9 +102,9 @@ ti::ECS::Entity ti::Functions::AddSpriteEntity() {
 }
 
 void ti::Functions::SaveEntities() {
-	Serialize(registry, "scene.yaml");
+	Serialize(registry, "D:\\C++\\2.5D Engine\\assets\\scene.yaml");
 }
 
 void ti::Functions::LoadEntities() {
-	DeSerialize(registry, "scene.yaml");
+	DeSerialize(registry, "D:\\C++\\2.5D Engine\\assets\\scene.yaml");
 }

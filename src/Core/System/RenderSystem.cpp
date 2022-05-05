@@ -398,20 +398,21 @@ void ti::System::RenderSystem::Update(double dt) {
 	int vertexcount = registry->View<Tag, Transform, SpriteRenderer>().size() * 4;
 
 	if (vertexcount) {
-		float* vertices = (float*)malloc(sizeof(float) * (3 + 4 + 2) * vertexcount);
-
 		uint32_t flags = POSITION_ATTRIB_BIT | COLOR_ATTRIB_BIT | UV0_ATTRIB_BIT;
 		auto& context = registry->Store<SpriteRendererRegistry>().GetSpriteRendererContext(flags);
+		context.vertexcount = vertexcount;
 		SetModel(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)));
+
+		static IndexBuffer* indexbuffer;
 
 		if (context.vertexarray == nullptr)
 			context.vertexarray = GetVertexArray(flags);
 		if (context.vertexbuffer == nullptr)
 			context.vertexbuffer = VertexBuffer_Create();
-		if (context.indexbuffer == nullptr)
-			context.indexbuffer = IndexBuffer_Create(context.vertexarray);
+		if (indexbuffer == nullptr)
+			indexbuffer = IndexBuffer_Create(context.vertexarray);
 
-		context.vertexcount = vertexcount;
+		float* vertices = (float*)malloc(sizeof(float) * (3 + 4 + 2) * context.vertexcount);
 
 		int i = 0;
 		for (auto& entity : registry->View<Tag, Transform, SpriteRenderer>()) {
@@ -487,7 +488,9 @@ void ti::System::RenderSystem::Update(double dt) {
 		context.vertexbuffer->Allocate(sizeof(float) * (3 + 4 + 2) * context.vertexcount);
 		context.vertexbuffer->AddDataDynamic(vertices, sizeof(float) * (3 + 4 + 2) * context.vertexcount);
 
-		if (context.indexcount < context.vertexcount * 1.5) {
+		static int indexcount;
+
+		if (indexcount < context.vertexcount * 1.5) {
 			uint32_t* indices = (uint32_t*)malloc(sizeof(unsigned int) * context.vertexcount * 1.5);
 			for (int i = 0; i < context.vertexcount / 4; i += 4) {
 				indices[int(i * 1.5 + 0)] = 0 + i;
@@ -498,13 +501,13 @@ void ti::System::RenderSystem::Update(double dt) {
 				indices[int(i * 1.5 + 5)] = 0 + i;
 			}
 
-			context.indexcount = context.vertexcount * 1.5;
-			context.indexbuffer->AddData(indices, sizeof(uint32_t) * context.vertexcount * 1.5);
+			indexcount = context.vertexcount * 1.5;
+			indexbuffer->AddData(indices, sizeof(uint32_t) * context.vertexcount * 1.5);
 		}
 
 		context.vertexarray->Bind();
 		context.vertexarray->BindVertexBuffer(context.vertexbuffer, context.vertexarray->stride);
-		context.vertexarray->BindIndexBuffer(context.indexbuffer);
+		context.vertexarray->BindIndexBuffer(indexbuffer);
 
 		glDrawElements(GL_TRIANGLES, context.vertexcount * 1.5, GL_UNSIGNED_INT, nullptr);
 		auto& engine = registry->Store<EngineProperties>();
