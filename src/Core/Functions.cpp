@@ -101,6 +101,28 @@ ti::ECS::Entity ti::Functions::AddSpriteEntity() {
 	return entity;
 }
 
+void ti::Functions::DuplicateEntity(ti::ECS::Entity entity) {
+	auto created_entity = registry->Create();
+
+	registry->Add<ti::Component::Tag>(created_entity, registry->Get<ti::Component::Tag>(entity).name, uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
+	registry->Add<ti::Component::Transform>(created_entity, registry->Get<ti::Component::Transform>(entity));
+	
+	if (registry->Contains<ti::Component::Camera>(entity))
+		registry->Add<ti::Component::Camera>(created_entity, registry->Get<ti::Component::Camera>(entity));
+	
+	if (registry->Contains<ti::Component::Light>(entity))
+		registry->Add<ti::Component::Light>(created_entity, registry->Get<ti::Component::Light>(entity));
+	
+	if (registry->Contains<ti::Component::MeshFilter>(entity))
+		registry->Add<ti::Component::MeshFilter>(created_entity, registry->Get<ti::Component::MeshFilter>(entity));
+	
+	if (registry->Contains<ti::Component::SpriteRenderer>(entity))
+		registry->Add<ti::Component::SpriteRenderer>(created_entity, registry->Get<ti::Component::SpriteRenderer>(entity));
+	
+	if (registry->Contains<ti::Component::MeshRenderer>(entity))
+		registry->Add<ti::Component::MeshRenderer>(created_entity, registry->Get<ti::Component::MeshRenderer>(entity));
+}
+
 void ti::Functions::SaveEntities() {
 	Serialize(registry, "D:\\C++\\2.5D Engine\\assets\\scene.yaml");
 }

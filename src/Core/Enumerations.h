@@ -38,7 +38,6 @@ namespace ti {
 
 	enum LightMode {
 		Point = 0,
-		Flash,
 		Spot,
 		Area,
 		Directional,

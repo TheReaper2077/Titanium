@@ -183,7 +183,7 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 
 			auto& light = registry->Get<Light>(entity);
 
-			static std::string total_modes[] = { "Point", "Flash", "Spot", "Area", "Directional" };
+			static std::string total_modes[] = { "Point", "Spot", "Area", "Directional" };
 			if (ImGui::BeginCombo("mode", total_modes[light.mode].c_str(), ImGuiComboFlags_NoArrowButton)) {
 				for (int i = 0; i < LightMode_COUNT; i++) {
 					if (total_modes[i] != total_modes[light.mode])
@@ -334,18 +334,25 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 ti::ECS::Entity ti::ImGuiLayer::Heirarchy() {
 	using namespace ti::Component;
 
+	auto& events = registry->Store<Events>();
+
 	ImGui::Begin("Scene Hierarchy");
 
 	static ti::ECS::Entity selected_entity;
+	static bool hovered;
 
 	for (auto& entity : registry->View<Tag>()) {
 		auto& tag = registry->Get<Tag>(entity);
 
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-		if (selected_entity == entity) flags |= ImGuiTreeNodeFlags_Selected;
+		if (selected_entity == entity)
+			flags |= ImGuiTreeNodeFlags_Selected;
 
 		ImGui::TreeNodeEx(tag.name.c_str(), flags);
+
+		if (selected_entity == entity)
+			hovered = ImGui::IsItemFocused();
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
 			ImGui::OpenPopup("Properties");
@@ -361,13 +368,17 @@ ti::ECS::Entity ti::ImGuiLayer::Heirarchy() {
 			registry->Destroy(selected_entity);
 			selected_entity = 0;
 		}
-		if (ImGui::Selectable("Copy")) {
-			// registry->Store<Functions>().CopyEntity();
-			selected_entity = 0;
+		if (ImGui::Selectable("Duplicate")) {
+			registry->Store<Functions>().DuplicateEntity(selected_entity);
 		}
 
 		ImGui::EndPopup();
 	}
+
+	if (hovered && events.key_pressed.contains(SDL_SCANCODE_LCTRL) && events.key_pressed.contains(SDL_SCANCODE_D))
+		registry->Store<Functions>().DuplicateEntity(selected_entity);
+	
+	ImGui::Spacing();
 
 	if (ImGui::Button("Add Enity", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
 		ImGui::OpenPopup("New Entity");
@@ -412,6 +423,9 @@ void ti::ImGuiLayer::MaterialRegistry() {
 			ImGui::DragFloat3("Ambient", &material.ambient[0], 0.001, 0.0, 1.0, "%.3f");
 			ImGui::DragFloat3("Diffuse", &material.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
 			ImGui::DragFloat3("Specular", &material.specular[0], 0.001, 0.0, 1.0, "%.3f");
+			ImGui::DragFloat3("Albedo", &material.albedo[0], 0.001, 0.0, 1.0, "%.3f");
+			ImGui::DragFloat("Roughness", &material.roughness, 0.001, 0.0, 1.0, "%.3f");
+			ImGui::DragFloat("Metallic", &material.metallic, 0.001, 0.0, 1.0, "%.3f");
 			ImGui::DragFloat("Shininess", &material.shininess, 0.1);
 
 			ImGui::TreePop();

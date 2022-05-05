@@ -3,10 +3,47 @@
 #include "Components/Components.h"
 #include <OpenGL.h>
 #include "ECS.h"
+#include <string>
 
-// #define CALC_FLASH_LIGHT "CalcFlashLight"
-// #define CALC_SPOT_LIGHT "CalcSpotLight"
 // #define CALC_AREA_LIGHT "CalcAreaLight"
+// #define CALC_SPOT_LIGHT \
+// // float theta = dot(lightDir, normalize(-light.direction));
+// "vec3 CalculatePointLight(Material mat, Light light, vec3 normal, vec3 view_dir) {\n" \
+// "	vec3 light_dir = normalize(light.position - frag_pos);\n" \
+// "\n" \
+// "	float theta = dot(light_dir, normalize(-light.direction));\n" \
+// "	if (theta > light.cutOff) {\n" \
+// "		vec3 ambient;\n" \
+// "		float diff = max(dot(normal, light_dir), 0.0);\n" \
+// "		float spec = max(dot(view_dir, reflect(-light_dir, normal)), 0.0);\n" \
+// "		vec3 diffuse;\n" \
+// "		vec3 specular;\n" \
+// "		if (ambient_index > 0)\n" \
+// "			ambient = light.ambient * texture(mat.ambient_map, uv0).rgb * mat.ambient;\n" \
+// "		else\n" \
+// "			ambient = light.ambient * mat.ambient;\n" \
+// "		if (diffuse_index > 0)\n" \
+// "			diffuse = light.diffuse * diff * texture(mat.diffuse_map, uv0).rgb * mat.diffuse;\n" \
+// "		else\n" \
+// "			diffuse = light.diffuse * diff * mat.diffuse;\n" \
+// "		if (specular_index > 0)\n" \
+// "			specular = light.specular * spec * texture(mat.specular_map, uv0).rgb * mat.specular;\n" \
+// "		else\n" \
+// "			specular = light.specular * spec * mat.specular;\n" \
+// "\n" \
+// "		float distance = length(light.position - frag_pos);\n" \
+// "		float attenuation = 1.0f / float(light.constant + light.linear * distance + light.quadratic * (distance * distance));\n" \
+// "\n" \
+// "		diffuse *= attenuation;\n" \
+// "		specular *= attenuation;\n" \
+// "		return specular + ambient + diffuse;\n" \
+// "	}\n" \
+// "\n" \
+// "	if (ambient_index > 0)\n" \
+// "		return light.ambient * texture(mat.ambient_map, uv0).rgb * mat.ambient;\n" \
+// "	else\n" \
+// "		return light.ambient * mat.ambient;\n" \
+// "}\n"
 
 #define CALC_POINT_LIGHT \
 "vec3 CalculatePointLight(Material mat, Light light, vec3 normal, vec3 view_dir) {\n" \
@@ -187,7 +224,6 @@ namespace ti {
 
 			int point_light = 0;
 			int dir_light = 0;
-			int flash_light = 0;
 			int spot_light = 0;
 			int area_light = 0;
 
@@ -198,29 +234,36 @@ namespace ti {
 
 				if (light.active) {
 					if (light.mode == Point) point_light++;
-					if (light.mode == Flash) flash_light++;
 					if (light.mode == Spot) spot_light++;
 					if (light.mode == Area) area_light++;
 					if (light.mode == Directional) dir_light++;
 				}
 			}
 
-			return RegisterShader(0, point_light, dir_light, flash_light, spot_light, area_light);
+			return RegisterShader(0, point_light, dir_light, spot_light, area_light);
 		}
 
-		Shader* RegisterShader(uint32_t shader_flags, int point_light, int dir_light, int flash_light, int spot_light, int area_light) {
-			std::string id = std::to_string(shader_flags) + '_' + std::to_string(dir_light) + '_' + std::to_string(point_light) + '_' + std::to_string(flash_light) + '_' + std::to_string(spot_light) + '_' + std::to_string(area_light);
+		void AddShader(Shader* shader) {
+			registry[shader->name] = shader;
+		}
 
+		Shader* GetShader(std::string name) {
+			return registry[name];
+		}
+
+		Shader* RegisterShader(uint32_t shader_flags, int point_light, int dir_light, int spot_light, int area_light) {
+			std::string id = std::to_string(shader_flags) + '_' + std::to_string(dir_light) + '_' + std::to_string(point_light) + '_' + std::to_string(spot_light) + '_' + std::to_string(area_light);
+	
 			if (registry.find(id) == registry.end()) {
 				std::string fragmentshader = FS_INITIALISE;
 
-				fragmentshader += SetUniforms(point_light, dir_light, flash_light, spot_light, area_light);
-				fragmentshader += SetFunctions(point_light, dir_light, flash_light, spot_light, area_light);
+				fragmentshader += SetUniforms(point_light, dir_light, spot_light, area_light);
+				fragmentshader += SetFunctions(point_light, dir_light, spot_light, area_light);
 
 				fragmentshader += "\nvoid main() {\n";
 				fragmentshader += "	if (has_texture > 0) {\n		gl_FragData[0] = color;\n		return;\n	}";
 
-				fragmentshader += SetLogic(point_light, dir_light, flash_light, spot_light, area_light);
+				fragmentshader += SetLogic(point_light, dir_light, spot_light, area_light);
 
 				fragmentshader += "	gl_FragData[0] = vec4(result, 1.0);\n}\n";
 				// fragmentshader += "	gl_FragColor = vec4(result, 1.0);\n}\n";
@@ -233,7 +276,7 @@ namespace ti {
 			return registry[id];
 		}
 
-		std::string SetUniforms(int point_light, int dir_light, int flash_light, int spot_light, int area_light) {
+		std::string SetUniforms(int point_light, int dir_light, int spot_light, int area_light) {
 			std::string uniforms;
 
 			for (int i = 0; i < point_light; i++) {
@@ -241,9 +284,6 @@ namespace ti {
 			}
 			for (int i = 0; i < dir_light; i++) {
 				uniforms += "uniform Light directional" + std::to_string(i) + ";\n";
-			}
-			for (int i = 0; i < flash_light; i++) {
-				uniforms += "uniform Light flash" + std::to_string(i) + ";\n";
 			}
 			for (int i = 0; i < spot_light; i++) {
 				uniforms += "uniform Light spot" + std::to_string(i) + ";\n";
@@ -257,7 +297,7 @@ namespace ti {
 			return uniforms;
 		}
 
-		std::string SetFunctions(int point_light, int dir_light, int flash_light, int spot_light, int area_light) {
+		std::string SetFunctions(int point_light, int dir_light, int spot_light, int area_light) {
 			std::string functions;
 
 			if (dir_light) {
@@ -266,13 +306,16 @@ namespace ti {
 			if (point_light) {
 				functions += CALC_POINT_LIGHT;
 			}
+			if (spot_light) {
+				// functions += CALC_SPOT_LIGHT;
+			}
 
 			functions += "\n";
 
 			return functions;
 		}
 
-		std::string SetLogic(int point_light, int dir_light, int flash_light, int spot_light, int area_light) {
+		std::string SetLogic(int point_light, int dir_light, int spot_light, int area_light) {
 			std::string logic = "	vec3 view_dir = normalize(view_pos - frag_pos);\n	vec3 result;\n\n";
 
 			for (int i = 0; i < dir_light; i++) {
@@ -282,11 +325,8 @@ namespace ti {
 			for (int i = 0; i < point_light; i++) {
 				logic += "	result += CalculatePointLight(material, point" + std::to_string(i) + ", normal, view_dir);\n";
 			}
-			// for (int i = 0; i < point_light; i++) {
-			// 	logic += "result += CalculatePointLight(material, point" + std::to_string(i) + ", normal, view_dir);\n";
-			// }
 			// for (int i = 0; i < spot_light; i++) {
-			// 	logic += "result += CalculatePointLight(material, point" + std::to_string(i) + ", normal, view_dir);\n";
+			// 	logic += "	result += CalculateSpotLight(material, spot" + std::to_string(i) + ", normal, view_dir);\n";
 			// }
 			// for (int i = 0; i < area_light; i++) {
 			// 	logic += "result += CalculatePointLight(material, point" + std::to_string(i) + ", normal, view_dir);\n";

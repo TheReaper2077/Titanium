@@ -36,6 +36,8 @@ namespace ti {
 		ti::ECS::Entity AddLightEntity();
 		ti::ECS::Entity AddCameraEntity();
 		ti::ECS::Entity AddSpriteEntity();
+
+		void DuplicateEntity(ti::ECS::Entity entity);
 		
 		void SaveEntities();
 		void LoadEntities();

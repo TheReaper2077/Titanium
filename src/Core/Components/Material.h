@@ -36,6 +36,10 @@ namespace ti {
 			Texture2D* diffuse_map = nullptr;
 			Texture2D* specular_map = nullptr;
 
+			float roughness = 0.5;
+			float metallic = 0;
+			glm::vec3 albedo = glm::vec3(1, 0, 0);
+
 			// Shader* shader;
 			std::string name;
 
