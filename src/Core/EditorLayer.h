@@ -1,5 +1,6 @@
 #pragma once
 
+#include <deque>
 #include "Engine.h"
 #include "Components/Components.h"
 #include "MaterialRegistry.h"
@@ -10,6 +11,7 @@
 #include <imgui_stdlib.h>
 #include <imgui_impl_opengl3.h>
 #include <ImGuizmo.h>
+// #include "Serializer.h"
 
 #define DEGREE_TO_RADIANS(x) ((x) * (3.14159265359/180.0))
 #define RADIANS_TO_DEGREE(x) ((x) * (180.0/3.14159265359))
@@ -67,7 +69,9 @@ namespace ti {
 			ImGui::SetNextWindowPos(ImVec2(0, 0));
 			ImGui::SetNextWindowSize(ImVec2(engine.context_width, engine.context_height));
 
+
 			static bool p_open;
+			
 			ImGui::Begin("DockSpace", &p_open, window_flags);
 				ImGui::PopStyleVar();
 				ImGui::PopStyleVar(2);
@@ -112,8 +116,27 @@ namespace ti {
 			using namespace ti::Component;
 
 			static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+			static ECS::Entity last_entity;
 
 			if (!entity) return;
+
+			static bool camera_open;
+			static bool light_open;
+			static bool meshfilter_open;
+			static bool spriterenderer_open;
+			static bool meshrenderer_open;
+
+			auto& funnctions = registry->Store<Functions>();
+
+			if (entity != last_entity) {
+				last_entity = entity;
+
+				camera_open = true;
+				light_open = true;
+				meshfilter_open = true;
+				spriterenderer_open = true;
+				meshrenderer_open = true;
+			}
 
 			ImGui::Begin("Inspector");
 
@@ -121,7 +144,7 @@ namespace ti {
 				if (ImGui::CollapsingHeader("Tag", flags)) {
 					auto& tag = registry->Get<Tag>(entity);
 
-					// ImGui::InputText("Name", tag.name.c_str(), 20*sizeof(char));
+					ImGui::InputText("name", &tag.name);
 				}
 			}
 
@@ -137,10 +160,8 @@ namespace ti {
 				}
 			}
 
-			static bool closing;
-
 			if (registry->Contains<Camera>(entity)) {
-				if (ImGui::CollapsingHeader("Camera", flags)) {
+				if (ImGui::CollapsingHeader("Camera", &camera_open, flags)) {
 					auto& camera = registry->Get<Camera>(entity);
 
 					ImGui::Checkbox("Enable", &camera.enable);
@@ -153,20 +174,23 @@ namespace ti {
 
 					ImGui::Spacing();
 
-					static std::string total_modes[] = { "FPS", "TPS", "Editor" };
-					if (ImGui::BeginCombo("Type", total_modes[camera.type].c_str(), ImGuiComboFlags_NoArrowButton)) {
-						for (int i = 0; i < LightMode_COUNT; i++) {
+					static const char* total_modes[] = { "FPS", "TPS", "Editor" };
+					if (ImGui::BeginCombo("Type", total_modes[camera.type], ImGuiComboFlags_NoArrowButton)) {
+						for (int i = 0; i < CameraType_COUNT; i++) {
 							if (total_modes[i] != total_modes[camera.type])
-								if (ImGui::Selectable(total_modes[i].c_str(), true))
+								if (ImGui::Selectable(total_modes[i], true))
 									camera.type = (CameraType)i;
 						}
 						ImGui::EndCombo();
 					}
+				} else if (!camera_open) {
+					registry->Remove<Camera>(entity);
 				}
 			}
 
 			if (registry->Contains<Light>(entity)) {
-				if (ImGui::CollapsingHeader("Light", flags)) {
+				if (ImGui::CollapsingHeader("Light", &light_open, flags)) {
+
 					auto& light = registry->Get<Light>(entity);
 
 					static std::string total_modes[] = { "Point", "Flash", "Spot", "Area", "Directional" };
@@ -199,11 +223,13 @@ namespace ti {
 						ImGui::DragFloat("Linear", &light.linear, 0.001, 0.0, 1.0, "%.3f");
 						ImGui::DragFloat("Quadratic", &light.quadratic, 0.001, 0.0, 2.0, "%.3f");
 					}
+				} else if (!light_open) {
+					registry->Remove<Light>(entity);
 				}
 			}
 
 			if (registry->Contains<MeshFilter>(entity)) {
-				if (ImGui::CollapsingHeader("MeshFilter", flags)) {
+				if (ImGui::CollapsingHeader("MeshFilter", &meshfilter_open, flags)) {
 					auto& meshfilter = registry->Get<MeshFilter>(entity);
 					
 					if (ImGui::BeginCombo("Mesh", meshfilter.mesh.c_str(), ImGuiComboFlags_NoArrowButton)) {
@@ -213,27 +239,41 @@ namespace ti {
 						}
 						ImGui::EndCombo();
 					}
+				} else if (!meshfilter_open) {
+					registry->Remove<MeshFilter>(entity);
 				}
 			}
 
 			if (registry->Contains<SpriteRenderer>(entity)) {
-				if (ImGui::CollapsingHeader("SpriteRenderer", flags)) {
+				if (ImGui::CollapsingHeader("SpriteRenderer", &spriterenderer_open, flags)) {
 					auto& spriterenderer = registry->Get<SpriteRenderer>(entity);
 
-					// spriterenderer
+					ImGui::Spacing();
+
+					ImGui::Checkbox("Visible", &spriterenderer.visible);
+
+					ImGui::Spacing();
+
 					ImGui::ColorPicker4("Color", &spriterenderer.color[0]);
+				} else if (!spriterenderer_open) {
+					registry->Remove<SpriteRenderer>(entity);
 				}
 			}
 
 			if (registry->Contains<MeshRenderer>(entity)) {
-				if (ImGui::CollapsingHeader("MeshRenderer", flags)) {
+				if (ImGui::CollapsingHeader("MeshRenderer", &meshrenderer_open, flags)) {
 					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
+
+					ImGui::Spacing();
+
+					ImGui::Checkbox("Visible", &meshrenderer.visible);
+
+					ImGui::Spacing();
 
 					if (ImGui::BeginCombo("Material", meshrenderer.material.c_str(), ImGuiComboFlags_NoArrowButton)) {
 						for (auto& pair: registry->Store<ti::MaterialRegistry>().registry) {
-							// if (meshrenderer.material != pair.first)
-								if (ImGui::Selectable(pair.first.c_str()))
-									meshrenderer.material = pair.first;
+							if (ImGui::Selectable(pair.first.c_str()))
+								meshrenderer.material = pair.first;
 						}
 						ImGui::EndCombo();
 					}
@@ -264,6 +304,8 @@ namespace ti {
 					ImGui::Checkbox("UV6", &check);
 					check = (meshrenderer.flags & UV7_ATTRIB_BIT);
 					ImGui::Checkbox("UV7", &check);
+				} else if (!meshrenderer_open) {
+					registry->Remove<MeshRenderer>(entity);
 				}
 			}
 
@@ -275,22 +317,28 @@ namespace ti {
 			if (ImGui::BeginPopup("New Component")) {
 				if (ImGui::Selectable("MeshFilter") && !registry->Contains<MeshFilter>(entity)) {
 					registry->Add<MeshFilter>(entity);
+					meshfilter_open = true;
 				}
 				if (ImGui::Selectable("MeshRenderer") && !registry->Contains<MeshRenderer>(entity)) {
 					registry->Add<MeshRenderer>(entity);
+					meshrenderer_open = true;
 				}
 				if (ImGui::Selectable("SpriteRenderer") && !registry->Contains<SpriteRenderer>(entity)) {
 					registry->Add<SpriteRenderer>(entity);
+					spriterenderer_open = true;
 				}
 				if (ImGui::Selectable("Camera") && !registry->Contains<Camera>(entity)) {
 					registry->Add<Camera>(entity);
+					camera_open = true;
 				}
 				if (ImGui::Selectable("Light") && !registry->Contains<Light>(entity)) {
 					registry->Add<Light>(entity);
+					light_open = true;
 				}
-				if (ImGui::Selectable("Rigidbody") && !registry->Contains<Rigidbody>(entity)) {
-					registry->Add<Rigidbody>(entity);
-				}
+				// if (ImGui::Selectable("Rigidbody") && !registry->Contains<Rigidbody>(entity)) {
+				// 	registry->Add<Rigidbody>(entity);
+				// 	rigidbody_open = true;
+				// }
 				// if (ImGui::Selectable("Rigidbody2D") && !registry->Contains<Rigidbody2D>(entity)) {
 					// registry->Add<Rigidbody2D>(entity);
 				// }
@@ -324,7 +372,19 @@ namespace ti {
 
 				ImGui::TreeNodeEx(tag.name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
 
-				if (ImGui::IsItemClicked() || !selected_entity) {
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+					// ImGui::OpenPopup("Properties");
+
+					// std::cout << "hello\n";
+
+					// if (ImGui::BeginPopup("Properties")) {
+					// 	if (ImGui::Selectable("Delete")) {
+					// 		registry->Destroy(entity);
+					// 	}
+
+					// 	ImGui::EndPopup();
+					// }
+				} else if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || !selected_entity) {
 					selected_entity = entity;
 				}
 			}
@@ -415,12 +475,18 @@ namespace ti {
 
 		void Update() {
 			using namespace ti::Component;
+			auto& functions = registry->Store<Functions>();
+			auto& events = registry->Store<Events>();
+
+			functions.runtime_creation = false;
 
 			auto entity = Heirarchy();
 			Inspector(entity);
 			Status();
 			MaterialRegistry();
 			MeshRegistry();
+
+			functions.runtime_creation = true;
 		}
 
 		void EventHandler() {

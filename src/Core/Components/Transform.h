@@ -1,5 +1,7 @@
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/common.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -35,6 +37,10 @@ namespace ti {
 				position = glm::vec3(0, 0, 0);
 				scale = glm::vec3(0, 0, 0);
 				rotation = glm::vec3(0, 0, 0);
+			}
+
+			void Save() {
+				
 			}
 		};
 	}

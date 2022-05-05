@@ -1,5 +1,6 @@
 #pragma once
 
+#include "uuid.h"
 #include "ECS.h"
 
 #include "Components/Components.h"
@@ -17,6 +18,11 @@ namespace ti {
 		Assimp::Importer* importer;
 
 		ti::ECS::Entity editor_camera = 0;
+
+		std::unordered_map<std::size_t, ECS::Entity> entities;
+
+		bool runtime_creation = false;
+		bool save_entities = false;
 
 		Functions() {
 			importer = new Assimp::Importer();
@@ -59,8 +65,9 @@ namespace ti {
 		ti::ECS::Entity AddEmptyEntity() {
 			auto entity = registry->Create();
 			
-			registry->Add<ti::Component::Tag>(entity, "Empty - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Tag>(entity, "Empty - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 			registry->Add<ti::Component::Transform>(entity);
+			if (!runtime_creation) save_entities = true;
 
 			return entity;
 		}
@@ -68,10 +75,11 @@ namespace ti {
 		ti::ECS::Entity AddMeshEntity() {
 			auto entity = registry->Create();
 			
-			registry->Add<ti::Component::Tag>(entity, "Mesh - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Tag>(entity, "Mesh - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 			registry->Add<ti::Component::Transform>(entity);
 			registry->Add<ti::Component::MeshFilter>(entity);
 			registry->Add<ti::Component::MeshRenderer>(entity);
+			if (!runtime_creation) save_entities = true;
 
 			return entity;
 		}
@@ -79,9 +87,10 @@ namespace ti {
 		ti::ECS::Entity AddLightEntity() {
 			auto entity = registry->Create();
 			
-			registry->Add<ti::Component::Tag>(entity, "Light - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Tag>(entity, "Light - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 			registry->Add<ti::Component::Transform>(entity);
 			registry->Add<ti::Component::Light>(entity);
+			if (!runtime_creation) save_entities = true;
 
 			return entity;
 		}
@@ -89,9 +98,10 @@ namespace ti {
 		ti::ECS::Entity AddCameraEntity() {
 			auto entity = registry->Create();
 			
-			registry->Add<ti::Component::Tag>(entity, "Camera - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Tag>(entity, "Camera - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 			registry->Add<ti::Component::Transform>(entity);
 			registry->Add<ti::Component::Camera>(entity, ti::Projection::PERSPECTIVE, false);
+			if (!runtime_creation) save_entities = true;
 
 			return entity;
 		}
@@ -99,11 +109,19 @@ namespace ti {
 		ti::ECS::Entity AddSpriteEntity() {
 			auto entity = registry->Create();
 
-			registry->Add<ti::Component::Tag>(entity, "Camera - " + std::to_string(entity), entity);
+			registry->Add<ti::Component::Tag>(entity, "Sprite - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 			registry->Add<ti::Component::Transform>(entity);
 			registry->Add<ti::Component::SpriteRenderer>(entity);
+			if (!runtime_creation) save_entities = true;
 
 			return entity;
+		}
+
+		void SaveEntities(const char* filename) {
+		}
+
+		void LoadEntities(const char* filename) {
+
 		}
 	};
 }

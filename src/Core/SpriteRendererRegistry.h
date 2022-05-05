@@ -1,7 +1,7 @@
 #pragma once
 
 #include <OpenGL.h>
-#include <unordered_map
+#include <unordered_map>
 
 namespace ti {
 	struct SpriteRendererContext {
@@ -12,10 +12,13 @@ namespace ti {
 		int vertexcount = 0;
 		uint32_t flags = 0;
 
+
+		SpriteRendererContext() {}
 		SpriteRendererContext(uint32_t flags) {
-			vertexarray = GetVertexArray(flags);
-			vertexbuffer = VertexBuffer_Create();
-			indexbuffer = IndexBuffer_Create(vertexarray);
+			// vertexarray = GetVertexArray(flags);
+			// vertexbuffer = VertexBuffer_Create();
+			// indexbuffer = IndexBuffer_Create(vertexarray);
+			this->flags = flags;
 		}
 	};
 

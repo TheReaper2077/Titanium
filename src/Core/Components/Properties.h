@@ -6,7 +6,8 @@ namespace ti {
 	namespace Component {
 		struct Tag {
 			std::string name;
-			unsigned int id;
+			std::string id;
+			bool save = false;
 		};
 	}
 }

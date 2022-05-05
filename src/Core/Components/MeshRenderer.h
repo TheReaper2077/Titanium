@@ -18,10 +18,12 @@ namespace ti {
 	namespace Component {
 		struct MeshRenderer {
 			std::string material;
-			bool lighting_enable = true;
 
 			VertexArray* vertexarray = nullptr;
 			uint32_t flags = POSITION_ATTRIB_BIT;
+
+			bool visible = true;
+			bool lighting = true;
 
 			MeshRenderer() {}
 			MeshRenderer(const aiScene* ai_scene, aiMesh* ai_mesh) {

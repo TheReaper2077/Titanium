@@ -1,12 +1,14 @@
 #pragma once
 
-#include "../ShaderRegistry.h"
-#include "System.h"
 #include <unordered_map>
 #include <iostream>
+
+#include "System.h"
 #include "../Functions.h"
 #include "../MaterialRegistry.h"
 #include "../MeshRegistry.h"
+#include "../SpriteRendererRegistry.h"
+#include "../ShaderRegistry.h"
 
 namespace ti {
 	namespace System {
@@ -406,6 +408,8 @@ namespace ti {
 					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
+					if (!meshrenderer.visible) continue;
+
 					if (!registry->Store<MaterialRegistry>().Contains(meshrenderer.material)) continue;
 
 					SetModel(transform.GetModel());
@@ -419,6 +423,8 @@ namespace ti {
 					auto& meshrenderer = registry->Get<MeshRenderer>(entity);
 					auto& transform = registry->Get<Transform>(entity);
 
+					if (!meshrenderer.visible) continue;
+
 					if (!registry->Store<MaterialRegistry>().Contains(meshrenderer.material)) continue;
 
 					SetModel(transform.GetModel());
@@ -427,11 +433,127 @@ namespace ti {
 					Render(TRIANGLE, meshrenderer.material, meshrenderer.vertexarray, mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
 				}
 
-				for (auto& entity: registry->View<Tag, Transform, SpriteRenderer>()) {
-					auto& transform = registry->Get<Transform>(entity);
-					auto& spriterenderer = registry->Get<SpriteRenderer>(entity);
+				int vertexcount = registry->View<Tag, Transform, SpriteRenderer>().size()*4;
 
+				if (vertexcount) {
+					float* vertices = (float*)malloc(sizeof(float) * (3 + 4 + 2) * vertexcount);
+
+					uint32_t flags = POSITION_ATTRIB_BIT | COLOR_ATTRIB_BIT | UV0_ATTRIB_BIT;
+					auto& context = registry->Store<SpriteRendererRegistry>().GetSpriteRendererContext(flags);
+					SetModel(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)));
+
+					if (context.vertexarray == nullptr)
+						context.vertexarray = GetVertexArray(flags);
+					if (context.vertexbuffer == nullptr)
+						context.vertexbuffer = VertexBuffer_Create();
+					if (context.indexbuffer == nullptr)
+						context.indexbuffer = IndexBuffer_Create(context.vertexarray);
 					
+					context.vertexcount = vertexcount;
+					
+					int i = 0;
+					for (auto& entity: registry->View<Tag, Transform, SpriteRenderer>()) {
+						auto& transform = registry->Get<Transform>(entity);
+						auto& spriterenderer = registry->Get<SpriteRenderer>(entity);
+						auto quaternion = transform.GetRotationQuat();
+
+						if (!spriterenderer.visible) {
+							context.vertexcount -= 4;
+							continue;
+						}
+
+						glm::vec3 pos00 = quaternion * glm::vec3(transform.position.x - transform.scale.x, transform.position.y - transform.scale.y, transform.position.z);
+						glm::vec3 pos01 = quaternion * glm::vec3(transform.position.x - transform.scale.x, transform.position.y + transform.scale.y, transform.position.z);
+						glm::vec3 pos10 = quaternion * glm::vec3(transform.position.x + transform.scale.x, transform.position.y - transform.scale.y, transform.position.z);
+						glm::vec3 pos11 = quaternion * glm::vec3(transform.position.x + transform.scale.x, transform.position.y + transform.scale.y, transform.position.z);
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 0] = pos00.x;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 1] = pos00.y;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 2] = pos00.z;
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 0] = spriterenderer.color.x;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 1] = spriterenderer.color.y;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 2] = spriterenderer.color.z;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 3] = spriterenderer.color.w;
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->uv0_offset + 0] = 0;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->uv0_offset + 1] = 0;
+						i++;
+
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 0] = pos01.x;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 1] = pos01.y;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 2] = pos01.z;
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 0] = spriterenderer.color.x;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 1] = spriterenderer.color.y;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 2] = spriterenderer.color.z;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 3] = spriterenderer.color.w;
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->uv0_offset + 0] = 0;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->uv0_offset + 1] = 1;
+						i++;
+
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 0] = pos10.x;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 1] = pos10.y;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 2] = pos10.z;
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 0] = spriterenderer.color.x;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 1] = spriterenderer.color.y;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 2] = spriterenderer.color.z;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 3] = spriterenderer.color.w;
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->uv0_offset + 0] = 1;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->uv0_offset + 1] = 0;
+						i++;
+
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 0] = pos11.x;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 1] = pos11.y;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->position_offset + 2] = pos11.z;
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 0] = spriterenderer.color.x;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 1] = spriterenderer.color.y;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 2] = spriterenderer.color.z;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->color_offset + 3] = spriterenderer.color.w;
+						
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->uv0_offset + 0] = 1;
+						vertices[i * context.vertexarray->elem_stride + context.vertexarray->uv0_offset + 1] = 1;
+						i++;
+					}
+
+					shader->SetUniformi("has_texture", 1);
+
+					context.vertexbuffer->Allocate(sizeof(float) * (3 + 4 + 2) * context.vertexcount);
+					context.vertexbuffer->AddDataDynamic(vertices, sizeof(float) * (3 + 4 + 2) * context.vertexcount);
+
+					if (context.indexcount < context.vertexcount * 1.5) {
+						uint32_t* indices = (uint32_t*)malloc(sizeof(unsigned int) * context.vertexcount * 1.5);
+						for (int i = 0; i < context.vertexcount/4; i += 4) {
+							indices[int(i * 1.5 + 0)] = 0 + i;
+							indices[int(i * 1.5 + 1)] = 1 + i;
+							indices[int(i * 1.5 + 2)] = 3 + i;
+							indices[int(i * 1.5 + 3)] = 2 + i;
+							indices[int(i * 1.5 + 4)] = 3 + i;
+							indices[int(i * 1.5 + 5)] = 0 + i;
+						}
+
+						context.indexcount = context.vertexcount * 1.5;
+						context.indexbuffer->AddData(indices, sizeof(uint32_t) * context.vertexcount * 1.5);
+					}
+					
+					context.vertexarray->Bind();
+					context.vertexarray->BindVertexBuffer(context.vertexbuffer, context.vertexarray->stride);
+					context.vertexarray->BindIndexBuffer(context.indexbuffer);
+					
+					glDrawElements(GL_TRIANGLES, context.vertexcount*1.5, GL_UNSIGNED_INT, nullptr);
+					auto& engine = registry->Store<EngineProperties>();
+					engine.drawcalls++;
+					engine.vertexcount += context.vertexcount;
+					engine.indexcount += context.vertexcount*1.5;
+
+					free(vertices);
+					vertices = nullptr;
+
+					shader->SetUniformi("has_texture", 0);
 				}
 			}
 		};

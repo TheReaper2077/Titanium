@@ -10,7 +10,7 @@
 
 namespace ti {
 	namespace Component {
-		struct TileMap {
+		struct Tilemap {
 			int* tiles;
 			int xmax;
 			int ymax;

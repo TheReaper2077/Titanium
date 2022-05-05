@@ -208,6 +208,7 @@ struct Shader {
 struct Texture2D {
 	TextureId id;
 	std::string type;
+	std::string filename;
 	uint32_t width, height, channels;
 
 	void Bind();
@@ -230,7 +231,7 @@ struct TextureArray2D {
 void OpenGL_CreateContext();
 void OpenGL_DestroyContext();
 
-FrameBuffer* FrameBuffer_Create(int width, int height);
+FrameBuffer* FrameBuffer_Create(int width, int height, bool picking = false);
 
 VertexArray* VertexArray_Create(std::vector<VertexArrayAttribDescriptor> layouts);
 

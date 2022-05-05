@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include <OpenGL.h>
 
 #include <glm/glm.hpp>
@@ -14,7 +12,7 @@
 
 namespace ti {
 	namespace Component {
-		struct TileMapRenderer {
+		struct TilemapRenderer {
 			bool lighting = false;
 		};
 	}

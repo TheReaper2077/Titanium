@@ -112,6 +112,15 @@ namespace ti {
 			void Remove(Entity entity) {
 				assert(componentarray_map.find(typeid(T).hash_code()) != componentarray_map.end());
 
+				if (!(entityid_map[entity] & (1 << GetComponentArray<T>()->type))) return;
+
+				std::cout << std::bitset<16>(entityid_map[entity]) << ' ' << std::bitset<16>(1 << GetComponentArray<T>()->type) << ' ';
+
+				entityid_map[entity] &= ~(1 << GetComponentArray<T>()->type);
+
+				std::cout << std::bitset<16>(entityid_map[entity]) << ' ' << typeid(T).name() << '\n';
+
+				EntityChanged(entity);
 				GetComponentArray<T>()->Destroy(entity);
 			}
 
@@ -126,6 +135,15 @@ namespace ti {
 			template <typename T, typename ...Args>
 			void Add(Entity entity, Args ...args) {
 				GetComponentArray<T>()->Add(entity, T{args...});
+
+				entityid_map[entity] |= (1 << GetComponentArray<T>()->type);
+
+				EntityChanged(entity);
+			}
+
+			template <typename T>
+			void Add(Entity entity, T data) {
+				GetComponentArray<T>()->Add(entity, data);
 
 				entityid_map[entity] |= (1 << GetComponentArray<T>()->type);
 

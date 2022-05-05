@@ -13,8 +13,8 @@ namespace ti {
 			float linear = 0.09;
 			float quadratic = 0.032;
 			
-			float cutOff;
-			float outerCutOff;
+			float cutOff = 0;
+			float outerCutOff = 0;
 
 			LightMode mode = Directional;
 

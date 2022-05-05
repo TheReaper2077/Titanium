@@ -36,7 +36,7 @@ namespace ti {
 
 							camera.first_mouse = true;
 
-							camera.projection = glm::perspective(glm::radians(camera.fov), (float)camera.width / camera.height, camera.near, camera.far);
+							camera.projection = glm::perspective(glm::radians(camera.fov), (float)camera.width / camera.height, camera.camera_near, camera.camera_far);
 							if (!camera.init) transform.position = glm::vec3(0, 0, 10);
 							camera.init = true;
 						}

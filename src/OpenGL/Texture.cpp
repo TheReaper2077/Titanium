@@ -21,6 +21,7 @@ Texture2D *Texture_LoadFile(const char* filename) {
 	auto* texture = Texture_Create();
 	
 	texture->Bind();
+	texture->filename = std::string(filename);
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);

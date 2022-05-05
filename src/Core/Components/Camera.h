@@ -24,8 +24,8 @@ namespace ti {
 			glm::vec3 Center = glm::vec3(0, 0, 0);
 			glm::vec3 Offset = glm::vec3(0, 0, 0);
 
-			Projection mode;
-			CameraType type;
+			Projection mode = PERSPECTIVE;
+			CameraType type = FPS;
 
 			bool enable = false;
 
@@ -40,8 +40,8 @@ namespace ti {
 			int width = 0;
 			int height = 0;
 			float fov = 45.0;
-			float near = 0.001;
-			float far = 1000.0;
+			float camera_near = 0.001f;
+			float camera_far = 1000.0f;
 
 			bool changed = true;
 			bool init = false;

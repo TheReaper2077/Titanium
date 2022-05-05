@@ -39,6 +39,9 @@ target_link_libraries(main PRIVATE SDL2::SDL2 SDL2::SDL2main)
 find_package(assimp CONFIG REQUIRED)
 target_link_libraries(main PRIVATE assimp::assimp)
 
+find_package(yaml-cpp CONFIG REQUIRED)
+target_link_libraries(main PRIVATE yaml-cpp)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)

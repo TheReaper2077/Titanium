@@ -16,3 +16,5 @@
 #include "Texture.h"
 #include "Light.h"
 #include "SpriteRenderer.h"
+#include "Tilemap.h"
+#include "TilemapRenderer.h"
