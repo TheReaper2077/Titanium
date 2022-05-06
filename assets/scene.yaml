@@ -30,3 +30,17 @@
       outerCutOff: 0
       active: true
       mode: 3
+- Name: Mesh - 8
+  ID: 463e14f3-8913-4bd3-8f7e-51269a14db87
+  Components:
+    Transform:
+      position: [0, -3, 0]
+      rotation: [0, 0, 0]
+      scale: [72.5, 0.100000001, 42.5999985]
+    MeshFilter:
+      mesh: Cube
+    MeshRenderer:
+      visible: true
+      lighting: true
+      flags: 11
+      material: DefaultMaterial

@@ -127,32 +127,50 @@ unsigned int Shader::GetUniformLoc(std::string name) {
 	return this->uniform_location_map[name];
 }
 
-void Shader::SetUniformMat4(std::string uniform, const float* matrix) {
+bool Shader::SetUniformMat4(std::string uniform, const float* matrix) {
 	this->Bind();
-	glUniformMatrix4fv(this->GetUniformLoc(uniform), 1, GL_FALSE, matrix);
+	auto location = this->GetUniformLoc(uniform);
+	glUniformMatrix4fv(location, 1, GL_FALSE, matrix);
+
+	return (location > 0);
 }
 
-void Shader::SetUniformi(std::string uniform, int v0) {
+bool Shader::SetUniformi(std::string uniform, int v0) {
 	this->Bind();
-	glUniform1i(this->GetUniformLoc(uniform), v0);
+	auto location = this->GetUniformLoc(uniform);
+	glUniform1i(location, v0);
+
+	return (location > 0);
 }
 
-void Shader::SetUniformf(std::string uniform, float v0) {
+bool Shader::SetUniformf(std::string uniform, float v0) {
 	this->Bind();
-	glUniform1f(this->GetUniformLoc(uniform), v0);
+	auto location = this->GetUniformLoc(uniform);
+	glUniform1f(location, v0);
+
+	return (location > 0);
 }
 
-void Shader::SetUniformVec3(std::string uniform, const float *v) {
+bool Shader::SetUniformVec3(std::string uniform, const float *v) {
 	this->Bind();
-	glUniform3fv(this->GetUniformLoc(uniform), 1, v);
+	auto location = this->GetUniformLoc(uniform);
+	glUniform3fv(location, 1, v);
+
+	return (location > 0);
 }
 
-void Shader::SetUniformVec4(std::string uniform, const float *v) {
+bool Shader::SetUniformVec4(std::string uniform, const float *v) {
 	this->Bind();
-	glUniform4fv(this->GetUniformLoc(uniform), 1, v);
+	auto location = this->GetUniformLoc(uniform);
+	glUniform4fv(location, 1, v);
+
+	return (location > 0);
 }
 
-void Shader::SetUniformArray(std::string uniform, std::size_t count, const float *v) {
+bool Shader::SetUniformArray(std::string uniform, std::size_t count, const float *v) {
 	this->Bind();
-	glUniform1fv(this->GetUniformLoc(uniform), count, v);
+	auto location = this->GetUniformLoc(uniform);
+	glUniform1fv(location, count, v);
+
+	return (location > 0);
 }

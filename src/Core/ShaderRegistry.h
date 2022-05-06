@@ -325,6 +325,7 @@ namespace ti {
 			for (int i = 0; i < point_light; i++) {
 				logic += "	result += CalculatePointLight(material, point" + std::to_string(i) + ", normal, view_dir);\n";
 			}
+			
 			// for (int i = 0; i < spot_light; i++) {
 			// 	logic += "	result += CalculateSpotLight(material, spot" + std::to_string(i) + ", normal, view_dir);\n";
 			// }

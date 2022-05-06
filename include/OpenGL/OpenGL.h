@@ -197,12 +197,12 @@ struct Shader {
 	void BindUniformBlock(std::string name, unsigned int index);
 	unsigned int GetUniformLoc(std::string name);
 
-	void SetUniformi(std::string uniform, int v0);
-	void SetUniformf(std::string uniform, float v0);
-	void SetUniformVec3(std::string uniform, const float* v);
-	void SetUniformVec4(std::string uniform, const float* v);
-	void SetUniformMat4(std::string uniform, const float* matrix);
-	void SetUniformArray(std::string uniform, std::size_t count, const float* v);
+	bool SetUniformi(std::string uniform, int v0);
+	bool SetUniformf(std::string uniform, float v0);
+	bool SetUniformVec3(std::string uniform, const float* v);
+	bool SetUniformVec4(std::string uniform, const float* v);
+	bool SetUniformMat4(std::string uniform, const float* matrix);
+	bool SetUniformArray(std::string uniform, std::size_t count, const float* v);
 };
 
 struct Texture2D {

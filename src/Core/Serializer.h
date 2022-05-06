@@ -4,7 +4,6 @@
 
 
 namespace ti {
-	void Serialize(ECS::Registry* registry, const char* filename);
-
-	void DeSerialize(ECS::Registry* registry, const char* filename);
+	void SerializeEntities(ECS::Registry* registry, const char* filename);
+	void DeSerializeEntities(ECS::Registry* registry, const char* filename);
 }

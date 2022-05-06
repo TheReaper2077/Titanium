@@ -124,9 +124,9 @@ void ti::Functions::DuplicateEntity(ti::ECS::Entity entity) {
 }
 
 void ti::Functions::SaveEntities() {
-	Serialize(registry, "D:\\C++\\2.5D Engine\\assets\\scene.yaml");
+	SerializeEntities(registry, "D:\\C++\\2.5D Engine\\assets\\scene.yaml");
 }
 
 void ti::Functions::LoadEntities() {
-	DeSerialize(registry, "D:\\C++\\2.5D Engine\\assets\\scene.yaml");
+	DeSerializeEntities(registry, "D:\\C++\\2.5D Engine\\assets\\scene.yaml");
 }

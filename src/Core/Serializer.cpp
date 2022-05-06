@@ -92,7 +92,7 @@ struct YAML::convert<glm::vec4> {
 	}
 };
 
-void ti::Serialize(ECS::Registry* registry, const char* filename) {
+void ti::SerializeEntities(ECS::Registry* registry, const char* filename) {
 	using namespace ti::Component;
 
 	YAML::Emitter out;
@@ -237,7 +237,7 @@ void ti::Serialize(ECS::Registry* registry, const char* filename) {
 	fout.close();
 }
 
-void ti::DeSerialize(ECS::Registry* registry, const char* filename) {
+void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 	using namespace ti::Component;
 
 	std::ifstream f(filename);

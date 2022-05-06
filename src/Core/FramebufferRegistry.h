@@ -2,12 +2,14 @@
 
 #include <OpenGL.h>
 
-#define GAME 
-#define EDITOR 
-#define MODEL_DISPLAY 
+#define FB_GAME_BIT 
+#define FB_EDITOR_BIT 
+#define FB_MODEL_DISPLAY_BIT 
 
 namespace ti {
 	struct FrameBufferRegistry {
+
+
 		FrameBuffer* GetFramebuffer() {
 
 		}

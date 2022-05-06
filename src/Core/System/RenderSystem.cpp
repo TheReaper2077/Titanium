@@ -139,15 +139,15 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 	if (mesh.uv6.size()) flags |= UV6_ATTRIB_BIT;
 	if (mesh.uv7.size()) flags |= UV7_ATTRIB_BIT;
 
+	if (meshrenderer.vertexarray == nullptr)
+		meshrenderer.vertexarray = GetVertexArray(meshrenderer.flags);
+
 	if (!mesh.changed && mesh.indices.size() == mesh.indexcount && mesh.positions.size() == mesh.vertexcount && meshrenderer.flags == flags) return;
 	mesh.changed = true;
 	meshrenderer.flags = flags;
 
 	mesh.indexcount = mesh.indices.size();
 	mesh.vertexcount = mesh.positions.size();
-
-	if (meshrenderer.vertexarray == nullptr)
-		meshrenderer.vertexarray = GetVertexArray(meshrenderer.flags);
 
 	if (mesh.vertexbuffer == nullptr && mesh.vertexcount)
 		mesh.vertexbuffer = VertexBuffer_Create();
