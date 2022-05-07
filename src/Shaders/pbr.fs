@@ -1,6 +1,5 @@
 #version 400 core
 
-in vec3 normal;
 in vec4 color;
 in vec2 uv0;
 in vec2 uv1;
@@ -17,15 +16,34 @@ in vec3 view_pos;
 uniform vec3 lightPositions[4];
 uniform vec3 lightColors[4];
 
-uniform vec3 albedo;
-uniform float metallic;
-uniform float roughness;
-uniform float ao;
+struct Material {
+	vec3 albedo;
+	sampler2D albedo_map;
+	float metallic;
+	sampler2D metallic_map;
+	float roughness;
+	sampler2D roughness_map;
+	float ao;
+	sampler2D ao_map;
+};
 
-#define PBR_IMPL
+in vec3 normal;
+uniform sampler2D normal_map;
 
-#ifdef PBR_IMPL
+vec3 albedo;
+float metallic;
+float roughness;
+float ao;
 
+uniform int normalmap_index;
+uniform int metallicmap_index;
+uniform int albedomap_index;
+uniform int roughnessmap_index;
+uniform int aomap_index;
+
+#define PBR_ENABLE
+
+#ifdef PBR_ENABLE
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
 	return F0 + (1. - F0) * pow(clamp(1. - cosTheta, 0., 1.), 5.);
 }
@@ -92,9 +110,19 @@ vec3 CalculatePBR(vec3 N, vec3 V, vec3 light_position, vec3 light_color) {
 
 #endif
 
+uniform Material material;
+
+#define LOGIC_BEGIN
+#define LOGIC_END
+
 void main() {
 	vec3 N = normalize(normal);
 	vec3 V = normalize(view_pos - frag_pos);
+
+	albedo = material.albedo;
+	ao = material.ao;
+	metallic = material.metallic;
+	roughness = material.roughness;
 	
 	vec3 Lo = vec3(0.);
 

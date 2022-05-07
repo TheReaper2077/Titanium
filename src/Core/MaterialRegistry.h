@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include "Components/Components.h"
+#include "uuid.h"
 
 namespace ti {
 	struct MaterialRegistry {

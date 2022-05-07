@@ -15,6 +15,8 @@
 
 #include "../Enumerations.h"
 
+#include "../uuid.h"
+
 // #define MAT_AMBIENT_COLOR_BIT (1 << ti::MaterialAttrib::Ambient_Color)
 // #define MAT_DIFFUSE_COLOR_BIT (1 << ti::MaterialAttrib::Diffuse_Color)
 // #define MAT_SPECULAR_COLOR_BIT (1 << ti::MaterialAttrib::Specular_Color)
@@ -31,6 +33,8 @@ namespace ti {
 			glm::vec3 diffuse;
 			glm::vec3 specular;
 			float shininess;
+
+			// std::string id = uuids::to_string(uuids::uuid_system_generator{}());
 
 			Texture2D* ambient_map = nullptr;
 			Texture2D* diffuse_map = nullptr;

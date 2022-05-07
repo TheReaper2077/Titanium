@@ -68,10 +68,10 @@ void ti::System::RenderSystem::SetMaterial(ti::Component::Material& material) {
 	// shader->SetUniformf("material.metallic", material.metallic);
 	// shader->SetUniformf("material.roughness", material.roughness);
 	
-	shader->SetUniformVec3("albedo", &material.albedo[0]);
-	shader->SetUniformf("metallic", material.metallic);
-	shader->SetUniformf("roughness", material.roughness);
-	shader->SetUniformf("ao", 1.0f);
+	shader->SetUniformVec3("material.albedo", &material.albedo[0]);
+	shader->SetUniformf("material.metallic", material.metallic);
+	shader->SetUniformf("material.roughness", material.roughness);
+	shader->SetUniformf("material.ao", 1.0f);
 
 	// shader->SetUniformf("material.shininess", material.shininess);
 

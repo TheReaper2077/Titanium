@@ -262,8 +262,8 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 
 			if (ImGui::BeginCombo("Material", meshrenderer.material.c_str(), ImGuiComboFlags_NoArrowButton)) {
 				for (auto& pair : registry->Store<ti::MaterialRegistry>().registry) {
-					if (ImGui::Selectable(pair.first.c_str()))
-						meshrenderer.material = pair.first;
+					if (ImGui::Selectable(pair.second.name.c_str()))
+						meshrenderer.material = pair.second.name;
 				}
 				ImGui::EndCombo();
 			}

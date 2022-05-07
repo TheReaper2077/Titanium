@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <OpenGL.h>
 #include "../Enumerations.h"
+#include "../uuid.h"
 
 #define POSITION_ATTRIB_BIT ( 1 << VertexArrayAttrib::position )
 #define NORMAL_ATTRIB_BIT ( 1 << VertexArrayAttrib::normal )
@@ -19,6 +20,8 @@
 namespace ti {
 	namespace Component {
 		struct Mesh {
+			// std::string id = uuids::to_string(uuids::uuid_system_generator{}());
+			
 			std::vector<glm::vec3> positions;
 			std::vector<glm::vec3> normals;
 			std::vector<glm::vec4> color;

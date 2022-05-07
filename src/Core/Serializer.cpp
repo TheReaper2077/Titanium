@@ -1,5 +1,6 @@
 #include "Serializer.h"
 
+#include "MaterialRegistry.h"
 #include <fstream>
 #include "Components/Components.h"
 #include "yaml-cpp/yaml.h"
@@ -330,3 +331,18 @@ void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 	}
 }
 
+void ti::SerializeMaterials(ECS::Registry* registry, const char* filename) {
+	YAML::Emitter out;
+	
+	out << YAML::BeginSeq;
+	for (auto& pair: registry->Store<MaterialRegistry>().registry) {
+		out << YAML::BeginMap;
+		out << YAML::Key << pair.first;
+		out << YAML::Value << pair.second.albedo;
+	}
+	out << YAML::EndSeq;
+}
+
+void ti::DeSerializeMaterials(ECS::Registry* registry, const char* filename) {
+	
+}

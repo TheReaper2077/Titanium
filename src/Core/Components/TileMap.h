@@ -12,10 +12,9 @@ namespace ti {
 	namespace Component {
 		struct Tilemap {
 			int* tiles;
-			int xmax;
-			int ymax;
-			int xgrid;
-			int ygrid;
+			glm::vec2 grid = glm::vec2(1, 1);
+			std::vector<VertexBuffer*> vertexbuffer_array;
+			
 		};
 	}
 }

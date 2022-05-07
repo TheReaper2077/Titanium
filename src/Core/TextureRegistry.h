@@ -2,6 +2,6 @@
 
 namespace ti {
 	struct TextureRegistry {
-		std::vector<>
+		
 	};
 }
