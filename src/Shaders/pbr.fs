@@ -13,8 +13,7 @@ in vec2 uv7;
 in vec3 frag_pos;
 in vec3 view_pos;
 
-uniform vec3 lightPositions[4];
-uniform vec3 lightColors[4];
+#define SET_FUNCTIONS
 
 struct Material {
 	vec3 albedo;
@@ -41,9 +40,13 @@ uniform int albedomap_index;
 uniform int roughnessmap_index;
 uniform int aomap_index;
 
-#define PBR_ENABLE
+#ifdef SPRITE_ENABLE
 
-#ifdef PBR_ENABLE
+
+
+#endif
+
+#ifdef LIGHTING_ENABLE
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
 	return F0 + (1. - F0) * pow(clamp(1. - cosTheta, 0., 1.), 5.);
 }
@@ -108,34 +111,47 @@ vec3 CalculatePBR(vec3 N, vec3 V, vec3 light_position, vec3 light_color) {
 	return (kD * albedo / 3.14159265359 + specular) * radiance * NdotL;
 }
 
+struct Light {
+	vec3 position;
+	vec3 color;
+};
+
 #endif
 
 uniform Material material;
 
-#define LOGIC_BEGIN
-#define LOGIC_END
+#define SET_UNIFORMS
+
+uniform int has_texture;
 
 void main() {
+	if (has_texture > 0) {
+		gl_FragColor = color;
+		return;
+	}
+
 	vec3 N = normalize(normal);
 	vec3 V = normalize(view_pos - frag_pos);
 
-	albedo = material.albedo;
-	ao = material.ao;
-	metallic = material.metallic;
-	roughness = material.roughness;
-	
-	vec3 Lo = vec3(0.);
+	#ifdef LIGHTING_ENABLE
+		albedo = material.albedo;
+		ao = material.ao;
+		metallic = material.metallic;
+		roughness = material.roughness;
+		
+		vec3 Lo = vec3(0.);
 
-	Lo += CalculatePBR(N, V, lightPositions[0], lightColors[0]);
-	Lo += CalculatePBR(N, V, lightPositions[1], lightColors[1]);
-	Lo += CalculatePBR(N, V, lightPositions[2], lightColors[2]);
-	Lo += CalculatePBR(N, V, lightPositions[3], lightColors[3]);
-	
-	vec3 ambient = vec3(.03) * albedo * ao;
-	vec3 color = ambient + Lo;
-	
-	color = color / (color + vec3(1.));
-	color = pow(color, vec3(1. / 2.2));
-	
-	gl_FragColor = vec4(color, 1.);
+		#define SET_LOGIC
+		
+		vec3 ambient = vec3(.03) * albedo * ao;
+		vec3 color = ambient + Lo;
+		
+		color = color / (color + vec3(1.));
+		color = pow(color, vec3(1. / 2.2));
+		
+		gl_FragColor = vec4(color, 1.);
+		return;
+	#endif
+
+	gl_FragColor = vec4(N, 1.0);
 }

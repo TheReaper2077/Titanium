@@ -199,20 +199,22 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 
 			ImGui::Spacing();
 
-			if (light.mode == Directional) {
-				ImGui::DragFloat3("Ambient", &light.ambient[0], 0.001, 0.0, 1.0, "%.3f");
-				ImGui::DragFloat3("Diffuse", &light.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
-				ImGui::DragFloat3("Specular", &light.specular[0], 0.001, 0.0, 1.0, "%.3f");
-			}
-			if (light.mode == Point) {
-				ImGui::DragFloat3("Ambient", &light.ambient[0], 0.001, 0.0, 1.0, "%.3f");
-				ImGui::DragFloat3("Diffuse", &light.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
-				ImGui::DragFloat3("Specular", &light.specular[0], 0.001, 0.0, 1.0, "%.3f");
+			ImGui::ColorPicker3("Color", &light.color[0]);
 
-				ImGui::DragFloat("Constant", &light.constant, 0.001, 0.0, 1.0, "%.3f");
-				ImGui::DragFloat("Linear", &light.linear, 0.001, 0.0, 1.0, "%.3f");
-				ImGui::DragFloat("Quadratic", &light.quadratic, 0.001, 0.0, 2.0, "%.3f");
-			}
+			// if (light.mode == Directional) {
+			// 	ImGui::DragFloat3("Ambient", &light.ambient[0], 0.001, 0.0, 1.0, "%.3f");
+			// 	ImGui::DragFloat3("Diffuse", &light.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
+			// 	ImGui::DragFloat3("Specular", &light.specular[0], 0.001, 0.0, 1.0, "%.3f");
+			// }
+			// if (light.mode == Point) {
+			// 	ImGui::DragFloat3("Ambient", &light.ambient[0], 0.001, 0.0, 1.0, "%.3f");
+			// 	ImGui::DragFloat3("Diffuse", &light.diffuse[0], 0.001, 0.0, 1.0, "%.3f");
+			// 	ImGui::DragFloat3("Specular", &light.specular[0], 0.001, 0.0, 1.0, "%.3f");
+
+			// 	ImGui::DragFloat("Constant", &light.constant, 0.001, 0.0, 1.0, "%.3f");
+			// 	ImGui::DragFloat("Linear", &light.linear, 0.001, 0.0, 1.0, "%.3f");
+			// 	ImGui::DragFloat("Quadratic", &light.quadratic, 0.001, 0.0, 2.0, "%.3f");
+			// }
 		} else if (!light_open) {
 			registry->Remove<Light>(entity);
 		}

@@ -157,22 +157,24 @@ void ti::SerializeEntities(ECS::Registry* registry, const char* filename) {
 			out << YAML::Value;
 
 			out << YAML::BeginMap;
-			out << YAML::Key << "ambient";
-			out << YAML::Value << light.ambient;
-			out << YAML::Key << "diffuse";
-			out << YAML::Value << light.diffuse;
-			out << YAML::Key << "specular";
-			out << YAML::Value << light.specular;
-			out << YAML::Key << "constant";
-			out << YAML::Value << light.constant;
-			out << YAML::Key << "linear";
-			out << YAML::Value << light.linear;
-			out << YAML::Key << "quadratic";
-			out << YAML::Value << light.quadratic;
-			out << YAML::Key << "cutOff";
-			out << YAML::Value << light.cutOff;
-			out << YAML::Key << "outerCutOff";
-			out << YAML::Value << light.outerCutOff;
+			out << YAML::Key << "color";
+			out << YAML::Value << light.color;
+			// out << YAML::Key << "ambient";
+			// out << YAML::Value << light.ambient;
+			// out << YAML::Key << "diffuse";
+			// out << YAML::Value << light.diffuse;
+			// out << YAML::Key << "specular";
+			// out << YAML::Value << light.specular;
+			// out << YAML::Key << "constant";
+			// out << YAML::Value << light.constant;
+			// out << YAML::Key << "linear";
+			// out << YAML::Value << light.linear;
+			// out << YAML::Key << "quadratic";
+			// out << YAML::Value << light.quadratic;
+			// out << YAML::Key << "cutOff";
+			// out << YAML::Value << light.cutOff;
+			// out << YAML::Key << "outerCutOff";
+			// out << YAML::Value << light.outerCutOff;
 			out << YAML::Key << "active";
 			out << YAML::Value << light.active;
 			out << YAML::Key << "mode";
@@ -284,15 +286,16 @@ void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 			if (pair.first.as<std::string>() == "Light") {
 				Light light;
 
-				light.ambient = pair.second["ambient"].as<glm::vec3>();
-				light.diffuse = pair.second["diffuse"].as<glm::vec3>();
-				light.specular = pair.second["specular"].as<glm::vec3>();
-				light.constant = pair.second["constant"].as<float>();
-				light.linear = pair.second["linear"].as<float>();
-				light.quadratic = pair.second["quadratic"].as<float>();
-				light.cutOff = pair.second["cutOff"].as<float>();
-				light.outerCutOff = pair.second["outerCutOff"].as<float>();
-				light.active = pair.second["active"].as<bool>();
+				// light.ambient = pair.second["ambient"].as<glm::vec3>();
+				light.color = pair.second["color"].as<glm::vec3>();
+				// light.diffuse = pair.second["diffuse"].as<glm::vec3>();
+				// light.specular = pair.second["specular"].as<glm::vec3>();
+				// light.constant = pair.second["constant"].as<float>();
+				// light.linear = pair.second["linear"].as<float>();
+				// light.quadratic = pair.second["quadratic"].as<float>();
+				// light.cutOff = pair.second["cutOff"].as<float>();
+				// light.outerCutOff = pair.second["outerCutOff"].as<float>();
+				// light.active = pair.second["active"].as<bool>();
 				light.mode = (LightMode)pair.second["mode"].as<int>();
 
 				registry->Add(entity, light);

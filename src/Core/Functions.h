@@ -29,7 +29,7 @@ namespace ti {
 		void ImportModel(const aiScene* ai_scene);
 		void ImportMaterials(const aiScene* ai_scene);
 		
-		void GetName();
+		std::string GetName(std::string name);
 
 		ti::ECS::Entity AddEmptyEntity();
 		ti::ECS::Entity AddMeshEntity();

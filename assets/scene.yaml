@@ -1,10 +1,10 @@
 - Name: Mesh - 8
-  ID: 8173b8e8-1820-4af8-8896-2107d7a2e2f2
+  ID: 141b8d91-ed03-49b0-bf51-01308bbb329e
   Components:
     Transform:
-      position: [0, 0, 0]
+      position: [2.4000001, 0, 0]
       rotation: [0, 0, 0]
-      scale: [1, 1, 1]
+      scale: [119.699997, 0.300000012, 115.300003]
     MeshFilter:
       mesh: Cube
     MeshRenderer:
@@ -13,34 +13,35 @@
       flags: 11
       material: Material
 - Name: Light - 9
-  ID: 4e3e0386-e266-4c6f-8041-1214cb0d062b
+  ID: 308eaabd-983a-4ce1-bb99-c3841004d6f9
   Components:
     Transform:
-      position: [0, 0, 0]
+      position: [4.5999999, 1.60000002, 14.8999996]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
     Light:
-      ambient: [0.200000003, 0.200000003, 0.200000003]
-      diffuse: [0.5, 0.5, 0.5]
-      specular: [1, 1, 1]
-      constant: 1
-      linear: 0.0900000036
-      quadratic: 0.0320000015
-      cutOff: 0
-      outerCutOff: 0
+      color: [1, 1, 1]
       active: true
-      mode: 3
-- Name: Mesh - 8
-  ID: 463e14f3-8913-4bd3-8f7e-51269a14db87
+      mode: 0
+- Name: Light - 9
+  ID: 32a09e38-bfa4-468f-8d30-852ac309a639
   Components:
     Transform:
-      position: [0, -3, 0]
+      position: [4.5999999, 1.60000002, 0]
       rotation: [0, 0, 0]
-      scale: [72.5, 0.100000001, 42.5999985]
-    MeshFilter:
-      mesh: Cube
-    MeshRenderer:
-      visible: true
-      lighting: true
-      flags: 11
-      material: DefaultMaterial
+      scale: [1, 1, 1]
+    Light:
+      color: [1, 1, 1]
+      active: true
+      mode: 0
+- Name: Light - 9
+  ID: 4ed2a61b-00a3-43b4-bfb6-faafae83a9d1
+  Components:
+    Transform:
+      position: [4.5999999, 1.60000002, 6.5]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+    Light:
+      color: [1, 1, 1]
+      active: true
+      mode: 0

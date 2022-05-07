@@ -63,6 +63,7 @@ void ti::System::CameraSystem::Update(double dt) {
 			}
 
 			distance = glm::length(transform.position - camera.Center);
+			camera.scrollspeed = distance / 10;
 			transform.position = distance * -camera.Front;
 
 			static glm::vec3 delta;

@@ -6,8 +6,6 @@ void ti::System::RenderSystem::Init(ti::ECS::Registry* registry) {
 	uniformbuffer = UniformBuffer_Create();
 	uniformbuffer->Allocate(sizeof(glm::mat4) * 4);
 	uniformbuffer->BindRange(0, sizeof(glm::mat4) * 4);
-
-	registry->Store<ShaderRegistry>().AddShader(Shader_Create("pbr", "D:\\C++\\2.5D Engine\\src\\Shaders\\default.vs", "D:\\C++\\2.5D Engine\\src\\Shaders\\pbr.fs"));
 }
 
 VertexArray* ti::System::RenderSystem::GetVertexArray(uint32_t flags) {
@@ -304,14 +302,7 @@ glm::vec3 lightColors[] = {
 void ti::System::RenderSystem::Render(Primitive primitive, std::string material, VertexArray* vertexarray, int vertexcount, VertexBuffer* vertexbuffer, int indexcount, IndexBuffer* indexbuffer) {
 	auto& engine = registry->Store<EngineProperties>();
 	
-	shader = registry->Store<ShaderRegistry>().GetShader("pbr");
-	shader->Bind();
 	SetMaterial(material);
-
-	for (int i = 0; i < 4; i++) {
-		shader->SetUniformVec3("lightPositions[" + std::to_string(i) + "]", &lightPositions[i][0]);
-		shader->SetUniformVec3("lightColors[" + std::to_string(i) + "]", &lightColors[i][0]);
-	}
 
 	vertexarray->Bind();
 	vertexarray->BindVertexBuffer(vertexbuffer, vertexarray->stride);
@@ -373,12 +364,10 @@ void ti::System::RenderSystem::Update(double dt) {
 		}
 	}
 
-	SetShader(registry->Store<ShaderRegistry>().GetShader(registry));
+	SetShader(registry->Store<ShaderRegistry>().GetShader(0, registry));
 
 	int point_light = 0;
 	int dir_light = 0;
-	int spot_light = 0;
-	int area_light = 0;
 
 	for (auto& entity : registry->View<Tag, Transform, Light>()) {
 		auto& transform = registry->Get<Transform>(entity);
@@ -389,22 +378,13 @@ void ti::System::RenderSystem::Update(double dt) {
 		if (light.mode == Directional) {
 			auto direction = glm::normalize(transform.GetRotationQuat() * glm::vec3(0, -1.0, 0));
 
-			shader->SetUniformVec3("directional" + std::to_string(dir_light) + ".direction", &direction[0]);
-			shader->SetUniformVec3("directional" + std::to_string(dir_light) + ".ambient", &light.ambient[0]);
-			shader->SetUniformVec3("directional" + std::to_string(dir_light) + ".diffuse", &light.diffuse[0]);
-			shader->SetUniformVec3("directional" + std::to_string(dir_light) + ".specular", &light.specular[0]);
+			shader->SetUniformVec3("dir_light" + std::to_string(dir_light) + ".color", &light.color[0]);
 
 			dir_light++;
 		}
 		if (light.mode == Point) {
-			shader->SetUniformVec3("point" + std::to_string(point_light) + ".position", &transform.position[0]);
-			shader->SetUniformVec3("point" + std::to_string(point_light) + ".ambient", &light.ambient[0]);
-			shader->SetUniformVec3("point" + std::to_string(point_light) + ".diffuse", &light.diffuse[0]);
-			shader->SetUniformVec3("point" + std::to_string(point_light) + ".specular", &light.specular[0]);
-
-			shader->SetUniformVec3("point" + std::to_string(point_light) + ".constant", &light.constant);
-			shader->SetUniformVec3("point" + std::to_string(point_light) + ".linear", &light.linear);
-			shader->SetUniformVec3("point" + std::to_string(point_light) + ".quadratic", &light.quadratic);
+			shader->SetUniformVec3("point_light" + std::to_string(point_light) + ".color", &light.color[0]);
+			shader->SetUniformVec3("point_light" + std::to_string(point_light) + ".position", &transform.position[0]);
 
 			point_light++;
 		}

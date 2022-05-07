@@ -42,14 +42,24 @@ void ti::Functions::ImportMaterials(const aiScene* ai_scene) {
 		registry->Store<ti::MaterialRegistry>().RegisterMaterial(ti::Component::Material(ai_scene->mMaterials[i]));
 }
 
-void ti::Functions::GetName() {
+std::string ti::Functions::GetName(std::string name) {
+	int i = 0;
+	for (auto entity: registry->View<ti::Component::Tag>()) {
+		if (registry->Get<ti::Component::Tag>(entity).name == name)
+			i++;
+	}
 
+	if (i) {
+		return name + "(" + std::to_string(i) + ")";
+	}
+
+	return name;
 }
 
 ti::ECS::Entity ti::Functions::AddEmptyEntity() {
 	auto entity = registry->Create();
 	
-	registry->Add<ti::Component::Tag>(entity, "Empty - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
+	registry->Add<ti::Component::Tag>(entity, GetName("Empty"), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 	registry->Add<ti::Component::Transform>(entity);
 	if (!runtime_creation) save_entities = true;
 
@@ -59,7 +69,7 @@ ti::ECS::Entity ti::Functions::AddEmptyEntity() {
 ti::ECS::Entity ti::Functions::AddMeshEntity() {
 	auto entity = registry->Create();
 	
-	registry->Add<ti::Component::Tag>(entity, "Mesh - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
+	registry->Add<ti::Component::Tag>(entity, GetName("Mesh"), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 	registry->Add<ti::Component::Transform>(entity);
 	registry->Add<ti::Component::MeshFilter>(entity);
 	registry->Add<ti::Component::MeshRenderer>(entity);
@@ -71,7 +81,7 @@ ti::ECS::Entity ti::Functions::AddMeshEntity() {
 ti::ECS::Entity ti::Functions::AddLightEntity() {
 	auto entity = registry->Create();
 	
-	registry->Add<ti::Component::Tag>(entity, "Light - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
+	registry->Add<ti::Component::Tag>(entity, GetName("Light"), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 	registry->Add<ti::Component::Transform>(entity);
 	registry->Add<ti::Component::Light>(entity);
 	if (!runtime_creation) save_entities = true;
@@ -82,7 +92,7 @@ ti::ECS::Entity ti::Functions::AddLightEntity() {
 ti::ECS::Entity ti::Functions::AddCameraEntity() {
 	auto entity = registry->Create();
 	
-	registry->Add<ti::Component::Tag>(entity, "Camera - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
+	registry->Add<ti::Component::Tag>(entity, GetName("Camera"), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 	registry->Add<ti::Component::Transform>(entity);
 	registry->Add<ti::Component::Camera>(entity, ti::Projection::PERSPECTIVE, false);
 	if (!runtime_creation) save_entities = true;
@@ -93,7 +103,7 @@ ti::ECS::Entity ti::Functions::AddCameraEntity() {
 ti::ECS::Entity ti::Functions::AddSpriteEntity() {
 	auto entity = registry->Create();
 
-	registry->Add<ti::Component::Tag>(entity, "Sprite - " + std::to_string(entity), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
+	registry->Add<ti::Component::Tag>(entity, GetName("Sprite"), uuids::to_string(uuids::uuid_system_generator{}()), !runtime_creation);
 	registry->Add<ti::Component::Transform>(entity);
 	registry->Add<ti::Component::SpriteRenderer>(entity);
 	if (!runtime_creation) save_entities = true;
