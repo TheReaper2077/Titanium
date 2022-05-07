@@ -57,3 +57,17 @@
       lighting: false
       flags: 0
       color: [1, 1, 1, 1]
+- Name: Mesh
+  ID: 34958811-dd00-44aa-807f-ac7191ea7a46
+  Components:
+    Transform:
+      position: [0, 1, 0]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+    MeshFilter:
+      mesh: Cylinder
+    MeshRenderer:
+      visible: true
+      lighting: true
+      flags: 11
+      material: Material
