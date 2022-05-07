@@ -103,6 +103,12 @@ void ti::Engine::EventHandler() {
 				events.key_chord.push_back(engine.event.key.keysym.scancode);
 		}
 		if (engine.event.type == SDL_KEYUP && (!engine.debug_mode || in_window)) {
+			if (events.key_pressed.contains(engine.event.key.keysym.scancode)) {
+				if (!events.key_toggled.contains(engine.event.key.keysym.scancode))
+					events.key_toggled.insert(engine.event.key.keysym.scancode);
+				else
+					events.key_toggled.erase(engine.event.key.keysym.scancode);
+			}
 			events.key_chord.clear();
 			events.key_pressed.erase(engine.event.key.keysym.scancode);
 		}

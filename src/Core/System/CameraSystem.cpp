@@ -10,11 +10,14 @@ void ti::System::CameraSystem::Update(double dt) {
 	auto& engine = registry->Store<EngineProperties>();
 	auto& events = registry->Store<Events>();
 
+	std::cout << events.key_toggled.contains(SDL_SCANCODE_F4) << '\n';
+
 	for (auto& entity : registry->View<Transform, Camera>()) {
 		if (registry->Contains<Tag>(entity)) continue;
 
 		auto& camera = registry->Get<Camera>(entity);
 		auto& transform = registry->Get<Transform>(entity);
+		
 		if (!camera.enable) continue;
 
 		if (camera.mode == PERSPECTIVE) {

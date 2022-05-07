@@ -223,8 +223,6 @@ int main(int ArgCount, char **Args) {
 	ti::Engine engine;
 	engine.CreateContext();
 	
-	engine.AddScene<Sandbox>();
-
 	engine.Mainloop();
 
 	return 0;

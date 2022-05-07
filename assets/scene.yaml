@@ -45,3 +45,15 @@
       color: [1, 1, 1]
       active: true
       mode: 0
+- Name: Sprite
+  ID: 67a6ccb4-e34a-472f-a475-3933fb830913
+  Components:
+    Transform:
+      position: [0, 2.29999995, 0]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+    SpriteRenderer:
+      visible: true
+      lighting: false
+      flags: 0
+      color: [1, 1, 1, 1]

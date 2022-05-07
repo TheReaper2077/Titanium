@@ -32,13 +32,5 @@ namespace ti {
 		void Update(double dt);
 
 		void Destroy();
-
-		template <typename T> void AddScene() {
-			auto scene = std::make_shared<T>();
-
-			scene->registry = &registry;
-
-			scene_array.push_back(std::static_pointer_cast<Layer>(scene));
-		}
-	};
+};
 }

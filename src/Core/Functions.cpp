@@ -43,14 +43,13 @@ void ti::Functions::ImportMaterials(const aiScene* ai_scene) {
 }
 
 std::string ti::Functions::GetName(std::string name) {
+	std::string result;
+
 	int i = 0;
 	for (auto entity: registry->View<ti::Component::Tag>()) {
-		if (registry->Get<ti::Component::Tag>(entity).name == name)
+		if (registry->Get<ti::Component::Tag>(entity).name == name) {
 			i++;
-	}
-
-	if (i) {
-		return name + "(" + std::to_string(i) + ")";
+		}
 	}
 
 	return name;

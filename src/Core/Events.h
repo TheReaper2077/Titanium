@@ -17,6 +17,7 @@ namespace ti {
 
 		std::set<SDL_Scancode> key_pressed;
 		std::vector<SDL_Scancode> key_chord;
+		std::set<SDL_Scancode> key_toggled;
 
 		glm::vec3 normalized_mouse;
 
