@@ -2,7 +2,7 @@
   ID: 141b8d91-ed03-49b0-bf51-01308bbb329e
   Components:
     Transform:
-      position: [2.4000001, 0, 0]
+      position: [2.4000001, -4.5999999, 0]
       rotation: [0, 0, 0]
       scale: [119.699997, 0.300000012, 115.300003]
     MeshFilter:
@@ -71,3 +71,16 @@
       lighting: true
       flags: 11
       material: Material
+- Name: Camera
+  ID: 7b5377c5-95f8-4e0c-83e6-fba5a7eb49b8
+  Components:
+    Transform:
+      position: [0, 0, -6.5999999]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+    Camera:
+      fov: 45
+      near: 0.00100000005
+      far: 1000
+      Projection: 1
+      CameraType: 0

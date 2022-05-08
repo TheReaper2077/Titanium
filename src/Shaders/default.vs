@@ -32,6 +32,9 @@ out vec2 uv7;
 
 out vec3 frag_pos;
 out vec3 view_pos;
+
+flat out uint vertexid;
+flat out uint instanceid;
 	
 void main() {
 	normal = mat3(transpose(inverse(model))) * v_normal;
@@ -49,4 +52,6 @@ void main() {
 	view_pos = v_view_pos;
 
 	gl_Position = projection * view * vec4(frag_pos, 1.0);
+	vertexid = gl_VertexID;
+	instanceid = gl_InstanceID;
 }

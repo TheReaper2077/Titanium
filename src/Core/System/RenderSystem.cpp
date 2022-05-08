@@ -314,7 +314,11 @@ void ti::System::RenderSystem::Render(Primitive primitive, std::string material,
 
 
 void ti::System::RenderSystem::Render(WindowContext& window) {
-	window.framebuffer->Bind();
+	auto& events = registry->Store<ti::Events>();
+	auto& engine = registry->Store<ti::EngineProperties>();
+
+	if (engine.debug_mode)
+		window.framebuffer->Bind();
 
 	if (uniformbuffer == nullptr) {
 		uniformbuffer = UniformBuffer_Create();
@@ -322,11 +326,9 @@ void ti::System::RenderSystem::Render(WindowContext& window) {
 		uniformbuffer->BindRange(0, sizeof(glm::mat4) * 4);
 	}
 
-	auto& events = registry->Store<ti::Events>();
-
 	glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, window.width, window.height);
-	glClearColor(0, 0, 1, 1);
+	glClearColor(0, 0, 1, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	using namespace ti::Component;
@@ -334,9 +336,7 @@ void ti::System::RenderSystem::Render(WindowContext& window) {
 	if (window.type == EditorWindow) {	// Editor Camera
 		auto& editorcamera = window.camera;
 		if (editorcamera == 0) {
-			editorcamera = registry->Create();
-			registry->Add<Transform>(editorcamera);
-			registry->Add<Camera>(editorcamera, PERSPECTIVE, true, Default);
+			
 		}
 
 		auto& camera = registry->Get<Camera>(editorcamera);
@@ -345,17 +345,6 @@ void ti::System::RenderSystem::Render(WindowContext& window) {
 		SetViewPosition(transform.position);
 		SetView(camera.view);
 		SetProjection(camera.projection);
-	} else {
-		for (auto& entity : registry->View<Tag, Transform, Camera>()) {
-			auto& camera = registry->Get<Camera>(entity);
-			auto& transform = registry->Get<Transform>(entity);
-
-			if (!camera.enable) continue;
-
-			SetViewPosition(transform.position);
-			SetView(camera.view);
-			SetProjection(camera.projection);
-		}
 	}
 
 	SetShader(registry->Store<ShaderRegistry>().GetShader(0, registry));
@@ -544,5 +533,6 @@ void ti::System::RenderSystem::Render(WindowContext& window) {
 		shader->SetUniformi("has_texture", 0);
 	}
 
-	window.framebuffer->UnBind();
+	if (engine.debug_mode)
+		window.framebuffer->UnBind();
 }

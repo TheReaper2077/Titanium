@@ -13,6 +13,9 @@ in vec2 uv7;
 in vec3 frag_pos;
 in vec3 view_pos;
 
+flat in uint vertexid;
+flat in uint instanceid;
+
 #define SET_FUNCTIONS
 
 struct Material {
@@ -182,7 +185,7 @@ void main() {
 		color = pow(color, vec3(1. / 2.2));
 		
 		gl_FragData[0] = vec4(color, 1.);
-		gl_FragData[1] = vec4(1, 0.5, 0, 1);
+		gl_FragData[1] = vec4(vertexid, instanceid, 0, 1);
 		return;
 	#endif
 

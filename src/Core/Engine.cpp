@@ -25,7 +25,7 @@ void ti::Engine::CreateContext() {
 
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-	// registry.Store<WindowRegistry>().Create(GameWindow);
+	registry.Store<WindowRegistry>().Create(GameWindow);
 	if (engine.debug_mode) {
 		registry.Store<WindowRegistry>().Create(EditorWindow);
 
@@ -152,7 +152,7 @@ void ti::Engine::EventHandler() {
 }
 
 void ti::Engine::FixedUpdate(double dt) {
-
+	
 }
 
 void ti::Engine::Update(double dt) {
@@ -164,7 +164,6 @@ void ti::Engine::Update(double dt) {
 	}
 
 	camerasystem.Update(dt);
-
 }
 
 void ti::Engine::Render() {
@@ -174,7 +173,7 @@ void ti::Engine::Render() {
 	engine.indexcount = 0;
 	engine.vertexcount = 0;
 	
-	// // rendersystem.Render(registry.Store<WindowRegistry>().Get(GameWindow));
+	rendersystem.Render(registry.Store<WindowRegistry>().Get(GameWindow));
 	if (engine.debug_mode) {
 		rendersystem.Render(registry.Store<WindowRegistry>().Get(EditorWindow));
 		imguilayer.Render();

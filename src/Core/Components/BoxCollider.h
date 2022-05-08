@@ -13,6 +13,7 @@ namespace ti {
 		struct BoxCollider {
 			glm::vec3 center;
 			glm::vec3 size;
+			bool visible;
 		};
 	}
 }

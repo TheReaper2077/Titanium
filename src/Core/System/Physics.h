@@ -4,16 +4,14 @@
 
 namespace ti {
 	namespace System {
-		class PhysicsSystem {
+		class Physics {
 			ti::ECS::Registry* registry;
 
 			void Init(ti::ECS::Registry* registry) {
 				this->registry = registry;
 			}
 
-			void Update(double dt) {
-
-			}
+			void Update(double dt);
 		};
 	}
 }

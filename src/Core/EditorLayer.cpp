@@ -39,7 +39,6 @@ void ti::ImGuiLayer::Init() {
 
 void ti::ImGuiLayer::Render() {
 	auto& engine = registry->Store<EngineProperties>();
-	auto& window = registry->Store<ti::WindowRegistry>().Get(EditorWindow);
 	auto& events = registry->Store<Events>();
 
 	glViewport(0, 0, engine.context_width, engine.context_height);
@@ -49,7 +48,6 @@ void ti::ImGuiLayer::Render() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
-	// ImGuizmo::BeginFrame();
 
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -79,15 +77,32 @@ void ti::ImGuiLayer::Render() {
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin(window.title.c_str());
+	auto& gamewindow = registry->Store<ti::WindowRegistry>().Get(GameWindow);
+
+	ImGui::Begin(gamewindow.title.c_str());
 	ImGui::PopStyleVar();
 
-	window.posx = ImGui::GetWindowPos().x;
-	window.posy = ImGui::GetWindowPos().y;
-	window.width = ImGui::GetWindowSize().x;
-	window.height = ImGui::GetWindowSize().y;
+	gamewindow.posx = ImGui::GetWindowPos().x;
+	gamewindow.posy = ImGui::GetWindowPos().y;
+	gamewindow.width = ImGui::GetWindowSize().x;
+	gamewindow.height = ImGui::GetWindowSize().y;
 
-	window.framebuffer->Bind();
+	ImGui::GetWindowDrawList()->AddImage((void*)gamewindow.framebuffer->texture, ImVec2(gamewindow.posx, gamewindow.posy), ImVec2(gamewindow.posx + gamewindow.width, gamewindow.posy + gamewindow.height), ImVec2(0, (float)gamewindow.height / engine.context_height), ImVec2((float)gamewindow.width / engine.context_width, 0));
+
+	ImGui::End();
+	
+	auto& editorwindow = registry->Store<ti::WindowRegistry>().Get(EditorWindow);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin(editorwindow.title.c_str());
+	ImGui::PopStyleVar();
+
+	editorwindow.posx = ImGui::GetWindowPos().x;
+	editorwindow.posy = ImGui::GetWindowPos().y;
+	editorwindow.width = ImGui::GetWindowSize().x;
+	editorwindow.height = ImGui::GetWindowSize().y;
+
+	editorwindow.framebuffer->Bind();
 
 	glm::vec4 pixel;
 
@@ -99,9 +114,9 @@ void ti::ImGuiLayer::Render() {
 
 	glReadBuffer(GL_NONE);
 
-	window.framebuffer->UnBind();
+	editorwindow.framebuffer->UnBind();
 
-	ImGui::GetWindowDrawList()->AddImage((void*)window.framebuffer->id, ImVec2(window.posx, window.posy), ImVec2(window.posx + window.width, window.posy + window.height), ImVec2(0, (float)window.height / engine.context_height), ImVec2((float)window.width / engine.context_width, 0));
+	ImGui::GetWindowDrawList()->AddImage((void*)editorwindow.framebuffer->texture, ImVec2(editorwindow.posx, editorwindow.posy), ImVec2(editorwindow.posx + editorwindow.width, editorwindow.posy + editorwindow.height), ImVec2(0, (float)editorwindow.height / engine.context_height), ImVec2((float)editorwindow.width / engine.context_width, 0));
 	ImGui::End();
 
 	Update();
@@ -123,8 +138,7 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 	static bool meshfilter_open;
 	static bool spriterenderer_open;
 	static bool meshrenderer_open;
-
-	auto& funnctions = registry->Store<Functions>();
+	static bool boxcollider_open;
 
 	if (entity != last_entity) {
 		last_entity = entity;
@@ -307,6 +321,23 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 		}
 	}
 
+	if (registry->Contains<BoxCollider>(entity)) {
+		if (ImGui::CollapsingHeader("BoxCollider", &boxcollider_open, flags)) {
+			auto& boxcollider = registry->Get<BoxCollider>(entity);
+
+			static bool pos_implied;
+			if (!pos_implied)
+				ImGui::DragFloat3("Pos", &boxcollider.center[0], 0.1);
+
+			static bool size_implied;
+			ImGui::Checkbox("Transform Size", &size_implied);
+			if (!size_implied)
+				ImGui::DragFloat3("Size", &boxcollider.size[0], 0.1);
+		} else if (!boxcollider_open) {
+			registry->Remove<BoxCollider>(entity);
+		}
+	}
+
 	ImGui::Spacing();
 
 	if (ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvail().x, 0)))
@@ -331,6 +362,10 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 		}
 		if (ImGui::Selectable("Light") && !registry->Contains<Light>(entity)) {
 			registry->Add<Light>(entity);
+			light_open = true;
+		}
+		if (ImGui::Selectable("BoxCollider") && !registry->Contains<BoxCollider>(entity)) {
+			registry->Add<BoxCollider>(entity);
 			light_open = true;
 		}
 		ImGui::EndPopup();

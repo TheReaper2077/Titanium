@@ -12,7 +12,11 @@ namespace ti {
 		public:
 			void Init(ti::ECS::Registry *registry);
 
+			void EditorCamera();
+
 			void Update(double dt);
+
+			void GameCamera();
 		};
 	}
 }
