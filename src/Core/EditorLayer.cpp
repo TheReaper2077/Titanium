@@ -96,9 +96,8 @@ void ti::ImGuiLayer::EndMain() {
 	glm::vec4 pixel;
 
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
-
 	
-	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
+	glReadPixels(events.editor_mouspos.x, events.editor_mouspos.y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
 
 	glReadBuffer(GL_NONE);
 

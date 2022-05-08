@@ -20,7 +20,7 @@ void ti::System::CameraSystem::Update(double dt) {
 
 		float distance;
 
-		if (events.key_toggled.contains(SDL_SCANCODE_F4) && camera.type == Editor)
+		if (events.key_toggled.contains(SDL_SCANCODE_F4) && camera.type == Default)
 			camera.mode = ORTHOGRAPHIC;
 		else
 			camera.mode = PERSPECTIVE;

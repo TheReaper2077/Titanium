@@ -22,7 +22,7 @@ namespace ti {
 	enum CameraType {
 		FPS,
 		TPS,
-		Editor,
+		Default,
 
 		CameraType_COUNT
 	};
@@ -62,8 +62,8 @@ namespace ti {
 	};
 
 	enum WindowType {
-		Editor,
-		Game,
-		Mesh
+		EditorWindow,
+		GameWindow,
+		MiscWindow
 	};
 }

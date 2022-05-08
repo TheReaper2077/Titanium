@@ -42,7 +42,7 @@
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
     Light:
-      color: [1, 1, 1]
+      color: [0.852941036, 0, 1]
       active: true
       mode: 0
 - Name: Sprite

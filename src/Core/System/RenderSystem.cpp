@@ -343,7 +343,7 @@ void ti::System::RenderSystem::Update(double dt) {
 		if (editorcamera == 0) {
 			editorcamera = registry->Create();
 			registry->Add<Transform>(editorcamera);
-			registry->Add<Camera>(editorcamera, PERSPECTIVE, true, Editor);
+			registry->Add<Camera>(editorcamera, PERSPECTIVE, true, Default);
 		}
 
 		auto& camera = registry->Get<Camera>(editorcamera);

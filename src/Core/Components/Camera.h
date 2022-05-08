@@ -48,7 +48,7 @@ namespace ti {
 			bool init = false;
 
 			Camera() {}
-			Camera(Projection mode, bool enable = false, CameraType type = Editor) {
+			Camera(Projection mode, bool enable = false, CameraType type = Default) {
 				this->enable = enable;
 				this->mode = mode;
 				this->type = type;
