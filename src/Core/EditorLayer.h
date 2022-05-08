@@ -12,13 +12,9 @@ namespace ti {
 	public:
 		ti::ECS::Registry* registry;
 
-		FrameBuffer* main_fbo = nullptr;
-
 		void Init();
 
-		void BeginMain();
-
-		void EndMain();
+		void Render();
 
 		void Inspector(ti::ECS::Entity& entity);
 

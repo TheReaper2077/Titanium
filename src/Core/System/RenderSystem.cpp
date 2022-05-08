@@ -2,10 +2,6 @@
 
 void ti::System::RenderSystem::Init(ti::ECS::Registry* registry) {
 	this->registry = registry;
-
-	uniformbuffer = UniformBuffer_Create();
-	uniformbuffer->Allocate(sizeof(glm::mat4) * 4);
-	uniformbuffer->BindRange(0, sizeof(glm::mat4) * 4);
 }
 
 VertexArray* ti::System::RenderSystem::GetVertexArray(uint32_t flags) {
@@ -78,8 +74,7 @@ void ti::System::RenderSystem::SetMaterial(ti::Component::Material& material) {
 		material.ambient_map->BindUnit(0);
 		shader->SetUniformi("material.ambient_map", 0);
 		shader->SetUniformi("ambient_index", 1);
-	}
-	else {
+	} else {
 		shader->SetUniformi("ambient_index", 0);
 	}
 
@@ -88,8 +83,7 @@ void ti::System::RenderSystem::SetMaterial(ti::Component::Material& material) {
 		material.diffuse_map->BindUnit(1);
 		shader->SetUniformi("material.diffuse_map", 1);
 		shader->SetUniformi("diffuse_index", 1);
-	}
-	else {
+	} else {
 		shader->SetUniformi("diffuse_index", 0);
 	}
 
@@ -98,8 +92,7 @@ void ti::System::RenderSystem::SetMaterial(ti::Component::Material& material) {
 		material.specular_map->BindUnit(2);
 		shader->SetUniformi("material.specular_map", 2);
 		shader->SetUniformi("specular_index", 1);
-	}
-	else {
+	} else {
 		shader->SetUniformi("specular_index", 0);
 	}
 }
@@ -161,8 +154,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 0] = mesh.positions[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 1] = mesh.positions[i].y;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 2] = mesh.positions[i].z;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 1] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 2] = 0;
@@ -173,8 +165,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 0] = mesh.normals[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 1] = mesh.normals[i].y;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 2] = mesh.normals[i].z;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 1] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 2] = 0;
@@ -186,8 +177,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 1] = mesh.color[i].y;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 2] = mesh.color[i].z;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 3] = mesh.color[i].w;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 1] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 2] = 0;
@@ -198,8 +188,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 			if (i < mesh.uv0.size()) {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 0] = mesh.uv0[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 1] = mesh.uv0[i].y;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 1] = 0;
 			}
@@ -208,8 +197,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 			if (i < mesh.uv1.size()) {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 0] = mesh.uv1[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 1] = mesh.uv1[i].y;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 1] = 0;
 			}
@@ -218,8 +206,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 			if (i < mesh.uv2.size()) {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 0] = mesh.uv2[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 1] = mesh.uv2[i].y;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 1] = 0;
 			}
@@ -228,8 +215,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 			if (i < mesh.uv3.size()) {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 0] = mesh.uv3[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 1] = mesh.uv3[i].y;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 1] = 0;
 			}
@@ -238,8 +224,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 			if (i < mesh.uv4.size()) {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 0] = mesh.uv4[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 1] = mesh.uv4[i].y;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 1] = 0;
 			}
@@ -248,8 +233,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 			if (i < mesh.uv5.size()) {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 0] = mesh.uv5[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 1] = mesh.uv5[i].y;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 1] = 0;
 			}
@@ -258,8 +242,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 			if (i < mesh.uv6.size()) {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 0] = mesh.uv6[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 1] = mesh.uv6[i].y;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 1] = 0;
 			}
@@ -268,8 +251,7 @@ void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Compo
 			if (i < mesh.uv7.size()) {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 0] = mesh.uv7[i].x;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 1] = mesh.uv7[i].y;
-			}
-			else {
+			} else {
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 0] = 0;
 				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 1] = 0;
 			}
@@ -319,8 +301,7 @@ void ti::System::RenderSystem::Render(Primitive primitive, std::string material,
 		if (primitive == ti::Primitive::LINE_STRIP) glDrawElements(GL_LINE_STRIP, indexcount, GL_UNSIGNED_INT, nullptr);
 		if (primitive == ti::Primitive::POINT) glDrawElements(GL_POINTS, indexcount, GL_UNSIGNED_INT, nullptr);
 		engine.drawcalls++;
-	}
-	else {
+	} else {
 		if (primitive == ti::Primitive::TRIANGLE) glDrawArrays(GL_TRIANGLES, 0, vertexcount);
 		if (primitive == ti::Primitive::TRIANGLE_FAN) glDrawArrays(GL_TRIANGLE_FAN, 0, vertexcount);
 		if (primitive == ti::Primitive::TRIANGLE_STRIP) glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexcount);
@@ -330,16 +311,28 @@ void ti::System::RenderSystem::Render(Primitive primitive, std::string material,
 		engine.drawcalls++;
 	}
 }
-void ti::System::RenderSystem::SetRenderPass(bool debug) {
-	registry->Store<EngineProperties>().debug_render = debug;
-}
-void ti::System::RenderSystem::Update(double dt) {
+
+
+void ti::System::RenderSystem::Render(WindowContext& window) {
+	window.framebuffer->Bind();
+
+	if (uniformbuffer == nullptr) {
+		uniformbuffer = UniformBuffer_Create();
+		uniformbuffer->Allocate(sizeof(glm::mat4) * 4);
+		uniformbuffer->BindRange(0, sizeof(glm::mat4) * 4);
+	}
+
 	auto& events = registry->Store<ti::Events>();
+
+	glEnable(GL_DEPTH_TEST);
+	glViewport(0, 0, window.width, window.height);
+	glClearColor(0, 0, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	using namespace ti::Component;
 
-	if (registry->Store<EngineProperties>().debug_render) {	// Editor Camera
-		auto& editorcamera = registry->Store<Functions>().editor_camera;
+	if (window.type == EditorWindow) {	// Editor Camera
+		auto& editorcamera = window.camera;
 		if (editorcamera == 0) {
 			editorcamera = registry->Create();
 			registry->Add<Transform>(editorcamera);
@@ -352,8 +345,7 @@ void ti::System::RenderSystem::Update(double dt) {
 		SetViewPosition(transform.position);
 		SetView(camera.view);
 		SetProjection(camera.projection);
-	}
-	else {
+	} else {
 		for (auto& entity : registry->View<Tag, Transform, Camera>()) {
 			auto& camera = registry->Get<Camera>(entity);
 			auto& transform = registry->Get<Transform>(entity);
@@ -551,4 +543,6 @@ void ti::System::RenderSystem::Update(double dt) {
 
 		shader->SetUniformi("has_texture", 0);
 	}
+
+	window.framebuffer->UnBind();
 }

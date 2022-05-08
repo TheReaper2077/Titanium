@@ -30,6 +30,7 @@ namespace ti {
 		void FixedUpdate(double dt);
 
 		void Update(double dt);
+		void Render();
 
 		void Destroy();
 };

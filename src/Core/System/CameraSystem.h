@@ -7,7 +7,7 @@ namespace ti {
 	namespace System {
 		class CameraSystem {
 			bool toggle = false;
-			ti::ECS::Registry *registry;
+			ti::ECS::Registry* registry;
 
 		public:
 			void Init(ti::ECS::Registry *registry);

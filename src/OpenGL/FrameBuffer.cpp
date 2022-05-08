@@ -61,8 +61,8 @@ FrameBuffer* FrameBuffer_Create(int width, int height, bool picking) {
 }
 
 void FrameBuffer::Bind() {
-	if (gl_context->binding_framebuffer == this->id) return;
-	gl_context->binding_framebuffer = this->id;
+	// if (gl_context->binding_framebuffer == this->id) return;
+	// gl_context->binding_framebuffer = this->id;
 	glBindFramebuffer(GL_FRAMEBUFFER, this->id);
 }
 

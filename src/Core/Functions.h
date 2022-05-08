@@ -11,7 +11,7 @@ namespace ti {
 		ti::ECS::Registry* registry;
 		Assimp::Importer* importer;
 
-		ti::ECS::Entity editor_camera = 0;
+		ti::ECS::Entity game_camera = 0;
 
 		std::unordered_map<std::size_t, ECS::Entity> entities;
 

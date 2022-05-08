@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "WindowRegistry.h"
 #include "System/CameraSystem.h"
 #include "System/RenderSystem.h"
 
@@ -8,11 +9,15 @@ ti::System::CameraSystem camerasystem;
 void ti::Engine::CreateContext() {
 	auto& engine = registry.Store<EngineProperties>();
 	registry.Store<ti::Functions>(&registry);
+	registry.Store<ti::WindowRegistry>(&registry);
 
 	engine.quit = false;
 
 	OpenGL_CreateContext();
 	SDL_Init(SDL_INIT_VIDEO);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	engine.window = SDL_CreateWindow(engine.context_title, engine.context_posx, engine.context_posy, engine.context_width, engine.context_height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	assert(engine.window);
@@ -20,8 +25,13 @@ void ti::Engine::CreateContext() {
 
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-	imguilayer.registry = &registry;
-	imguilayer.Init();
+	// registry.Store<WindowRegistry>().Create(GameWindow);
+	if (engine.debug_mode) {
+		registry.Store<WindowRegistry>().Create(EditorWindow);
+
+		imguilayer.registry = &registry;
+		imguilayer.Init();
+	}
 }
 
 void ti::Engine::Init() {
@@ -52,12 +62,8 @@ void ti::Engine::Mainloop() {
 		if (engine.dt >= 1/60.0)
 			FixedUpdate(engine.dt);
 
-		imguilayer.BeginMain();
-
 		Update(engine.dt);
-
-		imguilayer.EndMain();
-
+		Render();
 
 		SDL_GL_SwapWindow(engine.window);
 
@@ -71,6 +77,7 @@ void ti::Engine::Mainloop() {
 void ti::Engine::EventHandler() {
 	auto& events = registry.Store<Events>();
 	auto& engine = registry.Store<EngineProperties>();
+	auto& editorwindow = registry.Store<WindowRegistry>().Get(EditorWindow);
 
 	events.mouse_scrollup = false;
 	events.mouse_scrolldown = false;
@@ -83,7 +90,7 @@ void ti::Engine::EventHandler() {
 			engine.quit = true;
 		}
 		if (engine.event.type == SDL_MOUSEMOTION) {
-			in_window = (engine.event.motion.x >= engine.editor_posx && engine.event.motion.x < engine.editor_width + engine.editor_posx && engine.event.motion.y >= engine.editor_posy && engine.event.motion.y < engine.editor_height + engine.editor_posy);
+			in_window = (engine.event.motion.x >= editorwindow.posx && engine.event.motion.x < editorwindow.width + editorwindow.posx && engine.event.motion.y >= editorwindow.posy && engine.event.motion.y < editorwindow.height + editorwindow.posy);
 
 			if (in_window) {
 				events.posx += engine.event.motion.xrel;
@@ -92,19 +99,19 @@ void ti::Engine::EventHandler() {
 				events.relx = engine.event.motion.xrel;
 				events.rely = engine.event.motion.yrel;
 
-				events.editor_normalized_mouse.x = ((engine.event.motion.x - engine.editor_posx) / (engine.editor_width * 0.5)) - 1.0;
-				events.editor_normalized_mouse.y = 1.0 - ((engine.event.motion.y - engine.editor_posy) / (engine.editor_height * 0.5));
+				events.editor_normalized_mouse.x = ((engine.event.motion.x - editorwindow.posx) / (editorwindow.width * 0.5)) - 1.0;
+				events.editor_normalized_mouse.y = 1.0 - ((engine.event.motion.y - editorwindow.posy) / (editorwindow.height * 0.5));
 				events.editor_normalized_mouse.z = 0;
 
-				events.editor_mouspos.x = (1 + events.editor_normalized_mouse.x) * engine.editor_width / 2.0;
-				events.editor_mouspos.y = (1 + events.editor_normalized_mouse.y) * engine.editor_height / 2.0;
+				events.editor_mouspos.x = (1 + events.editor_normalized_mouse.x) * editorwindow.width / 2.0;
+				events.editor_mouspos.y = (1 + events.editor_normalized_mouse.y) * editorwindow.height / 2.0;
 
-				events.game_normalized_mouse.x = ((engine.event.motion.x - engine.game_posx) / (engine.game_width * 0.5)) - 1.0;
-				events.game_normalized_mouse.y = 1.0 - ((engine.event.motion.y - engine.game_posy) / (engine.game_height * 0.5));
-				events.game_normalized_mouse.z = 0;
+				// events.game_normalized_mouse.x = ((engine.event.motion.x - engine.game_posx) / (engine.game_width * 0.5)) - 1.0;
+				// events.game_normalized_mouse.y = 1.0 - ((engine.event.motion.y - engine.game_posy) / (engine.game_height * 0.5));
+				// events.game_normalized_mouse.z = 0;
 
-				events.game_mouspos.x = (1 + events.game_normalized_mouse.x) * engine.game_width / 2.0;
-				events.game_mouspos.y = (1 + events.game_normalized_mouse.y) * engine.game_height / 2.0;
+				// events.game_mouspos.x = (1 + events.game_normalized_mouse.x) * engine.game_width / 2.0;
+				// events.game_mouspos.y = (1 + events.game_normalized_mouse.y) * engine.game_height / 2.0;
 			}
 		}
 		if (engine.event.type == SDL_KEYDOWN && (!engine.debug_mode || in_window)) {
@@ -150,20 +157,7 @@ void ti::Engine::FixedUpdate(double dt) {
 
 void ti::Engine::Update(double dt) {
 	auto& engine = registry.Store<EngineProperties>();
-
-	engine.drawcalls = 0;
-	engine.indexcount = 0;
-	engine.vertexcount = 0;
-
 	auto& events = registry.Store<ti::Events>();
-
-	glEnable(GL_DEPTH_TEST);
-	// glEnable(GL_BLEND);
-	// glBlendFunc(GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	// glEnable(GL_CULL_FACE);`
-	glViewport(0, 0, engine.editor_width, engine.editor_height);
-	glClearColor(0, 0, 1, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (events.key_pressed.contains(SDL_SCANCODE_S) && events.key_pressed.contains(SDL_SCANCODE_LCTRL)) {
 		registry.Store<ti::Functions>().SaveEntities();
@@ -171,10 +165,21 @@ void ti::Engine::Update(double dt) {
 
 	camerasystem.Update(dt);
 
-	rendersystem.SetRenderPass(true);
-	rendersystem.Update(dt);
-	rendersystem.SetRenderPass(false);
+}
 
+void ti::Engine::Render() {
+	auto& engine = registry.Store<EngineProperties>();
+
+	engine.drawcalls = 0;
+	engine.indexcount = 0;
+	engine.vertexcount = 0;
+	
+	// // rendersystem.Render(registry.Store<WindowRegistry>().Get(GameWindow));
+	if (engine.debug_mode) {
+		rendersystem.Render(registry.Store<WindowRegistry>().Get(EditorWindow));
+		imguilayer.Render();
+	}
+	
 	static int count;
 	static double time_seconds;
 
@@ -185,7 +190,7 @@ void ti::Engine::Update(double dt) {
 	}
 
 	count++;
-	time_seconds += dt;
+	time_seconds += engine.dt;
 }
 
 void ti::Engine::Destroy() {

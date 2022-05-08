@@ -1,4 +1,5 @@
 #include "CameraSystem.h"
+#include "../WindowRegistry.h"
 
 void ti::System::CameraSystem::Init(ti::ECS::Registry* registry) {
 	this->registry = registry;
@@ -9,6 +10,7 @@ void ti::System::CameraSystem::Update(double dt) {
 
 	auto& engine = registry->Store<EngineProperties>();
 	auto& events = registry->Store<Events>();
+	auto& editorwindow = registry->Store<WindowRegistry>().Get(EditorWindow);
 
 	for (auto& entity : registry->View<Transform, Camera>()) {
 		if (registry->Contains<Tag>(entity)) continue;
@@ -25,9 +27,9 @@ void ti::System::CameraSystem::Update(double dt) {
 		else
 			camera.mode = PERSPECTIVE;
 
-		if (camera.width != engine.editor_width || camera.height != engine.editor_height) {
-			camera.width = engine.editor_width;
-			camera.height = engine.editor_height;
+		if (camera.width != editorwindow.width || camera.height != editorwindow.height) {
+			camera.width = editorwindow.width;
+			camera.height = editorwindow.height;
 
 			camera.lastX = camera.width / 2;
 			camera.lastY = camera.height / 2;

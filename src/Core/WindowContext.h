@@ -2,19 +2,19 @@
 
 #include <OpenGL.h>
 #include "Enumerations.h"
+#include "ECS.h"
 
 namespace ti {
 	struct WindowContext {
-		std::string title = "Game";
+		std::string title = "Titanium";
 		int width = 1280, height = 640, posx = 50, posy = 50;
 		WindowType type;
 
 		glm::vec2 pos;
 		glm::vec2 pos_normalized;
 
-		WindowContext(WindowType type) {
-			this->type = type;
+		ECS::Entity camera;
 
-		}
+		FrameBuffer* framebuffer;
 	};
 };

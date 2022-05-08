@@ -1,5 +1,7 @@
 #include "EditorLayer.h"
 
+#include <glm/ext.hpp>
+#include "WindowRegistry.h"
 #include "MeshRegistry.h"
 #include <deque>
 #include "Engine.h"
@@ -11,13 +13,11 @@
 #include <imgui_internal.h>
 #include <imgui_stdlib.h>
 #include <imgui_impl_opengl3.h>
-#include <ImGuizmo.h>
+#include "glm/gtx/string_cast.hpp"
+// #include <ImGuizmo.h>
 
 void ti::ImGuiLayer::Init() {
 	auto& engine = registry->Store<EngineProperties>();
-
-	if (main_fbo == nullptr)
-		main_fbo = FrameBuffer_Create(engine.editor_width, engine.editor_height, true);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -37,8 +37,10 @@ void ti::ImGuiLayer::Init() {
 	style.FrameBorderSize = 1;
 }
 
-void ti::ImGuiLayer::BeginMain() {
+void ti::ImGuiLayer::Render() {
 	auto& engine = registry->Store<EngineProperties>();
+	auto& window = registry->Store<ti::WindowRegistry>().Get(EditorWindow);
+	auto& events = registry->Store<Events>();
 
 	glViewport(0, 0, engine.context_width, engine.context_height);
 	glClearColor(0.2, 0.2, 0.2, 0.2);
@@ -47,7 +49,7 @@ void ti::ImGuiLayer::BeginMain() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
-	ImGuizmo::BeginFrame();
+	// ImGuizmo::BeginFrame();
 
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -77,21 +79,15 @@ void ti::ImGuiLayer::BeginMain() {
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin(engine.editor_title);
+	ImGui::Begin(window.title.c_str());
 	ImGui::PopStyleVar();
 
-	engine.editor_posx = ImGui::GetWindowPos().x;
-	engine.editor_posy = ImGui::GetWindowPos().y;
-	engine.editor_width = ImGui::GetWindowSize().x;
-	engine.editor_height = ImGui::GetWindowSize().y;
+	window.posx = ImGui::GetWindowPos().x;
+	window.posy = ImGui::GetWindowPos().y;
+	window.width = ImGui::GetWindowSize().x;
+	window.height = ImGui::GetWindowSize().y;
 
-	main_fbo->Bind();
-}
-
-void ti::ImGuiLayer::EndMain() {
-	auto& engine = registry->Store<EngineProperties>();
-	auto& events = registry->Store<Events>();
-
+	window.framebuffer->Bind();
 
 	glm::vec4 pixel;
 
@@ -99,11 +95,13 @@ void ti::ImGuiLayer::EndMain() {
 	
 	glReadPixels(events.editor_mouspos.x, events.editor_mouspos.y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
 
+	// std::cout << glm::to_string(pixel) << '\n';
+
 	glReadBuffer(GL_NONE);
 
-	main_fbo->UnBind();
+	window.framebuffer->UnBind();
 
-	ImGui::GetWindowDrawList()->AddImage((void*)main_fbo->id, ImVec2(engine.editor_posx, engine.editor_posy), ImVec2(engine.editor_posx + engine.editor_width, engine.editor_posy + engine.editor_height), ImVec2(0, (float)engine.editor_height / engine.context_height), ImVec2((float)engine.editor_width / engine.context_width, 0));
+	ImGui::GetWindowDrawList()->AddImage((void*)window.framebuffer->id, ImVec2(window.posx, window.posy), ImVec2(window.posx + window.width, window.posy + window.height), ImVec2(0, (float)window.height / engine.context_height), ImVec2((float)window.width / engine.context_width, 0));
 	ImGui::End();
 
 	Update();
@@ -155,8 +153,6 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 			ImGui::DragFloat3("Position", &transform.position[0], 0.1);
 			ImGui::DragFloat3("Rotation", &transform.rotation[0], 0.1);
 			ImGui::DragFloat3("Scale", &transform.scale[0], 0.1);
-
-			auto& editorcamera = registry->Get<Camera>(registry->Store<ti::Functions>().editor_camera);
 		}
 	}
 

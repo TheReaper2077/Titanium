@@ -9,11 +9,12 @@
 #include "../MeshRegistry.h"
 #include "../SpriteRendererRegistry.h"
 #include "../ShaderRegistry.h"
+#include "../WindowContext.h"
 
 namespace ti {
 	namespace System {
 		class RenderSystem {
-			UniformBuffer* uniformbuffer;
+			UniformBuffer* uniformbuffer = nullptr;
 
 			ti::ECS::Registry* registry;
 
@@ -45,9 +46,7 @@ namespace ti {
 
 			void Render(Primitive primitive, std::string material, VertexArray* vertexarray, int vertexcount, VertexBuffer* vertexbuffer, int indexcount = 0, IndexBuffer* indexbuffer = nullptr);
 
-			void SetRenderPass(bool debug);
-
-			void Update(double dt);
+			void Render(WindowContext& window);
 		};
 	}
 }
