@@ -83,7 +83,7 @@ void ti::Engine::EventHandler() {
 			engine.quit = true;
 		}
 		if (engine.event.type == SDL_MOUSEMOTION) {
-			in_window = (engine.event.motion.x >= engine.posx && engine.event.motion.x < engine.width + engine.posx && engine.event.motion.y >= engine.posy && engine.event.motion.y < engine.height + engine.posy);
+			in_window = (engine.event.motion.x >= engine.editor_posx && engine.event.motion.x < engine.editor_width + engine.editor_posx && engine.event.motion.y >= engine.editor_posy && engine.event.motion.y < engine.editor_height + engine.editor_posy);
 
 			if (in_window) {
 				events.posx += engine.event.motion.xrel;
@@ -92,9 +92,19 @@ void ti::Engine::EventHandler() {
 				events.relx = engine.event.motion.xrel;
 				events.rely = engine.event.motion.yrel;
 
-				events.normalized_mouse.x = ((engine.event.motion.x - engine.posx) / (engine.width * 0.5)) - 1.0;
-				events.normalized_mouse.y = 1.0 - ((engine.event.motion.y - engine.posy) / (engine.height * 0.5));
-				events.normalized_mouse.z = 0;
+				events.editor_normalized_mouse.x = ((engine.event.motion.x - engine.editor_posx) / (engine.editor_width * 0.5)) - 1.0;
+				events.editor_normalized_mouse.y = 1.0 - ((engine.event.motion.y - engine.editor_posy) / (engine.editor_height * 0.5));
+				events.editor_normalized_mouse.z = 0;
+
+				events.editor_mouspos.x = (1 + events.editor_normalized_mouse.x) * engine.editor_width / 2.0;
+				events.editor_mouspos.y = (1 + events.editor_normalized_mouse.y) * engine.editor_height / 2.0;
+
+				events.game_normalized_mouse.x = ((engine.event.motion.x - engine.game_posx) / (engine.game_width * 0.5)) - 1.0;
+				events.game_normalized_mouse.y = 1.0 - ((engine.event.motion.y - engine.game_posy) / (engine.game_height * 0.5));
+				events.game_normalized_mouse.z = 0;
+
+				events.game_mouspos.x = (1 + events.game_normalized_mouse.x) * engine.game_width / 2.0;
+				events.game_mouspos.y = (1 + events.game_normalized_mouse.y) * engine.game_height / 2.0;
 			}
 		}
 		if (engine.event.type == SDL_KEYDOWN && (!engine.debug_mode || in_window)) {
@@ -151,7 +161,7 @@ void ti::Engine::Update(double dt) {
 	// glEnable(GL_BLEND);
 	// glBlendFunc(GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// glEnable(GL_CULL_FACE);`
-	glViewport(0, 0, engine.width, engine.height);
+	glViewport(0, 0, engine.editor_width, engine.editor_height);
 	glClearColor(0, 0, 1, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

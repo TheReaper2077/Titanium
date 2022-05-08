@@ -60,4 +60,10 @@ namespace ti {
 	enum ShaderAttrib {
 		
 	};
+
+	enum WindowType {
+		Editor,
+		Game,
+		Mesh
+	};
 }

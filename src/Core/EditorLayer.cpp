@@ -17,7 +17,7 @@ void ti::ImGuiLayer::Init() {
 	auto& engine = registry->Store<EngineProperties>();
 
 	if (main_fbo == nullptr)
-		main_fbo = FrameBuffer_Create(engine.width, engine.height, true);
+		main_fbo = FrameBuffer_Create(engine.editor_width, engine.editor_height, true);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -77,13 +77,13 @@ void ti::ImGuiLayer::BeginMain() {
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin(engine.title);
+	ImGui::Begin(engine.editor_title);
 	ImGui::PopStyleVar();
 
-	engine.posx = ImGui::GetWindowPos().x;
-	engine.posy = ImGui::GetWindowPos().y;
-	engine.width = ImGui::GetWindowSize().x;
-	engine.height = ImGui::GetWindowSize().y;
+	engine.editor_posx = ImGui::GetWindowPos().x;
+	engine.editor_posy = ImGui::GetWindowPos().y;
+	engine.editor_width = ImGui::GetWindowSize().x;
+	engine.editor_height = ImGui::GetWindowSize().y;
 
 	main_fbo->Bind();
 }
@@ -97,17 +97,14 @@ void ti::ImGuiLayer::EndMain() {
 
 	glReadBuffer(GL_COLOR_ATTACHMENT1);
 
-	int x = (1 + events.normalized_mouse.x) * engine.width / 2.0;
-	int y = (1 + events.normalized_mouse.y) * engine.height / 2.0;
+	
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
-
-	std::cout << pixel.x << ' ' << pixel.y << ' ' << pixel.z << ' ' << pixel.w << " | " << x << ' ' << y << ' ' << '\n';
 
 	glReadBuffer(GL_NONE);
 
 	main_fbo->UnBind();
 
-	ImGui::GetWindowDrawList()->AddImage((void*)main_fbo->id, ImVec2(engine.posx, engine.posy), ImVec2(engine.posx + engine.width, engine.posy + engine.height), ImVec2(0, (float)engine.height / engine.context_height), ImVec2((float)engine.width / engine.context_width, 0));
+	ImGui::GetWindowDrawList()->AddImage((void*)main_fbo->id, ImVec2(engine.editor_posx, engine.editor_posy), ImVec2(engine.editor_posx + engine.editor_width, engine.editor_posy + engine.editor_height), ImVec2(0, (float)engine.editor_height / engine.context_height), ImVec2((float)engine.editor_width / engine.context_width, 0));
 	ImGui::End();
 
 	Update();

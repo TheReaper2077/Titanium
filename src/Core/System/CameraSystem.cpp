@@ -25,9 +25,9 @@ void ti::System::CameraSystem::Update(double dt) {
 		else
 			camera.mode = PERSPECTIVE;
 
-		if (camera.width != engine.width || camera.height != engine.height) {
-			camera.width = engine.width;
-			camera.height = engine.height;
+		if (camera.width != engine.editor_width || camera.height != engine.editor_height) {
+			camera.width = engine.editor_width;
+			camera.height = engine.editor_height;
 
 			camera.lastX = camera.width / 2;
 			camera.lastY = camera.height / 2;
@@ -85,7 +85,7 @@ void ti::System::CameraSystem::Update(double dt) {
 		if (events.mouse_pressed.contains(SDL_BUTTON_LEFT) && events.key_pressed.contains(SDL_SCANCODE_LALT)) {
 			glm::vec3 pos;
 			// if (camera.mode == PERSPECTIVE) {
-				glm::vec4 ray_clip = glm::vec4(events.normalized_mouse.x, events.normalized_mouse.y, -1.0, 1.0);
+				glm::vec4 ray_clip = glm::vec4(events.editor_normalized_mouse.x, events.editor_normalized_mouse.y, -1.0, 1.0);
 				glm::vec4 ray_eye = glm::inverse(camera.projection) * ray_clip;
 				ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
 				glm::vec3 ray_wor = glm::inverse(camera.view) * ray_eye;
