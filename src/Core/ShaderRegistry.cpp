@@ -59,6 +59,8 @@ std::string ti::ShaderRegistry::SetUniforms(int point_light, int dir_light) {
 
 	for (int i = 0; i < point_light; i++)
 		uniforms += "uniform Light point_light" + std::to_string(i) + ";\n";
+	for (int i = 0; i < dir_light; i++)
+		uniforms += "uniform Light dir_light" + std::to_string(i) + ";\n";
 
 	return uniforms;
 }
@@ -75,7 +77,9 @@ std::string ti::ShaderRegistry::SetLogic(int point_light, int dir_light) {
 	std::string logic;
 
 	for (int i = 0; i < point_light; i++)
-		logic += "	Lo += CalculatePBR(N, V, point_light" + std::to_string(i) + ".position, point_light" + std::to_string(i) + ".color);\n";
+		logic += "	Lo += PointCalculatePBR(N, V, point_light" + std::to_string(i) + ".position, point_light" + std::to_string(i) + ".color);\n";
+	for (int i = 0; i < dir_light; i++)
+		logic += "	Lo += DirCalculatePBR(N, V, dir_light" + std::to_string(i) + ".position, dir_light" + std::to_string(i) + ".direction, dir_light" + std::to_string(i) + ".color);\n";
 
 	return logic;
 }

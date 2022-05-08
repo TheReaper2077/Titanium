@@ -56,7 +56,7 @@
       visible: true
       lighting: false
       flags: 0
-      color: [1, 1, 1, 1]
+      color: [1, 0, 0, 1]
 - Name: Mesh
   ID: 34958811-dd00-44aa-807f-ac7191ea7a46
   Components:

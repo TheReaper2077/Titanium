@@ -62,6 +62,9 @@ struct FrameBuffer {
 	FrameBufferId id;
 	int width, height;
 
+	unsigned int picking;
+	unsigned int texture;
+
 	void Bind();
 	void UnBind();
 	void Destroy();

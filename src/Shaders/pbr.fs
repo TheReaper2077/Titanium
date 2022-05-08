@@ -83,7 +83,7 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
 	return ggx1 * ggx2;
 }
 
-vec3 CalculatePBR(vec3 N, vec3 V, vec3 light_position, vec3 light_color) {
+vec3 PointCalculatePBR(vec3 N, vec3 V, vec3 light_position, vec3 light_color) {
 	vec3 L = normalize(light_position - frag_pos);
 	vec3 H = normalize(V + L);
 	
@@ -111,9 +111,38 @@ vec3 CalculatePBR(vec3 N, vec3 V, vec3 light_position, vec3 light_color) {
 	return (kD * albedo / 3.14159265359 + specular) * radiance * NdotL;
 }
 
+vec3 DirCalculatePBR(vec3 N, vec3 V, vec3 light_position, vec3 light_direction, vec3 light_color) {
+	vec3 L = normalize(-light_direction);
+	vec3 H = normalize(V + L);
+	
+	float distance = length(light_position - frag_pos);
+	float attenuation = 1. / (distance * distance);
+	vec3 radiance = light_color;
+	
+	vec3 F0 = vec3(.04);
+	F0 = mix(F0, albedo, metallic);
+	vec3 F = fresnelSchlick(max(dot(H, V), 0.), F0);
+	
+	float NDF = DistributionGGX(N, H, roughness);
+	float G = GeometrySmith(N, V, L, roughness);
+	
+	vec3 numerator = NDF * G * F;
+	float denominator = 4. * max(dot(N, V), 0.) * max(dot(N, L), 0.) + .0001;
+	vec3 specular = numerator / denominator;
+	
+	vec3 kS = F;
+	vec3 kD = vec3(1.) - kS;
+	
+	kD *= 1. - metallic;
+	
+	float NdotL = max(dot(N, L), 0.);
+	return (kD * albedo / 3.14159265359 + specular) * radiance * NdotL;
+}
+
 struct Light {
 	vec3 position;
 	vec3 color;
+	vec3 direction;
 };
 
 #endif
@@ -124,9 +153,12 @@ uniform Material material;
 
 uniform int has_texture;
 
+uniform sampler2D texture_map;
+
 void main() {
+
 	if (has_texture > 0) {
-		gl_FragColor = color;
+		gl_FragData[0] = color;
 		return;
 	}
 
@@ -149,9 +181,10 @@ void main() {
 		color = color / (color + vec3(1.));
 		color = pow(color, vec3(1. / 2.2));
 		
-		gl_FragColor = vec4(color, 1.);
+		gl_FragData[0] = vec4(color, 1.);
+		gl_FragData[1] = vec4(1, 0.5, 0, 0);
 		return;
 	#endif
 
-	gl_FragColor = vec4(N, 1.0);
+	gl_FragData[0] = vec4(N, 1.0);
 }

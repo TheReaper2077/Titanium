@@ -30,6 +30,8 @@ namespace ti {
 
 		void Status();
 
+		void Controls();
+
 		void Update();
 
 		void EventHandler();

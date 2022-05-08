@@ -334,6 +334,8 @@ void ti::System::RenderSystem::SetRenderPass(bool debug) {
 	registry->Store<EngineProperties>().debug_render = debug;
 }
 void ti::System::RenderSystem::Update(double dt) {
+	auto& events = registry->Store<ti::Events>();
+
 	using namespace ti::Component;
 
 	if (registry->Store<EngineProperties>().debug_render) {	// Editor Camera
@@ -379,6 +381,7 @@ void ti::System::RenderSystem::Update(double dt) {
 			auto direction = glm::normalize(transform.GetRotationQuat() * glm::vec3(0, -1.0, 0));
 
 			shader->SetUniformVec3("dir_light" + std::to_string(dir_light) + ".color", &light.color[0]);
+			shader->SetUniformVec3("dir_light" + std::to_string(dir_light) + ".direction", &direction[0]);
 
 			dir_light++;
 		}

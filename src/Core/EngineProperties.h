@@ -28,5 +28,9 @@ namespace ti {
 		SDL_Window* window;
 		SDL_GLContext context;
 		SDL_Event event;
+
+		bool play;
+		bool stop;
+		bool pause;
 	};
 }

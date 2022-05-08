@@ -17,7 +17,7 @@ void ti::ImGuiLayer::Init() {
 	auto& engine = registry->Store<EngineProperties>();
 
 	if (main_fbo == nullptr)
-		main_fbo = FrameBuffer_Create(engine.width, engine.height);
+		main_fbo = FrameBuffer_Create(engine.width, engine.height, true);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -90,6 +90,20 @@ void ti::ImGuiLayer::BeginMain() {
 
 void ti::ImGuiLayer::EndMain() {
 	auto& engine = registry->Store<EngineProperties>();
+	auto& events = registry->Store<Events>();
+
+
+	glm::vec4 pixel;
+
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+
+	int x = (1 + events.normalized_mouse.x) * engine.width / 2.0;
+	int y = (1 + events.normalized_mouse.y) * engine.height / 2.0;
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
+
+	std::cout << pixel.x << ' ' << pixel.y << ' ' << pixel.z << ' ' << pixel.w << " | " << x << ' ' << y << ' ' << '\n';
+
+	glReadBuffer(GL_NONE);
 
 	main_fbo->UnBind();
 
@@ -469,6 +483,16 @@ void ti::ImGuiLayer::Status() {
 	ImGui::End();
 }
 
+void ti::ImGuiLayer::Controls() {
+	ImGui::Begin("Controls");
+
+	auto& engine = registry->Store<EngineProperties>();
+
+	
+
+	ImGui::End();
+}
+
 void ti::ImGuiLayer::Update() {
 	using namespace ti::Component;
 	auto& functions = registry->Store<Functions>();
@@ -481,6 +505,8 @@ void ti::ImGuiLayer::Update() {
 	Status();
 	MaterialRegistry();
 	MeshRegistry();
+
+	
 
 	// if (events.key_pressed.contains(SDL_SCANCODE_S) && events.key_pressed.contains(SDL_SCANCODE_LCTRL)) {
 	// 	// registry->Store<ti::Serializer>().Serialize();

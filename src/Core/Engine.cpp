@@ -41,6 +41,7 @@ void ti::Engine::Init() {
 void ti::Engine::Mainloop() {
 	Init();
 
+	auto& events = registry.Store<Events>();
 	auto& engine = registry.Store<EngineProperties>();
 
 	while (!engine.quit) {
@@ -56,6 +57,7 @@ void ti::Engine::Mainloop() {
 		Update(engine.dt);
 
 		imguilayer.EndMain();
+
 
 		SDL_GL_SwapWindow(engine.window);
 

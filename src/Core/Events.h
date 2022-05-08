@@ -20,7 +20,6 @@ namespace ti {
 		std::set<SDL_Scancode> key_toggled;
 
 		glm::vec3 normalized_mouse;
-
 		std::set<unsigned int> mouse_pressed;
 	};
 }
