@@ -5,7 +5,6 @@
 
 namespace ti {
 	struct SpriteRendererContext {
-		VertexArray* vertexarray = nullptr;
 		VertexBuffer* vertexbuffer = nullptr;
 		int vertexcount = 0;
 		uint32_t flags = 0;

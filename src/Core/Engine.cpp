@@ -2,9 +2,11 @@
 #include "WindowRegistry.h"
 #include "System/CameraSystem.h"
 #include "System/RenderSystem.h"
+#include "System/Physics.h"
 
 ti::System::RenderSystem rendersystem;
 ti::System::CameraSystem camerasystem;
+ti::System::Physics physicssystem;
 
 void ti::Engine::CreateContext() {
 	auto& engine = registry.Store<EngineProperties>();
@@ -46,6 +48,7 @@ void ti::Engine::Init() {
 	
 	rendersystem.Init(&registry);
 	camerasystem.Init(&registry);
+	physicssystem.Init(&registry);
 }
 
 void ti::Engine::Mainloop() {
@@ -162,6 +165,8 @@ void ti::Engine::Update(double dt) {
 	if (events.key_pressed.contains(SDL_SCANCODE_S) && events.key_pressed.contains(SDL_SCANCODE_LCTRL)) {
 		registry.Store<ti::Functions>().SaveEntities();
 	}
+
+	physicssystem.Update(dt);
 
 	camerasystem.Update(dt);
 }

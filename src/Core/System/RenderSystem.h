@@ -42,9 +42,13 @@ namespace ti {
 			void SetProjection(const glm::mat4& projection);
 			void SetViewPosition(const glm::vec3& view_position);
 			
+			IndexBuffer* TransferQuadIndices(VertexArray* vertexarray, int vertexcount);
 			void TransferMesh(ti::Component::Mesh& mesh, ti::Component::MeshRenderer& meshrenderer);
 
 			void Render(Primitive primitive, std::string material, VertexArray* vertexarray, int vertexcount, VertexBuffer* vertexbuffer, int indexcount = 0, IndexBuffer* indexbuffer = nullptr);
+			void RenderSprite(int vertexcount);
+			void RenderColliders();
+			void RenderCubeWire(const glm::vec3& center, const glm::vec3& size);
 
 			void Render(WindowContext& window);
 		};

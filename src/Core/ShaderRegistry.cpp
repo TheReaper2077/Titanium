@@ -46,7 +46,7 @@ Shader* ti::ShaderRegistry::RegisterShader(uint32_t shader_flags, int point_ligh
 		replace_first(fragmentshader, "#define SET_UNIFORMS", SetUniforms(point_light, dir_light));
 		replace_first(fragmentshader, "#define SET_FUNCTIONS", SetFunctions(point_light, dir_light));
 
-		std::cout << fragmentshader << '\n';
+		// std::cout << fragmentshader << '\n';
 
 		registry[id] = Shader_Create(id, vertexshader, fragmentshader, false);
 	}

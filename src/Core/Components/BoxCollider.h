@@ -14,6 +14,10 @@ namespace ti {
 			glm::vec3 center;
 			glm::vec3 size;
 			bool visible;
+			bool trigger;
+
+			BoxCollider() {}
+			BoxCollider(const glm::vec3& size): size(size) {}
 		};
 	}
 }

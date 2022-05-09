@@ -20,7 +20,6 @@ namespace ti {
 			bool use_gravity;
 
 			glm::bvec3 rotation_lock;
-			glm::bvec3 axis_lock;
 
 			void AddForce(const glm::vec3& force) {
 				this->force += force;

@@ -19,7 +19,7 @@ namespace ti {
 			bool lighting = false;
 			bool visible = true;
 
-			uint32_t flags = 0;
+			uint32_t flags = POSITION_ATTRIB_BIT | COLOR_ATTRIB_BIT | UV0_ATTRIB_BIT;
 		};
 	}
 }

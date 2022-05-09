@@ -138,6 +138,7 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 	static bool meshfilter_open;
 	static bool spriterenderer_open;
 	static bool meshrenderer_open;
+	static bool rigidbody_open;
 	static bool boxcollider_open;
 
 	if (entity != last_entity) {
@@ -148,6 +149,8 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 		meshfilter_open = true;
 		spriterenderer_open = true;
 		meshrenderer_open = true;
+		rigidbody_open = true;
+		boxcollider_open = true;
 	}
 
 	ImGui::Begin("Inspector");
@@ -321,18 +324,49 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 		}
 	}
 
+	if (registry->Contains<Rigidbody>(entity)) {
+		if (ImGui::CollapsingHeader("Rigidbody", &rigidbody_open, flags)) {
+			auto& rigidbody = registry->Get<Rigidbody>(entity);
+
+			ImGui::DragFloat3("Velocity", &rigidbody.velocity[0], 0.001);
+			ImGui::DragFloat3("Acceleration", &rigidbody.acceleration[0], 0.001);
+			ImGui::DragFloat3("Force", &rigidbody.force[0], 0.001);
+
+			ImGui::Spacing();
+
+			ImGui::InputFloat("Mass", &rigidbody.mass);
+			ImGui::InputFloat("Drag", &rigidbody.drag);
+			
+			ImGui::Spacing();
+			
+			ImGui::Checkbox("Enable Gravity", &rigidbody.use_gravity);
+
+			ImGui::Spacing();
+			
+			ImGui::Text("Lock Rotation");
+			ImGui::Checkbox("X", &rigidbody.rotation_lock.x);
+			ImGui::SameLine();
+			ImGui::Checkbox("Y", &rigidbody.rotation_lock.y);
+			ImGui::SameLine();
+			ImGui::Checkbox("Z", &rigidbody.rotation_lock.z);
+		} else if (!rigidbody_open) {
+			registry->Remove<Rigidbody>(entity);
+		}
+	}
+
 	if (registry->Contains<BoxCollider>(entity)) {
 		if (ImGui::CollapsingHeader("BoxCollider", &boxcollider_open, flags)) {
 			auto& boxcollider = registry->Get<BoxCollider>(entity);
 
-			static bool pos_implied;
-			if (!pos_implied)
-				ImGui::DragFloat3("Pos", &boxcollider.center[0], 0.1);
+			ImGui::Checkbox("Trigger", &boxcollider.trigger);
+			ImGui::Checkbox("Edit", &boxcollider.visible);
 
-			static bool size_implied;
-			ImGui::Checkbox("Transform Size", &size_implied);
-			if (!size_implied)
+			if (boxcollider.visible) {
+				ImGui::Spacing();
+
+				ImGui::DragFloat3("Pos", &boxcollider.center[0], 0.1);
 				ImGui::DragFloat3("Size", &boxcollider.size[0], 0.1);
+			}
 		} else if (!boxcollider_open) {
 			registry->Remove<BoxCollider>(entity);
 		}
@@ -364,10 +398,22 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 			registry->Add<Light>(entity);
 			light_open = true;
 		}
-		if (ImGui::Selectable("BoxCollider") && !registry->Contains<BoxCollider>(entity)) {
-			registry->Add<BoxCollider>(entity);
-			light_open = true;
+
+		if (ImGui::Selectable("Rigidbody") && !registry->Contains<Rigidbody>(entity)) {
+			registry->Add<Rigidbody>(entity);
+			rigidbody_open = true;
 		}
+
+		if (ImGui::Selectable("BoxCollider") && !registry->Contains<BoxCollider>(entity)) {
+			if (registry->Contains<Transform>(entity)) {
+				auto& transform = registry->Get<Transform>(entity);
+				registry->Add<BoxCollider>(entity, transform.scale);
+			} else {
+				registry->Add<BoxCollider>(entity);
+			}
+			boxcollider_open = true;
+		}
+		
 		ImGui::EndPopup();
 	}
 
@@ -532,8 +578,6 @@ void ti::ImGuiLayer::Update() {
 	Status();
 	MaterialRegistry();
 	MeshRegistry();
-
-	
 
 	// if (events.key_pressed.contains(SDL_SCANCODE_S) && events.key_pressed.contains(SDL_SCANCODE_LCTRL)) {
 	// 	// registry->Store<ti::Serializer>().Serialize();

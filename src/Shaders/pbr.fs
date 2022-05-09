@@ -155,10 +155,18 @@ uniform Material material;
 #define SET_UNIFORMS
 
 uniform int has_texture;
+uniform int wireframe_mode;
 
 uniform sampler2D texture_map;
 
+uniform vec4 wireframe_color;
+
 void main() {
+	gl_FragData[1] = vec4(vertexid, instanceid, 0, 1);
+	
+	if (wireframe_mode > 0) {
+		gl_FragData[0] = wireframe_color;
+	}
 
 	if (has_texture > 0) {
 		gl_FragData[0] = color;
@@ -185,7 +193,6 @@ void main() {
 		color = pow(color, vec3(1. / 2.2));
 		
 		gl_FragData[0] = vec4(color, 1.);
-		gl_FragData[1] = vec4(vertexid, instanceid, 0, 1);
 		return;
 	#endif
 

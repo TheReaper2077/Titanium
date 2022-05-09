@@ -44,12 +44,12 @@
     Light:
       color: [0.852941036, 0, 1]
       active: true
-      mode: 0
+      mode: 3
 - Name: Sprite
   ID: 67a6ccb4-e34a-472f-a475-3933fb830913
   Components:
     Transform:
-      position: [0, 3.79999995, 14.6000004]
+      position: [0, -4.0021739, -27.2000008]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
     SpriteRenderer:
@@ -61,7 +61,7 @@
   ID: 34958811-dd00-44aa-807f-ac7191ea7a46
   Components:
     Transform:
-      position: [0, 1, 0]
+      position: [0, 6.5, 0]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
     MeshFilter:
