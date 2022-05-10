@@ -13,7 +13,7 @@
 #include "MeshRenderer.h"
 #include "Model.h"
 #include "Sprite.h"
-#include "Texture.h"
+#include "Texture2D.h"
 #include "Light.h"
 #include "SpriteRenderer.h"
 #include "Tilemap.h"

@@ -8,6 +8,10 @@ namespace ti {
 	struct MeshRegistry {
 		std::unordered_map<std::string, ti::Component::Mesh> registry;
 
+		MeshRegistry() {
+			
+		}
+
 		bool Contains(std::string name) {
 			return (registry.find(name) != registry.end());
 		}

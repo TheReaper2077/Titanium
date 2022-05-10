@@ -1,24 +1,29 @@
 #include "Serializer.h"
 
+#include "Functions.h"
 #include "MaterialRegistry.h"
 #include <fstream>
 #include "Components/Components.h"
-#include "yaml-cpp/yaml.h"
-#include "yaml-cpp/emitter.h"
 
-YAML::Emitter& operator<< (YAML::Emitter& out, const glm::vec2& v) {
+YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v) {
 	out << YAML::Flow;
 	out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
 	return out;
 }
 
-YAML::Emitter& operator<< (YAML::Emitter& out, const glm::vec3& v) {
+YAML::Emitter& operator<<(YAML::Emitter& out, const glm::bvec3& v) {
 	out << YAML::Flow;
 	out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
 	return out;
 }
 
-YAML::Emitter& operator<< (YAML::Emitter& out, const glm::vec4& v) {
+YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v) {
+	out << YAML::Flow;
+	out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
+	return out;
+}
+
+YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& v) {
 	out << YAML::Flow;
 	out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
 	return out;
@@ -63,6 +68,29 @@ struct YAML::convert<glm::vec3> {
 		rhs.x = node[0].as<float>();
 		rhs.y = node[1].as<float>();
 		rhs.z = node[2].as<float>();
+
+		return true;
+	}
+};
+
+template<>
+struct YAML::convert<glm::bvec3> {
+	static Node encode(const glm::bvec3& rhs) {
+		Node node;
+		node.push_back(rhs.x);
+		node.push_back(rhs.y);
+		node.push_back(rhs.z);
+		return node;
+	}
+
+	static bool decode(const Node& node, glm::bvec3& rhs) {
+		if(!node.IsSequence() || node.size() != 3) {
+			return false;
+		}
+
+		rhs.x = node[0].as<bool>();
+		rhs.y = node[1].as<bool>();
+		rhs.z = node[2].as<bool>();
 
 		return true;
 	}
@@ -230,6 +258,62 @@ void ti::SerializeEntities(ECS::Registry* registry, const char* filename) {
 			out << YAML::EndMap;
 		}
 
+		if (registry->Contains<Rigidbody>(entity)) {
+			auto& rigidbody = registry->Get<Rigidbody>(entity);
+
+			out << YAML::Key << "Rigidbody";
+			out << YAML::Value;
+
+			out << YAML::BeginMap;
+			out << YAML::Key << "velocity";
+			out << YAML::Value << rigidbody.velocity;
+			out << YAML::Key << "acceleration";
+			out << YAML::Value << rigidbody.acceleration;
+			out << YAML::Key << "force";
+			out << YAML::Value << rigidbody.force;
+			out << YAML::Key << "mass";
+			out << YAML::Value << rigidbody.mass;
+			out << YAML::Key << "drag";
+			out << YAML::Value << rigidbody.drag;
+			out << YAML::Key << "use_gravity";
+			out << YAML::Value << rigidbody.use_gravity;
+			out << YAML::Key << "rotation_lock";
+			out << YAML::Value << rigidbody.rotation_lock;
+			out << YAML::EndMap;
+		}
+
+		if (registry->Contains<BoxCollider>(entity)) {
+			auto& boxcollider = registry->Get<BoxCollider>(entity);
+
+			out << YAML::Key << "BoxCollider";
+			out << YAML::Value;
+
+			out << YAML::BeginMap;
+			out << YAML::Key << "center";
+			out << YAML::Value << boxcollider.center;
+			out << YAML::Key << "size";
+			out << YAML::Value << boxcollider.size;
+			out << YAML::Key << "trigger";
+			out << YAML::Value << boxcollider.trigger;
+			out << YAML::Key << "visible";
+			out << YAML::Value << boxcollider.visible;
+			out << YAML::EndMap;
+		}
+
+		if (registry->Contains<SphereCollider>(entity)) {
+			auto& spherecollider = registry->Get<SphereCollider>(entity);
+
+			out << YAML::Key << "SphereCollider";
+			out << YAML::Value;
+
+			out << YAML::BeginMap;
+			out << YAML::Key << "center";
+			out << YAML::Value << spherecollider.center;
+			out << YAML::Key << "radius";
+			out << YAML::Value << spherecollider.radius;
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 		out << YAML::EndMap;
 	}
@@ -242,6 +326,8 @@ void ti::SerializeEntities(ECS::Registry* registry, const char* filename) {
 
 void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 	using namespace ti::Component;
+
+	auto& functions = registry->Store<ti::Functions>();
 
 	std::ifstream f(filename);
 	if (!f.good()) return;
@@ -256,7 +342,10 @@ void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 		tag.id = scene[i]["ID"].as<std::string>();
 		tag.save = true;
 
-		auto entity = registry->Create();
+		if (functions.loaded_entities.find(tag.id) == functions.loaded_entities.end())
+			functions.loaded_entities[tag.id] = registry->Create();
+
+		auto entity = functions.loaded_entities[tag.id];
 
 		registry->Add(entity, tag);
 
@@ -295,7 +384,7 @@ void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 				// light.quadratic = pair.second["quadratic"].as<float>();
 				// light.cutOff = pair.second["cutOff"].as<float>();
 				// light.outerCutOff = pair.second["outerCutOff"].as<float>();
-				// light.active = pair.second["active"].as<bool>();
+				light.active = pair.second["active"].as<bool>();
 				light.mode = (LightMode)pair.second["mode"].as<int>();
 
 				registry->Add(entity, light);
@@ -329,6 +418,42 @@ void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 				meshrenderer.material = pair.second["material"].as<std::string>();
 
 				registry->Add(entity, meshrenderer);
+			}
+
+			if (pair.first.as<std::string>() == "Rigidbody") {
+				Rigidbody rigidbody;
+
+				rigidbody.velocity = pair.second["velocity"].as<glm::vec3>();
+				rigidbody.acceleration = pair.second["acceleration"].as<glm::vec3>();
+				rigidbody.force = pair.second["force"].as<glm::vec3>();
+
+				rigidbody.mass = pair.second["mass"].as<float>();
+				rigidbody.drag = pair.second["drag"].as<float>();
+				rigidbody.use_gravity = pair.second["use_gravity"].as<bool>();
+
+				rigidbody.rotation_lock = pair.second["rotation_lock"].as<glm::bvec3>();
+
+				registry->Add(entity, rigidbody);
+			}
+
+			if (pair.first.as<std::string>() == "BoxCollider") {
+				BoxCollider boxcollider;
+
+				boxcollider.center = pair.second["center"].as<glm::vec3>();
+				boxcollider.size = pair.second["size"].as<glm::vec3>();
+				boxcollider.visible = pair.second["visible"].as<bool>();
+				boxcollider.trigger = pair.second["trigger"].as<bool>();
+
+				registry->Add(entity, boxcollider);
+			}
+
+			if (pair.first.as<std::string>() == "SphereCollider") {
+				SphereCollider spherecollider;
+
+				spherecollider.center = pair.second["center"].as<glm::vec3>();
+				spherecollider.radius = pair.second["radius"].as<float>();
+
+				registry->Add(entity, spherecollider);
 			}
 		}
 	}

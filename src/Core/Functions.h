@@ -13,7 +13,7 @@ namespace ti {
 
 		ti::ECS::Entity game_camera = 0;
 
-		std::unordered_map<std::size_t, ECS::Entity> entities;
+		std::unordered_map<std::string, ECS::Entity> loaded_entities;
 
 		bool runtime_creation = false;
 		bool save_entities = false;

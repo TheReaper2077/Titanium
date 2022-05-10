@@ -20,6 +20,8 @@ namespace ti {
 
 		ti::ECS::Entity Heirarchy();
 
+		void SpriteEditor();
+
 		void MaterialRegistry();
 
 		void MeshRegistry();

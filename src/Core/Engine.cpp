@@ -93,7 +93,7 @@ void ti::Engine::EventHandler() {
 			engine.quit = true;
 		}
 		if (engine.event.type == SDL_MOUSEMOTION) {
-			in_window = (engine.event.motion.x >= editorwindow.posx && engine.event.motion.x < editorwindow.width + editorwindow.posx && engine.event.motion.y >= editorwindow.posy && engine.event.motion.y < editorwindow.height + editorwindow.posy);
+			in_window = (editorwindow.focused && engine.event.motion.x >= editorwindow.posx && engine.event.motion.x < editorwindow.width + editorwindow.posx && engine.event.motion.y >= editorwindow.posy && engine.event.motion.y < editorwindow.height + editorwindow.posy);
 
 			if (in_window) {
 				events.posx += engine.event.motion.xrel;
@@ -166,7 +166,14 @@ void ti::Engine::Update(double dt) {
 		registry.Store<ti::Functions>().SaveEntities();
 	}
 
-	physicssystem.Update(dt);
+	if (engine.play && !engine.pause && !engine.stop) {
+		physicssystem.Update(dt);
+	}
+	
+	if (engine.stop) {
+		engine.stop = false;
+		registry.Store<ti::Functions>().LoadEntities();
+	}
 
 	camerasystem.Update(dt);
 }

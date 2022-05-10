@@ -2,8 +2,8 @@
   ID: 141b8d91-ed03-49b0-bf51-01308bbb329e
   Components:
     Transform:
-      position: [2.4000001, -4.5999999, 0]
-      rotation: [0, 0, 0]
+      position: [2.4000001, -4.5999999, 30.7999992]
+      rotation: [0, 34.7000008, 0]
       scale: [119.699997, 0.300000012, 115.300003]
     MeshFilter:
       mesh: Cube
@@ -49,14 +49,22 @@
   ID: 67a6ccb4-e34a-472f-a475-3933fb830913
   Components:
     Transform:
-      position: [0, -4.0021739, -27.2000008]
-      rotation: [0, 0, 0]
+      position: [0, 23.9890003, 5]
+      rotation: [0, 19.2000008, 0]
       scale: [1, 1, 1]
     SpriteRenderer:
       visible: true
       lighting: false
       flags: 0
       color: [1, 0, 0, 1]
+    Rigidbody:
+      velocity: [0, 0, 0]
+      acceleration: [0, 0, 0]
+      force: [0, 0, 0]
+      mass: 0
+      drag: 0
+      use_gravity: true
+      rotation_lock: [false, false, false]
 - Name: Mesh
   ID: 34958811-dd00-44aa-807f-ac7191ea7a46
   Components:

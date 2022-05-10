@@ -24,8 +24,8 @@ namespace ti {
 		SDL_GLContext context;
 		SDL_Event event;
 
-		bool play;
-		bool stop;
-		bool pause;
+		bool play = false;
+		bool pause = false;
+		bool stop = false;
 	};
 }

@@ -12,11 +12,17 @@
 
 namespace ti {
 	namespace Component {
-		struct Texture {
-			Texture2D *texture;
+		struct Texture2DComponent {
+			unsigned int* texture;
+
+			Texture2DComponent() {}
+			Texture2DComponent(const char* filename) {
+				
+			}
 			
-			glm::vec2 uv0;
-			glm::vec2 uv1;
+			void SetFilteringMode() {
+
+			}
 		};
 	}
 }

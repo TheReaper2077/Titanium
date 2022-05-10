@@ -66,4 +66,12 @@ namespace ti {
 		GameWindow,
 		MiscWindow
 	};
+
+	enum TextureFilterMode {
+
+	};
+
+	enum TextureWrapMode {
+
+	};
 }

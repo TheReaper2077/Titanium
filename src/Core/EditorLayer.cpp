@@ -82,6 +82,8 @@ void ti::ImGuiLayer::Render() {
 	ImGui::Begin(gamewindow.title.c_str());
 	ImGui::PopStyleVar();
 
+	gamewindow.focused = ImGui::IsWindowFocused();
+
 	gamewindow.posx = ImGui::GetWindowPos().x;
 	gamewindow.posy = ImGui::GetWindowPos().y;
 	gamewindow.width = ImGui::GetWindowSize().x;
@@ -94,30 +96,55 @@ void ti::ImGuiLayer::Render() {
 	auto& editorwindow = registry->Store<ti::WindowRegistry>().Get(EditorWindow);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-	ImGui::Begin(editorwindow.title.c_str());
-	ImGui::PopStyleVar();
 
-	editorwindow.posx = ImGui::GetWindowPos().x;
-	editorwindow.posy = ImGui::GetWindowPos().y;
-	editorwindow.width = ImGui::GetWindowSize().x;
-	editorwindow.height = ImGui::GetWindowSize().y;
+	if (ImGui::Begin(editorwindow.title.c_str())) {
+		ImGui::PopStyleVar();
 
-	editorwindow.framebuffer->Bind();
+		// std::cout << (ImGui::IsWindowFocused() && ImGui::IsWindowHovered()) << '\n';
+		editorwindow.focused = !gamewindow.focused;
 
-	glm::vec4 pixel;
+		editorwindow.posx = ImGui::GetWindowPos().x;
+		editorwindow.posy = ImGui::GetWindowPos().y;
+		editorwindow.width = ImGui::GetWindowSize().x;
+		editorwindow.height = ImGui::GetWindowSize().y;
 
-	glReadBuffer(GL_COLOR_ATTACHMENT1);
-	
-	glReadPixels(events.editor_mouspos.x, events.editor_mouspos.y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
+		editorwindow.framebuffer->Bind();
 
-	// std::cout << glm::to_string(pixel) << '\n';
+		glm::vec4 pixel;
 
-	glReadBuffer(GL_NONE);
+		glReadBuffer(GL_COLOR_ATTACHMENT1);
+		
+		glReadPixels(events.editor_mouspos.x, events.editor_mouspos.y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
 
-	editorwindow.framebuffer->UnBind();
+		glReadBuffer(GL_NONE);
 
-	ImGui::GetWindowDrawList()->AddImage((void*)editorwindow.framebuffer->texture, ImVec2(editorwindow.posx, editorwindow.posy), ImVec2(editorwindow.posx + editorwindow.width, editorwindow.posy + editorwindow.height), ImVec2(0, (float)editorwindow.height / engine.context_height), ImVec2((float)editorwindow.width / engine.context_width, 0));
-	ImGui::End();
+		editorwindow.framebuffer->UnBind();
+
+		ImGui::GetWindowDrawList()->AddImage((void*)editorwindow.framebuffer->texture, ImVec2(editorwindow.posx, editorwindow.posy), ImVec2(editorwindow.posx + editorwindow.width, editorwindow.posy + editorwindow.height), ImVec2(0, (float)editorwindow.height / engine.context_height), ImVec2((float)editorwindow.width / engine.context_width, 0));
+		ImGui::End();
+	}
+
+	if (ImGui::Begin("Controls")) {
+		bool play = ImGui::Button("Play");
+		bool pause = ImGui::Button("Pause");
+		bool stop = ImGui::Button("Stop");
+
+		if (play && (!engine.play || engine.pause)) {
+			engine.play = true;
+			engine.pause = false;
+			engine.stop = false;
+		}
+		if (pause && !engine.pause && engine.play) {
+			engine.pause = true;
+		}
+		if (stop && engine.play && !engine.stop) {
+			engine.play = false;
+			engine.stop = true;
+			engine.pause = false;
+		}
+
+		ImGui::End();
+	}
 
 	Update();
 

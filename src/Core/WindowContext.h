@@ -15,6 +15,8 @@ namespace ti {
 
 		ECS::Entity camera;
 
+		bool focused = false;
+
 		FrameBuffer* framebuffer;
 	};
 };

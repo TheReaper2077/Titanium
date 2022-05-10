@@ -14,7 +14,6 @@ namespace ti {
 			int* tiles;
 			glm::vec2 grid = glm::vec2(1, 1);
 			std::vector<VertexBuffer*> vertexbuffer_array;
-			
 		};
 	}
 }
