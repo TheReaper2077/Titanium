@@ -12,16 +12,20 @@
 
 namespace ti {
 	namespace Component {
-		struct Texture2DComponent {
-			unsigned int* texture;
+		struct Texture2D {
+			unsigned int texture;
+			std::string filename;
+			std::string id;
+			uint32_t width, height, channels;
 
-			Texture2DComponent() {}
-			Texture2DComponent(const char* filename) {
-				
-			}
-			
-			void SetFilteringMode() {
-				
+			Texture2D() {}
+			Texture2D(std::string filename) {
+				auto* tex = Texture_LoadFile(filename.c_str());
+				width = tex->width;
+				height = tex->height;
+				channels = tex->channels;
+				this->filename = filename;
+				texture = tex->id;
 			}
 		};
 	}

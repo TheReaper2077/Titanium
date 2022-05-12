@@ -45,6 +45,8 @@ namespace ti {
 			int indexcount = 0;
 			int vertexcount = 0;
 
+			uint32_t flags = 0;
+
 			bool init = false;
 
 			bool changed = true;

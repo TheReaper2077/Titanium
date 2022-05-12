@@ -43,7 +43,7 @@ namespace ti {
 			void SetViewPosition(const glm::vec3& view_position);
 			
 			IndexBuffer* TransferQuadIndices(VertexArray* vertexarray, int vertexcount);
-			void TransferMesh(ti::Component::Mesh& mesh, ti::Component::MeshRenderer& meshrenderer);
+			void TransferMesh(ti::Component::Mesh& mesh);
 
 			void Render(Primitive primitive, std::string material, VertexArray* vertexarray, int vertexcount, VertexBuffer* vertexbuffer, int indexcount = 0, IndexBuffer* indexbuffer = nullptr);
 			void RenderSprite(int vertexcount);

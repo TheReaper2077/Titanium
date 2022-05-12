@@ -29,7 +29,7 @@ struct VertexBuffer;
 struct IndexBuffer;
 struct UniformBuffer;
 struct Shader;
-struct Texture2D;
+struct Texture;
 struct TextureArray2D;
 struct FrameBuffer;
 struct TextureColorBuffer;
@@ -42,7 +42,7 @@ struct OpenGLContext {
 	std::vector<std::shared_ptr<UniformBuffer>> uniform_buffer_store;
 	std::vector<std::shared_ptr<FrameBuffer>> frame_buffer_store;
 	std::vector<std::shared_ptr<Shader>> shader_store;
-	std::vector<std::shared_ptr<Texture2D>> texture_store;
+	std::vector<std::shared_ptr<Texture>> texture_store;
 	std::vector<std::shared_ptr<TextureArray2D>> sprite_atlas_store;
 
 	VertexArrayId binding_vertexarray;
@@ -208,7 +208,7 @@ struct Shader {
 	bool SetUniformArray(std::string uniform, std::size_t count, const float* v);
 };
 
-struct Texture2D {
+struct Texture {
 	TextureId id;
 	std::string type;
 	std::string filename;
@@ -220,7 +220,7 @@ struct Texture2D {
 };
 
 struct TextureArray2D {
-	Texture2D* texture = nullptr;
+	Texture* texture = nullptr;
 
 	int tilecount;
 	int tileheight;
@@ -246,6 +246,6 @@ UniformBuffer* UniformBuffer_Create();
 
 Shader* Shader_Create(std::string name, const std::string &vs_filename, const std::string &fs_filename, bool file = true);
 
-Texture2D* Texture_Create();
-Texture2D* Texture_LoadFile(const char* filename);
+Texture* Texture_Create();
+Texture* Texture_LoadFile(const char* filename);
 TextureArray2D* TextureArray_LoadFile(int tilew, int tileh, const char* filename);

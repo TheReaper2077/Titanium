@@ -335,6 +335,8 @@ void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 
 	YAML::Node scene = YAML::LoadFile(filename);
 
+	// if (!scene.size()) return;
+
 	for (std::size_t i = 0; i < scene.size(); i++) {
 		Tag tag;
 

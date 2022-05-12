@@ -14,7 +14,7 @@ namespace ti {
 	namespace Component {
 		struct SpriteRenderer {
 			glm::vec4 color = glm::vec4(1, 1, 1, 1);
-			Texture2D* texture;
+			Texture* texture;
 
 			bool lighting = false;
 			bool visible = true;

@@ -13,7 +13,7 @@
 namespace ti {
 	namespace Component {
 		struct Sprite {
-			Texture2D *texture;
+			Texture *texture;
 			glm::vec2 uv0;
 			glm::vec2 uv1;
 			float index;

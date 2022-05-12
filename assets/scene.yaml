@@ -1,62 +1,40 @@
-- Name: Mesh - 8
-  ID: 141b8d91-ed03-49b0-bf51-01308bbb329e
+- Name: Mesh
+  ID: 2e775d0c-6dd3-4c4b-88a9-496c5aff8983
   Components:
     Transform:
       position: [0, 0, 0]
       rotation: [0, 0, 0]
-      scale: [236, 181.100006, 217.899994]
+      scale: [122.599998, 101.099998, 97.5]
     MeshFilter:
       mesh: Plane
     MeshRenderer:
       visible: true
       lighting: true
-      flags: 3
+      flags: 1
       material: Material
-- Name: Light Point 0
-  ID: 308eaabd-983a-4ce1-bb99-c3841004d6f9
+- Name: Light
+  ID: a79592a3-b4fd-4c54-aac2-a45197980839
   Components:
     Transform:
-      position: [4.5999999, 1.60000002, 14.8999996]
-      rotation: [0, 0, 0]
-      scale: [1, 1, 1]
+      position: [10, 0.400000006, 16]
+      rotation: [36.0999985, -8.19999981, 38.0999985]
+      scale: [1, 1.70000005, 1]
     Light:
       color: [1, 1, 1]
       active: true
       mode: 0
-- Name: Light Point 1
-  ID: 32a09e38-bfa4-468f-8d30-852ac309a639
-  Components:
-    Transform:
-      position: [4.5999999, 1.60000002, 0]
-      rotation: [0, 0, 0]
-      scale: [1, 1, 1]
-    Light:
-      color: [1, 1, 1]
-      active: true
-      mode: 0
-- Name: Light Point 2
-  ID: 4ed2a61b-00a3-43b4-bfb6-faafae83a9d1
-  Components:
-    Transform:
-      position: [4.5999999, 1.60000002, 6.5]
-      rotation: [0, 0, 0]
-      scale: [1, 1, 1]
-    Light:
-      color: [0.852941036, 0, 1]
-      active: true
-      mode: 3
 - Name: Sprite
-  ID: 67a6ccb4-e34a-472f-a475-3933fb830913
+  ID: 145137ac-7a7d-40fc-b75e-4e9bc2b5c3ff
   Components:
     Transform:
-      position: [0, 1.10000002, 0]
+      position: [0, 2.9000001, 0]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
     SpriteRenderer:
       visible: true
       lighting: false
-      flags: 0
-      color: [1, 0, 0, 1]
+      flags: 13
+      color: [0, 2.38418579e-07, 1, 1]
     Rigidbody:
       velocity: [0, 0, 0]
       acceleration: [0, 0, 0]
@@ -64,31 +42,23 @@
       mass: 0
       drag: 0
       use_gravity: true
-      rotation_lock: [true, true, true]
-- Name: Mesh
-  ID: 34958811-dd00-44aa-807f-ac7191ea7a46
+      rotation_lock: [false, false, false]
+    BoxCollider:
+      center: [1.35480294e-19, 1.26116862e-43, 2.46477271e-07]
+      size: [1, 1, 1]
+      trigger: true
+      visible: false
+- Name: Mesh(1)
+  ID: 459ea5c0-2f77-4405-9647-ebd34ce9a961
   Components:
     Transform:
-      position: [0, 6.5, 0]
+      position: [0, 11.8999996, 0]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
     MeshFilter:
-      mesh: Cube
+      mesh: Cube2
     MeshRenderer:
       visible: true
       lighting: true
-      flags: 11
+      flags: 1
       material: Material
-- Name: Camera
-  ID: 7b5377c5-95f8-4e0c-83e6-fba5a7eb49b8
-  Components:
-    Transform:
-      position: [0, 0, -6.5999999]
-      rotation: [0, 0, 0]
-      scale: [1, 1, 1]
-    Camera:
-      fov: 45
-      near: 0.00100000005
-      far: 1000
-      Projection: 1
-      CameraType: 0

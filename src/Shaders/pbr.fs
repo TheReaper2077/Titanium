@@ -163,14 +163,10 @@ uniform vec4 wireframe_color;
 
 void main() {
 	gl_FragData[1] = vec4(vertexid, instanceid, 0, 1);
-
-	// if (normal.x >= 0 && normal.y >= 0 && normal.z >= 0)
-	// 	gl_FragData[0] = vec4(normal, 1);
-
-	// return;
 	
 	if (wireframe_mode > 0) {
 		gl_FragData[0] = wireframe_color;
+		return;
 	}
 
 	if (has_texture > 0) {

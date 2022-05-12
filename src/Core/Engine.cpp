@@ -42,7 +42,7 @@ void ti::Engine::Init() {
 	auto& engine = registry.Store<EngineProperties>();
 
 	registry.Store<ti::Functions>().ImportModel("D:\\C++\\2.5D Engine\\res\\cube.obj");
-	registry.Store<ti::Functions>().ImportModel("D:\\C++\\2.5D Engine\\res\\cylinder.obj");
+	// registry.Store<ti::Functions>().ImportModel("D:\\C++\\2.5D Engine\\res\\cylinder.obj");
 
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -152,6 +152,9 @@ void ti::Engine::EventHandler() {
 
 			events.mouse_scrollup = false;
 			events.mouse_scrolldown = false;
+		}
+		if (engine.event.type == SDL_DROPFILE) {
+			
 		}
 	}
 }

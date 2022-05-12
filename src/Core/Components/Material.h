@@ -36,9 +36,9 @@ namespace ti {
 
 			// std::string id = uuids::to_string(uuids::uuid_system_generator{}());
 
-			Texture2D* ambient_map = nullptr;
-			Texture2D* diffuse_map = nullptr;
-			Texture2D* specular_map = nullptr;
+			Texture* ambient_map = nullptr;
+			Texture* diffuse_map = nullptr;
+			Texture* specular_map = nullptr;
 
 			float roughness = 0.5;
 			float metallic = 0;

@@ -143,7 +143,7 @@ IndexBuffer* ti::System::Renderer::TransferQuadIndices(VertexArray* vertexarray,
 	return indexbuffer;
 }
 
-void ti::System::Renderer::TransferMesh(ti::Component::Mesh& mesh, ti::Component::MeshRenderer& meshrenderer) {
+void ti::System::Renderer::TransferMesh(ti::Component::Mesh& mesh) {
 	uint32_t flags = 0;
 	if (mesh.positions.size()) flags |= POSITION_ATTRIB_BIT;
 	if (mesh.normals.size()) flags |= NORMAL_ATTRIB_BIT;
@@ -157,12 +157,11 @@ void ti::System::Renderer::TransferMesh(ti::Component::Mesh& mesh, ti::Component
 	if (mesh.uv6.size()) flags |= UV6_ATTRIB_BIT;
 	if (mesh.uv7.size()) flags |= UV7_ATTRIB_BIT;
 
-	VertexArray* vertexarray = GetVertexArray(meshrenderer.flags);
+	if (!mesh.changed && mesh.indices.size() == mesh.indexcount && mesh.positions.size() == mesh.vertexcount) return;
 	
-	if (!mesh.changed && mesh.indices.size() == mesh.indexcount && mesh.positions.size() == mesh.vertexcount && meshrenderer.flags == flags) return;
-	meshrenderer.flags = flags;
-	// mesh.changed = true;
-	std::cout << "hello\n";
+	mesh.flags = flags;
+	
+	VertexArray* vertexarray = GetVertexArray(mesh.flags);
 
 	mesh.indexcount = mesh.indices.size();
 	mesh.vertexcount = mesh.positions.size();
@@ -287,7 +286,6 @@ void ti::System::Renderer::TransferMesh(ti::Component::Mesh& mesh, ti::Component
 
 	mesh.vertexbuffer->Allocate(mesh.vertexcount * vertexarray->stride);
 	mesh.vertexbuffer->AddDataDynamic((void*)data, mesh.vertexcount * vertexarray->stride);
-	// mesh.vertexbuffer->AddDataStatic((void*)data, mesh.vertexcount*vertexarray->stride);
 	mesh.indexbuffer->AddData(mesh.indices.data(), sizeof(uint32_t) * mesh.indexcount);
 
 	mesh.changed = false;
@@ -340,6 +338,8 @@ void ti::System::Renderer::Render(Primitive primitive, std::string material, Ver
 }
 
 void ti::System::Renderer::RenderSprite(int vertexcount) {
+	if (!vertexcount) return;
+
 	using namespace ti::Component;
 
 	uint32_t flags = POSITION_ATTRIB_BIT | COLOR_ATTRIB_BIT | UV0_ATTRIB_BIT;
@@ -369,10 +369,10 @@ void ti::System::Renderer::RenderSprite(int vertexcount) {
 			continue;
 		}
 
-		glm::vec3 pos00 = quaternion * glm::vec3(transform.translation.x - transform.scale.x, transform.translation.y - transform.scale.y, transform.translation.z);
-		glm::vec3 pos01 = quaternion * glm::vec3(transform.translation.x - transform.scale.x, transform.translation.y + transform.scale.y, transform.translation.z);
-		glm::vec3 pos10 = quaternion * glm::vec3(transform.translation.x + transform.scale.x, transform.translation.y - transform.scale.y, transform.translation.z);
-		glm::vec3 pos11 = quaternion * glm::vec3(transform.translation.x + transform.scale.x, transform.translation.y + transform.scale.y, transform.translation.z);
+		glm::vec3 pos00 = (quaternion * glm::vec3(-transform.scale.x / 2.0, -transform.scale.y / 2.0, 0)) + transform.translation;
+		glm::vec3 pos01 = (quaternion * glm::vec3(-transform.scale.x / 2.0, +transform.scale.y / 2.0, 0)) + transform.translation;
+		glm::vec3 pos10 = (quaternion * glm::vec3(+transform.scale.x / 2.0, -transform.scale.y / 2.0, 0)) + transform.translation;
+		glm::vec3 pos11 = (quaternion * glm::vec3(+transform.scale.x / 2.0, +transform.scale.y / 2.0, 0)) + transform.translation;
 
 		vertices[i * vertexarray->elem_stride + vertexarray->position_offset + 0] = pos00.x;
 		vertices[i * vertexarray->elem_stride + vertexarray->position_offset + 1] = pos00.y;
@@ -451,8 +451,9 @@ void ti::System::Renderer::RenderSprite(int vertexcount) {
 void ti::System::Renderer::RenderColliders() {
 	using namespace ti::Component;
 
+	shader->Bind();
 	shader->SetUniformi("wireframe_mode", 1);
-	shader->SetUniformVec4("wireframe_color", &glm::vec4(1, 1, 0, 1)[0]);
+	shader->SetUniformVec4("wireframe_color", &glm::vec4(1, 1, 1, 1)[0]);
 
 	static int vertexcount;
 	VertexArray* vertexarray = GetVertexArray(POSITION_ATTRIB_BIT);
@@ -577,6 +578,8 @@ void ti::System::Renderer::Render(WindowContext& window) {
 		}
 	}
 
+	RenderColliders();
+	
 	for (auto& entity : registry->View<Tag, Transform, MeshFilter, MeshRenderer>()) {
 		auto meshfilter = registry->Get<MeshFilter>(entity);
 		if (!registry->Store<MeshRegistry>().Contains(meshfilter.mesh)) continue;
@@ -591,8 +594,8 @@ void ti::System::Renderer::Render(WindowContext& window) {
 
 		SetModel(transform.GetModel());
 
-		TransferMesh(mesh, meshrenderer);
-		Render(TRIANGLE, meshrenderer.material, GetVertexArray(meshrenderer.flags), mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
+		TransferMesh(mesh);
+		Render(TRIANGLE, meshrenderer.material, GetVertexArray(mesh.flags), mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
 	}
 
 	for (auto& entity : registry->View<Tag, Transform, Mesh, MeshRenderer>()) {
@@ -606,12 +609,11 @@ void ti::System::Renderer::Render(WindowContext& window) {
 
 		SetModel(transform.GetModel());
 
-		TransferMesh(mesh, meshrenderer);
-		Render(TRIANGLE, meshrenderer.material, GetVertexArray(meshrenderer.flags), mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
+		TransferMesh(mesh);
+		Render(TRIANGLE, meshrenderer.material, GetVertexArray(mesh.flags), mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
 	}
 
 	RenderSprite(registry->View<Tag, Transform, SpriteRenderer>().size() * 4);
-	RenderColliders();
 
 	if (engine.debug_mode)
 		window.framebuffer->UnBind();

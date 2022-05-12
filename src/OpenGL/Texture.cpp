@@ -4,10 +4,10 @@
 
 extern std::shared_ptr<OpenGLContext> gl_context;
 
-Texture2D *Texture_Create() {
+Texture *Texture_Create() {
 	assert(gl_context != nullptr);
 
-	auto texture = std::make_shared<Texture2D>();
+	auto texture = std::make_shared<Texture>();
 	glGenTextures(1, &texture->id);
 	
 	gl_context->texture_store.push_back(texture);
@@ -15,7 +15,7 @@ Texture2D *Texture_Create() {
 	return texture.get();
 }
 
-Texture2D *Texture_LoadFile(const char* filename) {
+Texture *Texture_LoadFile(const char* filename) {
 	assert(gl_context != nullptr);
 
 	auto* texture = Texture_Create();
@@ -51,14 +51,14 @@ Texture2D *Texture_LoadFile(const char* filename) {
 	return texture;
 }
 
-void Texture2D::Bind() {
+void Texture::Bind() {
 	glBindTexture(GL_TEXTURE_2D, this->id);
 }
 
-void Texture2D::BindUnit(uint32_t unit) {
+void Texture::BindUnit(uint32_t unit) {
 	glBindTextureUnit(unit, this->id);
 }
 
-void Texture2D::UnBind() {
+void Texture::UnBind() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
