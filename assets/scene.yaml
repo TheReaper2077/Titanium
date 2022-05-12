@@ -2,15 +2,15 @@
   ID: 141b8d91-ed03-49b0-bf51-01308bbb329e
   Components:
     Transform:
-      position: [2.4000001, -4.5999999, 30.7999992]
-      rotation: [0, 34.7000008, 0]
-      scale: [119.699997, 0.300000012, 115.300003]
+      position: [0, 0, 0]
+      rotation: [0, 0, 0]
+      scale: [236, 181.100006, 217.899994]
     MeshFilter:
-      mesh: Cube
+      mesh: Plane
     MeshRenderer:
       visible: true
       lighting: true
-      flags: 11
+      flags: 3
       material: Material
 - Name: Light Point 0
   ID: 308eaabd-983a-4ce1-bb99-c3841004d6f9
@@ -49,8 +49,8 @@
   ID: 67a6ccb4-e34a-472f-a475-3933fb830913
   Components:
     Transform:
-      position: [0, 23.9890003, 5]
-      rotation: [0, 19.2000008, 0]
+      position: [0, 1.10000002, 0]
+      rotation: [0, 0, 0]
       scale: [1, 1, 1]
     SpriteRenderer:
       visible: true
@@ -73,7 +73,7 @@
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
     MeshFilter:
-      mesh: Cylinder
+      mesh: Cube
     MeshRenderer:
       visible: true
       lighting: true

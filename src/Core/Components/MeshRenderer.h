@@ -19,7 +19,6 @@ namespace ti {
 		struct MeshRenderer {
 			std::string material;
 
-			VertexArray* vertexarray = nullptr;
 			uint32_t flags = POSITION_ATTRIB_BIT;
 
 			bool visible = true;

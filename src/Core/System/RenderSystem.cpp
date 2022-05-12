@@ -157,12 +157,12 @@ void ti::System::Renderer::TransferMesh(ti::Component::Mesh& mesh, ti::Component
 	if (mesh.uv6.size()) flags |= UV6_ATTRIB_BIT;
 	if (mesh.uv7.size()) flags |= UV7_ATTRIB_BIT;
 
-	if (meshrenderer.vertexarray == nullptr)
-		meshrenderer.vertexarray = GetVertexArray(meshrenderer.flags);
-
+	VertexArray* vertexarray = GetVertexArray(meshrenderer.flags);
+	
 	if (!mesh.changed && mesh.indices.size() == mesh.indexcount && mesh.positions.size() == mesh.vertexcount && meshrenderer.flags == flags) return;
-	mesh.changed = true;
 	meshrenderer.flags = flags;
+	// mesh.changed = true;
+	std::cout << "hello\n";
 
 	mesh.indexcount = mesh.indices.size();
 	mesh.vertexcount = mesh.positions.size();
@@ -171,123 +171,123 @@ void ti::System::Renderer::TransferMesh(ti::Component::Mesh& mesh, ti::Component
 		mesh.vertexbuffer = VertexBuffer_Create();
 
 	if (mesh.indexbuffer == nullptr && mesh.indexcount)
-		mesh.indexbuffer = IndexBuffer_Create(meshrenderer.vertexarray);
+		mesh.indexbuffer = IndexBuffer_Create(vertexarray);
 
-	auto* data = (float*)malloc(mesh.vertexcount * meshrenderer.vertexarray->stride);
+	auto* data = (float*)malloc(mesh.vertexcount * vertexarray->stride);
 
 	for (int i = 0; i < mesh.vertexcount; i++) {
-		if (meshrenderer.vertexarray->has_position) {
+		if (vertexarray->has_position) {
 			if (i < mesh.positions.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 0] = mesh.positions[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 1] = mesh.positions[i].y;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 2] = mesh.positions[i].z;
+				data[i * vertexarray->elem_stride + vertexarray->position_offset + 0] = mesh.positions[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->position_offset + 1] = mesh.positions[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->position_offset + 2] = mesh.positions[i].z;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 1] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->position_offset + 2] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->position_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->position_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->position_offset + 2] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_normal) {
+		if (vertexarray->has_normal) {
 			if (i < mesh.normals.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 0] = mesh.normals[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 1] = mesh.normals[i].y;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 2] = mesh.normals[i].z;
+				data[i * vertexarray->elem_stride + vertexarray->normal_offset + 0] = mesh.normals[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->normal_offset + 1] = mesh.normals[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->normal_offset + 2] = mesh.normals[i].z;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 1] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->normal_offset + 2] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->normal_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->normal_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->normal_offset + 2] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_color) {
+		if (vertexarray->has_color) {
 			if (i < mesh.color.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 0] = mesh.color[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 1] = mesh.color[i].y;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 2] = mesh.color[i].z;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 3] = mesh.color[i].w;
+				data[i * vertexarray->elem_stride + vertexarray->color_offset + 0] = mesh.color[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->color_offset + 1] = mesh.color[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->color_offset + 2] = mesh.color[i].z;
+				data[i * vertexarray->elem_stride + vertexarray->color_offset + 3] = mesh.color[i].w;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 1] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 2] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->color_offset + 3] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->color_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->color_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->color_offset + 2] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->color_offset + 3] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_uv0) {
+		if (vertexarray->has_uv0) {
 			if (i < mesh.uv0.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 0] = mesh.uv0[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 1] = mesh.uv0[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->uv0_offset + 0] = mesh.uv0[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->uv0_offset + 1] = mesh.uv0[i].y;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv0_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv0_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv0_offset + 1] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_uv1) {
+		if (vertexarray->has_uv1) {
 			if (i < mesh.uv1.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 0] = mesh.uv1[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 1] = mesh.uv1[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->uv1_offset + 0] = mesh.uv1[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->uv1_offset + 1] = mesh.uv1[i].y;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv1_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv1_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv1_offset + 1] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_uv2) {
+		if (vertexarray->has_uv2) {
 			if (i < mesh.uv2.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 0] = mesh.uv2[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 1] = mesh.uv2[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->uv2_offset + 0] = mesh.uv2[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->uv2_offset + 1] = mesh.uv2[i].y;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv2_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv2_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv2_offset + 1] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_uv3) {
+		if (vertexarray->has_uv3) {
 			if (i < mesh.uv3.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 0] = mesh.uv3[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 1] = mesh.uv3[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->uv3_offset + 0] = mesh.uv3[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->uv3_offset + 1] = mesh.uv3[i].y;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv3_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv3_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv3_offset + 1] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_uv4) {
+		if (vertexarray->has_uv4) {
 			if (i < mesh.uv4.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 0] = mesh.uv4[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 1] = mesh.uv4[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->uv4_offset + 0] = mesh.uv4[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->uv4_offset + 1] = mesh.uv4[i].y;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv4_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv4_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv4_offset + 1] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_uv5) {
+		if (vertexarray->has_uv5) {
 			if (i < mesh.uv5.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 0] = mesh.uv5[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 1] = mesh.uv5[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->uv5_offset + 0] = mesh.uv5[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->uv5_offset + 1] = mesh.uv5[i].y;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv5_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv5_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv5_offset + 1] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_uv6) {
+		if (vertexarray->has_uv6) {
 			if (i < mesh.uv6.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 0] = mesh.uv6[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 1] = mesh.uv6[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->uv6_offset + 0] = mesh.uv6[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->uv6_offset + 1] = mesh.uv6[i].y;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv6_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv6_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv6_offset + 1] = 0;
 			}
 		}
-		if (meshrenderer.vertexarray->has_uv7) {
+		if (vertexarray->has_uv7) {
 			if (i < mesh.uv7.size()) {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 0] = mesh.uv7[i].x;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 1] = mesh.uv7[i].y;
+				data[i * vertexarray->elem_stride + vertexarray->uv7_offset + 0] = mesh.uv7[i].x;
+				data[i * vertexarray->elem_stride + vertexarray->uv7_offset + 1] = mesh.uv7[i].y;
 			} else {
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 0] = 0;
-				data[i * meshrenderer.vertexarray->elem_stride + meshrenderer.vertexarray->uv7_offset + 1] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv7_offset + 0] = 0;
+				data[i * vertexarray->elem_stride + vertexarray->uv7_offset + 1] = 0;
 			}
 		}
 	}
 
-	mesh.vertexbuffer->Allocate(mesh.vertexcount * meshrenderer.vertexarray->stride);
-	mesh.vertexbuffer->AddDataDynamic((void*)data, mesh.vertexcount * meshrenderer.vertexarray->stride);
-	// mesh.vertexbuffer->AddDataStatic((void*)data, mesh.vertexcount*meshrenderer.vertexarray->stride);
+	mesh.vertexbuffer->Allocate(mesh.vertexcount * vertexarray->stride);
+	mesh.vertexbuffer->AddDataDynamic((void*)data, mesh.vertexcount * vertexarray->stride);
+	// mesh.vertexbuffer->AddDataStatic((void*)data, mesh.vertexcount*vertexarray->stride);
 	mesh.indexbuffer->AddData(mesh.indices.data(), sizeof(uint32_t) * mesh.indexcount);
 
 	mesh.changed = false;
@@ -532,6 +532,7 @@ void ti::System::Renderer::Render(WindowContext& window) {
 	glViewport(0, 0, window.width, window.height);
 	glClearColor(0, 0, 1, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// glEnable(GL_CULL_FACE);
 
 	using namespace ti::Component;
 
@@ -591,7 +592,7 @@ void ti::System::Renderer::Render(WindowContext& window) {
 		SetModel(transform.GetModel());
 
 		TransferMesh(mesh, meshrenderer);
-		Render(TRIANGLE, meshrenderer.material, meshrenderer.vertexarray, mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
+		Render(TRIANGLE, meshrenderer.material, GetVertexArray(meshrenderer.flags), mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
 	}
 
 	for (auto& entity : registry->View<Tag, Transform, Mesh, MeshRenderer>()) {
@@ -606,7 +607,7 @@ void ti::System::Renderer::Render(WindowContext& window) {
 		SetModel(transform.GetModel());
 
 		TransferMesh(mesh, meshrenderer);
-		Render(TRIANGLE, meshrenderer.material, meshrenderer.vertexarray, mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
+		Render(TRIANGLE, meshrenderer.material, GetVertexArray(meshrenderer.flags), mesh.vertexcount, mesh.vertexbuffer, mesh.indexcount, mesh.indexbuffer);
 	}
 
 	RenderSprite(registry->View<Tag, Transform, SpriteRenderer>().size() * 4);
