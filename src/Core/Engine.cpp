@@ -4,7 +4,7 @@
 #include "System/RenderSystem.h"
 #include "System/Physics.h"
 
-ti::System::RenderSystem rendersystem;
+ti::System::Renderer rendersystem;
 ti::System::CameraSystem camerasystem;
 ti::System::Physics physicssystem;
 
@@ -34,6 +34,8 @@ void ti::Engine::CreateContext() {
 		imguilayer.registry = &registry;
 		imguilayer.Init();
 	}
+
+	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 }
 
 void ti::Engine::Init() {

@@ -9,6 +9,6 @@ void ti::System::Physics::Update(double dt) {
 
 		if (!rigidbody.use_gravity) continue;
 
-		transform.position.y -= dt;
+		transform.translation.y -= dt;
 	}
 }

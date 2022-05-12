@@ -21,7 +21,7 @@ namespace ti {
 			}
 			
 			void SetFilteringMode() {
-
+				
 			}
 		};
 	}

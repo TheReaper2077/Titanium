@@ -1,8 +1,10 @@
 #pragma once
 
+#include <iostream>
 #include <glm/glm.hpp>
 #include <OpenGL.h>
 #include "../Enumerations.h"
+#include <glm/gtx/string_cast.hpp>
 #include "../uuid.h"
 
 #define POSITION_ATTRIB_BIT ( 1 << VertexArrayAttrib::position )
@@ -101,6 +103,12 @@ namespace ti {
 						indices.push_back(face.mIndices[j]);
 					}
 				}
+
+				// std::cout << "nextshxf\n";
+
+				// for (int i = 0; i < ai_mesh->mNumVertices; i++) {
+				// 	std::cout << glm::to_string(positions[i]) << '\n';
+				// }
 			}
 
 			Mesh() {}

@@ -150,7 +150,7 @@ void ti::SerializeEntities(ECS::Registry* registry, const char* filename) {
 
 			out << YAML::BeginMap;
 			out << YAML::Key << "position";
-			out << YAML::Value << transform.position;
+			out << YAML::Value << transform.translation;
 			out << YAML::Key << "rotation";
 			out << YAML::Value << transform.rotation;
 			out << YAML::Key << "scale";
@@ -353,7 +353,7 @@ void ti::DeSerializeEntities(ECS::Registry* registry, const char* filename) {
 			if (pair.first.as<std::string>() == "Transform") {
 				Transform transform;
 
-				transform.position = pair.second["position"].as<glm::vec3>();
+				transform.translation = pair.second["position"].as<glm::vec3>();
 				transform.rotation = pair.second["rotation"].as<glm::vec3>();
 				transform.scale = pair.second["scale"].as<glm::vec3>();
 

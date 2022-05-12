@@ -102,9 +102,9 @@ void ti::System::CameraSystem::EditorCamera() {
 		toggle = true;
 	}
 
-	transform.position = camera.Position + camera.Offset + delta;
+	transform.translation = camera.Position + camera.Offset + delta;
 
-	camera.view = glm::lookAt(transform.position, transform.position + camera.Front, camera.Up);
+	camera.view = glm::lookAt(transform.translation, transform.translation + camera.Front, camera.Up);
 
 	if (toggle && !events.mouse_pressed.contains(SDL_BUTTON_LEFT) && events.key_pressed.contains(SDL_SCANCODE_LALT)) {
 		camera.Offset += delta;

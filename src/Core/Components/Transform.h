@@ -9,12 +9,12 @@
 namespace ti {
 	namespace Component {
 		struct Transform {
-			glm::vec3 position = glm::vec3(0, 0, 0);
+			glm::vec3 translation = glm::vec3(0, 0, 0);
 			glm::vec3 rotation = glm::vec3(0, 0, 0);
 			glm::vec3 scale = glm::vec3(1, 1, 1);
 
 			glm::mat4 GetTranslationMatrix() {
-				return glm::translate(glm::mat4(1.0f), position);
+				return glm::translate(glm::mat4(1.0f), translation);
 			}
 
 			glm::mat4 GetScaleMatrix() {
@@ -34,7 +34,7 @@ namespace ti {
 			}
 
 			void Clear() {
-				position = glm::vec3(0, 0, 0);
+				translation = glm::vec3(0, 0, 0);
 				scale = glm::vec3(0, 0, 0);
 				rotation = glm::vec3(0, 0, 0);
 			}

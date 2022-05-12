@@ -2,7 +2,6 @@
 
 #include <glm/ext.hpp>
 #include "WindowRegistry.h"
-#include "MeshRegistry.h"
 #include <deque>
 #include "Engine.h"
 #include "Components/Components.h"
@@ -14,7 +13,7 @@
 #include <imgui_stdlib.h>
 #include <imgui_impl_opengl3.h>
 #include "glm/gtx/string_cast.hpp"
-// #include <ImGuizmo.h>
+#include "MeshRegistry.h"
 
 void ti::ImGuiLayer::Init() {
 	auto& engine = registry->Store<EngineProperties>();
@@ -97,54 +96,53 @@ void ti::ImGuiLayer::Render() {
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	if (ImGui::Begin(editorwindow.title.c_str())) {
-		ImGui::PopStyleVar();
+	ImGui::Begin(editorwindow.title.c_str());
+	ImGui::PopStyleVar();
 
-		// std::cout << (ImGui::IsWindowFocused() && ImGui::IsWindowHovered()) << '\n';
-		editorwindow.focused = !gamewindow.focused;
+	// std::cout << (ImGui::IsWindowFocused() && ImGui::IsWindowHovered()) << '\n';
+	editorwindow.focused = !gamewindow.focused;
 
-		editorwindow.posx = ImGui::GetWindowPos().x;
-		editorwindow.posy = ImGui::GetWindowPos().y;
-		editorwindow.width = ImGui::GetWindowSize().x;
-		editorwindow.height = ImGui::GetWindowSize().y;
+	editorwindow.posx = ImGui::GetWindowPos().x;
+	editorwindow.posy = ImGui::GetWindowPos().y;
+	editorwindow.width = ImGui::GetWindowSize().x;
+	editorwindow.height = ImGui::GetWindowSize().y;
 
-		editorwindow.framebuffer->Bind();
+	editorwindow.framebuffer->Bind();
 
-		glm::vec4 pixel;
+	glm::vec4 pixel;
 
-		glReadBuffer(GL_COLOR_ATTACHMENT1);
-		
-		glReadPixels(events.editor_mouspos.x, events.editor_mouspos.y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	
+	glReadPixels(events.editor_mouspos.x, events.editor_mouspos.y, 1, 1, GL_RGBA, GL_FLOAT, &pixel[0]);
 
-		glReadBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
 
-		editorwindow.framebuffer->UnBind();
+	editorwindow.framebuffer->UnBind();
 
-		ImGui::GetWindowDrawList()->AddImage((void*)editorwindow.framebuffer->texture, ImVec2(editorwindow.posx, editorwindow.posy), ImVec2(editorwindow.posx + editorwindow.width, editorwindow.posy + editorwindow.height), ImVec2(0, (float)editorwindow.height / engine.context_height), ImVec2((float)editorwindow.width / engine.context_width, 0));
-		ImGui::End();
+	ImGui::GetWindowDrawList()->AddImage((void*)editorwindow.framebuffer->texture, ImVec2(editorwindow.posx, editorwindow.posy), ImVec2(editorwindow.posx + editorwindow.width, editorwindow.posy + editorwindow.height), ImVec2(0, (float)editorwindow.height / engine.context_height), ImVec2((float)editorwindow.width / engine.context_width, 0));
+	ImGui::End();
+
+	ImGui::Begin("Controls");
+
+	bool play = ImGui::Button("Play");
+	bool pause = ImGui::Button("Pause");
+	bool stop = ImGui::Button("Stop");
+
+	if (play && (!engine.play || engine.pause)) {
+		engine.play = true;
+		engine.pause = false;
+		engine.stop = false;
+	}
+	if (pause && !engine.pause && engine.play) {
+		engine.pause = true;
+	}
+	if (stop && engine.play && !engine.stop) {
+		engine.play = false;
+		engine.stop = true;
+		engine.pause = false;
 	}
 
-	if (ImGui::Begin("Controls")) {
-		bool play = ImGui::Button("Play");
-		bool pause = ImGui::Button("Pause");
-		bool stop = ImGui::Button("Stop");
-
-		if (play && (!engine.play || engine.pause)) {
-			engine.play = true;
-			engine.pause = false;
-			engine.stop = false;
-		}
-		if (pause && !engine.pause && engine.play) {
-			engine.pause = true;
-		}
-		if (stop && engine.play && !engine.stop) {
-			engine.play = false;
-			engine.stop = true;
-			engine.pause = false;
-		}
-
-		ImGui::End();
-	}
+	ImGui::End();
 
 	Update();
 
@@ -194,7 +192,7 @@ void ti::ImGuiLayer::Inspector(ti::ECS::Entity& entity) {
 		if (ImGui::CollapsingHeader("Transform", flags)) {
 			auto& transform = registry->Get<Transform>(entity);
 
-			ImGui::DragFloat3("Position", &transform.position[0], 0.1);
+			ImGui::DragFloat3("Position", &transform.translation[0], 0.1);
 			ImGui::DragFloat3("Rotation", &transform.rotation[0], 0.1);
 			ImGui::DragFloat3("Scale", &transform.scale[0], 0.1);
 		}
@@ -593,6 +591,14 @@ void ti::ImGuiLayer::Controls() {
 	ImGui::End();
 }
 
+void ti::ImGuiLayer::TileEditor() {
+	ImGui::Begin("SpriteEditor");
+
+	// ImGui::Dragacc
+
+	ImGui::End();
+}
+
 void ti::ImGuiLayer::Update() {
 	using namespace ti::Component;
 	auto& functions = registry->Store<Functions>();
@@ -605,6 +611,7 @@ void ti::ImGuiLayer::Update() {
 	Status();
 	MaterialRegistry();
 	MeshRegistry();
+	TileEditor();
 
 	// if (events.key_pressed.contains(SDL_SCANCODE_S) && events.key_pressed.contains(SDL_SCANCODE_LCTRL)) {
 	// 	// registry->Store<ti::Serializer>().Serialize();

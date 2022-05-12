@@ -30,6 +30,8 @@ namespace ti {
 
 		void Controls();
 
+		void TileEditor();
+
 		void Update();
 
 		void EventHandler();

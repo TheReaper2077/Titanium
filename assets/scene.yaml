@@ -12,7 +12,7 @@
       lighting: true
       flags: 11
       material: Material
-- Name: Light - 9
+- Name: Light Point 0
   ID: 308eaabd-983a-4ce1-bb99-c3841004d6f9
   Components:
     Transform:
@@ -23,7 +23,7 @@
       color: [1, 1, 1]
       active: true
       mode: 0
-- Name: Light - 9
+- Name: Light Point 1
   ID: 32a09e38-bfa4-468f-8d30-852ac309a639
   Components:
     Transform:
@@ -34,7 +34,7 @@
       color: [1, 1, 1]
       active: true
       mode: 0
-- Name: Light - 9
+- Name: Light Point 2
   ID: 4ed2a61b-00a3-43b4-bfb6-faafae83a9d1
   Components:
     Transform:
@@ -64,7 +64,7 @@
       mass: 0
       drag: 0
       use_gravity: true
-      rotation_lock: [false, false, false]
+      rotation_lock: [true, true, true]
 - Name: Mesh
   ID: 34958811-dd00-44aa-807f-ac7191ea7a46
   Components:

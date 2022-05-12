@@ -13,7 +13,7 @@
 
 namespace ti {
 	namespace System {
-		class RenderSystem {
+		class Renderer {
 			UniformBuffer* uniformbuffer = nullptr;
 
 			ti::ECS::Registry* registry;
@@ -27,7 +27,7 @@ namespace ti {
 			std::unordered_map<uint32_t, VertexArray*> vertexarray_registry;
 		
 		public:
-			RenderSystem() {}
+			Renderer() {}
 
 			void Init(ti::ECS::Registry *registry);
 

@@ -2,11 +2,11 @@
 
 #include "glm/gtx/string_cast.hpp"
 
-void ti::System::RenderSystem::Init(ti::ECS::Registry* registry) {
+void ti::System::Renderer::Init(ti::ECS::Registry* registry) {
 	this->registry = registry;
 }
 
-VertexArray* ti::System::RenderSystem::GetVertexArray(uint32_t flags) {
+VertexArray* ti::System::Renderer::GetVertexArray(uint32_t flags) {
 	if (vertexarray_registry.find(flags) == vertexarray_registry.end()) {
 		std::vector<VertexArrayAttribDescriptor> descriptor;
 
@@ -49,13 +49,13 @@ VertexArray* ti::System::RenderSystem::GetVertexArray(uint32_t flags) {
 
 	return vertexarray_registry[flags];
 }
-void ti::System::RenderSystem::SetShader(Shader* shader) {
+void ti::System::Renderer::SetShader(Shader* shader) {
 	this->shader = shader;
 }
-void ti::System::RenderSystem::SetMaterial(std::string name) {
+void ti::System::Renderer::SetMaterial(std::string name) {
 	SetMaterial(registry->Store<MaterialRegistry>().GetMaterial(name));
 }
-void ti::System::RenderSystem::SetMaterial(ti::Component::Material& material) {
+void ti::System::Renderer::SetMaterial(ti::Component::Material& material) {
 	// shader->SetUniformVec3("material.ambient", &material.ambient[0]);
 	// shader->SetUniformVec3("material.diffuse", &material.diffuse[0]);
 	// shader->SetUniformVec3("material.specular", &material.specular[0]);
@@ -98,28 +98,28 @@ void ti::System::RenderSystem::SetMaterial(ti::Component::Material& material) {
 		shader->SetUniformi("specular_index", 0);
 	}
 }
-void ti::System::RenderSystem::SetModel(const glm::mat4& model) {
+void ti::System::Renderer::SetModel(const glm::mat4& model) {
 	if (this->model == model) return;
 	this->model = model;
 	uniformbuffer->AddDataDynamic(&this->model[0][0], sizeof(glm::mat4), sizeof(glm::mat4) * 0);
 }
-void ti::System::RenderSystem::SetView(const glm::mat4& view) {
+void ti::System::Renderer::SetView(const glm::mat4& view) {
 	if (this->view == view) return;
 	this->view = view;
 	uniformbuffer->AddDataDynamic(&this->view[0][0], sizeof(glm::mat4), sizeof(glm::mat4) * 1);
 }
-void ti::System::RenderSystem::SetProjection(const glm::mat4& projection) {
+void ti::System::Renderer::SetProjection(const glm::mat4& projection) {
 	if (this->projection == projection) return;
 	this->projection = projection;
 	uniformbuffer->AddDataDynamic(&this->projection[0][0], sizeof(glm::mat4), sizeof(glm::mat4) * 2);
 }
-void ti::System::RenderSystem::SetViewPosition(const glm::vec3& view_position) {
+void ti::System::Renderer::SetViewPosition(const glm::vec3& view_position) {
 	if (this->view_position == view_position) return;
 	this->view_position = view_position;
 	uniformbuffer->AddDataDynamic(&this->view_position[0], sizeof(glm::vec3), sizeof(glm::mat4) * 3);
 }
 
-IndexBuffer* ti::System::RenderSystem::TransferQuadIndices(VertexArray* vertexarray, int vertexcount) {
+IndexBuffer* ti::System::Renderer::TransferQuadIndices(VertexArray* vertexarray, int vertexcount) {
 	static int indexcount;
 	static IndexBuffer* indexbuffer;
 
@@ -143,7 +143,7 @@ IndexBuffer* ti::System::RenderSystem::TransferQuadIndices(VertexArray* vertexar
 	return indexbuffer;
 }
 
-void ti::System::RenderSystem::TransferMesh(ti::Component::Mesh& mesh, ti::Component::MeshRenderer& meshrenderer) {
+void ti::System::Renderer::TransferMesh(ti::Component::Mesh& mesh, ti::Component::MeshRenderer& meshrenderer) {
 	uint32_t flags = 0;
 	if (mesh.positions.size()) flags |= POSITION_ATTRIB_BIT;
 	if (mesh.normals.size()) flags |= NORMAL_ATTRIB_BIT;
@@ -308,7 +308,7 @@ glm::vec3 lightColors[] = {
 	glm::vec3(300.0f, 300.0f, 300.0f)
 };
 
-void ti::System::RenderSystem::Render(Primitive primitive, std::string material, VertexArray* vertexarray, int vertexcount, VertexBuffer* vertexbuffer, int indexcount, IndexBuffer* indexbuffer) {
+void ti::System::Renderer::Render(Primitive primitive, std::string material, VertexArray* vertexarray, int vertexcount, VertexBuffer* vertexbuffer, int indexcount, IndexBuffer* indexbuffer) {
 	auto& engine = registry->Store<EngineProperties>();
 	
 	SetMaterial(material);
@@ -339,7 +339,7 @@ void ti::System::RenderSystem::Render(Primitive primitive, std::string material,
 	}
 }
 
-void ti::System::RenderSystem::RenderSprite(int vertexcount) {
+void ti::System::Renderer::RenderSprite(int vertexcount) {
 	using namespace ti::Component;
 
 	uint32_t flags = POSITION_ATTRIB_BIT | COLOR_ATTRIB_BIT | UV0_ATTRIB_BIT;
@@ -369,10 +369,10 @@ void ti::System::RenderSystem::RenderSprite(int vertexcount) {
 			continue;
 		}
 
-		glm::vec3 pos00 = quaternion * glm::vec3(transform.position.x - transform.scale.x, transform.position.y - transform.scale.y, transform.position.z);
-		glm::vec3 pos01 = quaternion * glm::vec3(transform.position.x - transform.scale.x, transform.position.y + transform.scale.y, transform.position.z);
-		glm::vec3 pos10 = quaternion * glm::vec3(transform.position.x + transform.scale.x, transform.position.y - transform.scale.y, transform.position.z);
-		glm::vec3 pos11 = quaternion * glm::vec3(transform.position.x + transform.scale.x, transform.position.y + transform.scale.y, transform.position.z);
+		glm::vec3 pos00 = quaternion * glm::vec3(transform.translation.x - transform.scale.x, transform.translation.y - transform.scale.y, transform.translation.z);
+		glm::vec3 pos01 = quaternion * glm::vec3(transform.translation.x - transform.scale.x, transform.translation.y + transform.scale.y, transform.translation.z);
+		glm::vec3 pos10 = quaternion * glm::vec3(transform.translation.x + transform.scale.x, transform.translation.y - transform.scale.y, transform.translation.z);
+		glm::vec3 pos11 = quaternion * glm::vec3(transform.translation.x + transform.scale.x, transform.translation.y + transform.scale.y, transform.translation.z);
 
 		vertices[i * vertexarray->elem_stride + vertexarray->position_offset + 0] = pos00.x;
 		vertices[i * vertexarray->elem_stride + vertexarray->position_offset + 1] = pos00.y;
@@ -448,7 +448,7 @@ void ti::System::RenderSystem::RenderSprite(int vertexcount) {
 	shader->SetUniformi("has_texture", 0);
 }
 
-void ti::System::RenderSystem::RenderColliders() {
+void ti::System::Renderer::RenderColliders() {
 	using namespace ti::Component;
 
 	shader->SetUniformi("wireframe_mode", 1);
@@ -470,7 +470,7 @@ void ti::System::RenderSystem::RenderColliders() {
 
 		if (!collider.visible) continue;
 
-		const auto& center = collider.center + transform.position;
+		const auto& center = collider.center + transform.translation;
 
 		vertices.reserve(12 * 2 + vertices.size());
 
@@ -515,7 +515,7 @@ void ti::System::RenderSystem::RenderColliders() {
 	shader->SetUniformi("wireframe_mode", 0);
 }
 
-void ti::System::RenderSystem::Render(WindowContext& window) {
+void ti::System::Renderer::Render(WindowContext& window) {
 	auto& events = registry->Store<ti::Events>();
 	auto& engine = registry->Store<ti::EngineProperties>();
 
@@ -544,7 +544,7 @@ void ti::System::RenderSystem::Render(WindowContext& window) {
 		auto& camera = registry->Get<Camera>(editorcamera);
 		auto& transform = registry->Get<Transform>(editorcamera);
 
-		SetViewPosition(transform.position);
+		SetViewPosition(transform.translation);
 		SetView(camera.view);
 		SetProjection(camera.projection);
 	}
@@ -570,7 +570,7 @@ void ti::System::RenderSystem::Render(WindowContext& window) {
 		}
 		if (light.mode == Point) {
 			shader->SetUniformVec3("point_light" + std::to_string(point_light) + ".color", &light.color[0]);
-			shader->SetUniformVec3("point_light" + std::to_string(point_light) + ".position", &transform.position[0]);
+			shader->SetUniformVec3("point_light" + std::to_string(point_light) + ".position", &transform.translation[0]);
 
 			point_light++;
 		}
