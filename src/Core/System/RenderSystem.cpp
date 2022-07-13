@@ -533,7 +533,6 @@ void ti::System::Renderer::Render(WindowContext& window) {
 	glViewport(0, 0, window.width, window.height);
 	glClearColor(0, 0, 1, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// glEnable(GL_CULL_FACE);
 
 	using namespace ti::Component;
 

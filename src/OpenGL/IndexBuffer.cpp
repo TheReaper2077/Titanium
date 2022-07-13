@@ -17,7 +17,7 @@ IndexBuffer *IndexBuffer_Create(VertexArray *vertexarray) {
 }
 
 void IndexBuffer::Bind() {
-	this->vertexarray->Bind();
+	// this->vertexarray->Bind();
 	if (gl_context->binding_indexbuffer == this->id) return;
 	gl_context->binding_indexbuffer = this->id;
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->id);
